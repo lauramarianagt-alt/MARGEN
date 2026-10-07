@@ -16,8 +16,10 @@
   "type": "module",
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^18.0.6",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "oxlint": "^1.87.0",

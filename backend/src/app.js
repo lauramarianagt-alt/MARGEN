@@ -1,10 +1,15 @@
+import cookieParser from 'cookie-parser'
 import express from 'express'
 
+import { me } from './controllers/auth.controller.js'
+import { requireAuth } from './middleware/require-auth.js'
+import authRouter from './routes/auth.routes.js'
 import categoriesRouter from './routes/categories.routes.js'
 
 const app = express()
 
 app.use(express.json())
+app.use(cookieParser())
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({
@@ -14,5 +19,9 @@ app.get('/api/health', (req, res) => {
 })
 
 app.use('/api/categories', categoriesRouter)
+
+app.use('/api/auth', authRouter)
+
+app.get('/api/me', requireAuth, me)
 
 export default app
