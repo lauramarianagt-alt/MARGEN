@@ -1,0 +1,33 @@
+{
+  "brand": {
+    "name": "MARGEN",
+    "description": "Moda independiente y cultura visual",
+    "tagline": "La moda merece algo más que un feed."
+  },
+  "navigation": {
+    "home": "Inicio",
+    "discover": "Descubrir",
+    "login": "Iniciar sesión",
+    "register": "Crear cuenta",
+    "dashboard": "Mi espacio",
+    "logout": "Cerrar sesión"
+  },
+  "auth": {
+    "login": {
+      "title": "Iniciar sesión"
+    },
+    "register": {
+      "title": "Crear cuenta"
+    },
+    "emailConfirmed": "Tu correo ha sido confirmado. Ya puedes iniciar sesión."
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Ha ocurrido un error",
+    "retry": "Intentar de nuevo"
+  },
+  "language": {
+    "es": "ES",
+    "en": "EN"
+  }
+}
