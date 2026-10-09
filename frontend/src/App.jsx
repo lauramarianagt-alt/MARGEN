@@ -4,6 +4,7 @@ import {
   Routes,
 } from 'react-router-dom'
 
+import ProtectedRoute from './components/ProtectedRoute.jsx'
 import RootLayout from './layouts/RootLayout.jsx'
 import DashboardPage from './pages/DashboardPage.jsx'
 import HomePage from './pages/HomePage.jsx'
@@ -51,10 +52,12 @@ function App() {
           element={<RegisterPage />}
         />
 
-        <Route
-          path="/dashboard"
-          element={<DashboardPage />}
-        />
+        <Route element={<ProtectedRoute />}>
+          <Route
+            path="/dashboard"
+            element={<DashboardPage />}
+          />
+        </Route>
       </Route>
     </Routes>
   )

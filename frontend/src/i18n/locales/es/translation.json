@@ -10,16 +10,30 @@
     "login": "Iniciar sesión",
     "register": "Crear cuenta",
     "dashboard": "Mi espacio",
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+    "loggingOut": "Cerrando sesión..."
   },
   "auth": {
+    "email": "Correo electrónico",
+    "password": "Contraseña",
     "login": {
-      "title": "Iniciar sesión"
+      "title": "Iniciar sesión",
+      "submit": "Entrar",
+      "submitting": "Entrando...",
+      "invalidCredentials": "El correo o la contraseña no son correctos.",
+      "genericError": "No hemos podido iniciar sesión. Inténtalo de nuevo.",
+      "noAccount": "¿Todavía no tienes cuenta?",
+      "registerLink": "Crear una cuenta"
     },
     "register": {
       "title": "Crear cuenta"
     },
     "emailConfirmed": "Tu correo ha sido confirmado. Ya puedes iniciar sesión."
+  },
+  "dashboard": {
+    "title": "Mi espacio",
+    "welcome": "Hola, {{name}}",
+    "username": "@{{username}}"
   },
   "common": {
     "loading": "Cargando...",

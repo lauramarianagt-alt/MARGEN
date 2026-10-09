@@ -1,8 +1,25 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { useState } from 'react'
+import {
+  NavLink,
+  Outlet,
+  useNavigate,
+} from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+
+import { useAuth } from '../hooks/useAuth.js'
 
 function RootLayout() {
   const { i18n, t } = useTranslation()
+  const navigate = useNavigate()
+
+  const {
+    isAuthenticated,
+    isLoading,
+    logout,
+  } = useAuth()
+
+  const [isLoggingOut, setIsLoggingOut] =
+    useState(false)
 
   const changeLanguage = async (language) => {
     await i18n.changeLanguage(language)
@@ -11,6 +28,25 @@ function RootLayout() {
       'margen_language',
       language,
     )
+  }
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+
+    try {
+      await logout()
+
+      navigate('/', {
+        replace: true,
+      })
+    } catch (error) {
+      console.error(
+        'Unable to log out:',
+        error,
+      )
+    } finally {
+      setIsLoggingOut(false)
+    }
   }
 
   return (
@@ -28,24 +64,45 @@ function RootLayout() {
             {t('navigation.home')}
           </NavLink>
 
-          <NavLink to="/login">
-            {t('navigation.login')}
-          </NavLink>
+          {!isLoading && !isAuthenticated && (
+            <>
+              <NavLink to="/login">
+                {t('navigation.login')}
+              </NavLink>
 
-          <NavLink to="/register">
-            {t('navigation.register')}
-          </NavLink>
+              <NavLink to="/register">
+                {t('navigation.register')}
+              </NavLink>
+            </>
+          )}
 
-          <NavLink to="/dashboard">
-            {t('navigation.dashboard')}
-          </NavLink>
+          {!isLoading && isAuthenticated && (
+            <>
+              <NavLink to="/dashboard">
+                {t('navigation.dashboard')}
+              </NavLink>
+
+              <button
+                type="button"
+                className="navigation-button"
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+              >
+                {isLoggingOut
+                  ? t('navigation.loggingOut')
+                  : t('navigation.logout')}
+              </button>
+            </>
+          )}
         </nav>
 
         <div className="language-switcher">
           <button
             type="button"
             onClick={() => changeLanguage('es')}
-            aria-pressed={i18n.language === 'es'}
+            aria-pressed={
+              i18n.language === 'es'
+            }
           >
             {t('language.es')}
           </button>
@@ -53,7 +110,9 @@ function RootLayout() {
           <button
             type="button"
             onClick={() => changeLanguage('en')}
-            aria-pressed={i18n.language === 'en'}
+            aria-pressed={
+              i18n.language === 'en'
+            }
           >
             {t('language.en')}
           </button>

@@ -120,3 +120,103 @@ h1 {
   flex-direction: column;
   justify-content: center;
 }
+
+.auth-page {
+  display: flex;
+  justify-content: center;
+}
+
+.auth-container {
+  width: 100%;
+  max-width: 32rem;
+}
+
+.auth-container h1 {
+  margin-bottom: 3rem;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-field label {
+  font-size: 0.875rem;
+}
+
+.form-field input {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid #111111;
+  border-radius: 0;
+  padding: 0.75rem 0;
+  color: #111111;
+  background: transparent;
+  outline: none;
+}
+
+.form-field input:focus {
+  border-bottom-width: 2px;
+}
+
+.auth-submit {
+  align-self: flex-start;
+  border: 1px solid #111111;
+  padding: 0.75rem 1.5rem;
+  color: #f4f0e8;
+  background: #111111;
+  cursor: pointer;
+}
+
+.auth-submit:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.auth-message {
+  margin-bottom: 2rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #d8d2c8;
+}
+
+.auth-message--error {
+  font-weight: 600;
+}
+
+.auth-message--success {
+  color: #6f6a63;
+}
+
+.auth-alternative {
+  margin-top: 2rem;
+}
+
+.auth-alternative a {
+  color: inherit;
+}
+
+.navigation-button {
+  border: 0;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.navigation-button:disabled {
+  cursor: wait;
+  opacity: 0.5;
+}
+
+.dashboard-username {
+  margin-top: 1rem;
+  color: #6f6a63;
+  font-size: 1rem;
+}

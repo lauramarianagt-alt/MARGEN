@@ -10,16 +10,30 @@
     "login": "Log in",
     "register": "Create account",
     "dashboard": "My space",
-    "logout": "Log out"
+    "logout": "Log out",
+    "loggingOut": "Logging out..."
   },
   "auth": {
+    "email": "Email",
+    "password": "Password",
     "login": {
-      "title": "Log in"
+      "title": "Log in",
+      "submit": "Log in",
+      "submitting": "Logging in...",
+      "invalidCredentials": "The email or password is incorrect.",
+      "genericError": "We couldn't log you in. Please try again.",
+      "noAccount": "Don't have an account yet?",
+      "registerLink": "Create an account"
     },
     "register": {
       "title": "Create account"
     },
     "emailConfirmed": "Your email has been confirmed. You can now log in."
+  },
+  "dashboard": {
+    "title": "My space",
+    "welcome": "Hello, {{name}}",
+    "username": "@{{username}}"
   },
   "common": {
     "loading": "Loading...",
