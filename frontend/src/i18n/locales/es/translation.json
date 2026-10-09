@@ -13,9 +13,16 @@
     "logout": "Cerrar sesión",
     "loggingOut": "Cerrando sesión..."
   },
-  "auth": {
-    "email": "Correo electrónico",
-    "password": "Contraseña",
+ "auth": {
+  "email": "Correo electrónico",
+  "password": "Contraseña",
+  "confirmPassword": "Confirmar contraseña",
+  "showPassword": "Mostrar contraseña",
+  "hidePassword": "Ocultar contraseña",
+  "name": "Nombre",
+  "surname": "Apellidos",
+  "username": "Nombre de usuario",
+  "preferredLanguage": "Idioma preferido",
     "login": {
       "title": "Iniciar sesión",
       "submit": "Entrar",
@@ -25,8 +32,17 @@
       "noAccount": "¿Todavía no tienes cuenta?",
       "registerLink": "Crear una cuenta"
     },
-    "register": {
-      "title": "Crear cuenta"
+   "register": {
+    "title": "Crear cuenta",
+    "submit": "Crear cuenta",
+    "submitting": "Creando cuenta...",
+    "successTitle": "Revisa tu correo",
+    "successMessage": "Te hemos enviado un enlace para confirmar tu cuenta de MARGEN.",
+    "usernameTaken": "Ese nombre de usuario ya está en uso.",
+    "passwordMismatch": "Las contraseñas no coinciden.",
+    "genericError": "No hemos podido crear la cuenta. Revisa los datos e inténtalo de nuevo.",
+    "hasAccount": "¿Ya tienes una cuenta?",
+    "loginLink": "Iniciar sesión"
     },
     "emailConfirmed": "Tu correo ha sido confirmado. Ya puedes iniciar sesión."
   },

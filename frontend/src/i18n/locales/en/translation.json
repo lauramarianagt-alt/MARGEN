@@ -16,6 +16,13 @@
   "auth": {
     "email": "Email",
     "password": "Password",
+    "confirmPassword": "Confirm password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "name": "Name",
+    "surname": "Surname",
+    "username": "Username",
+    "preferredLanguage": "Preferred language",
     "login": {
       "title": "Log in",
       "submit": "Log in",
@@ -26,7 +33,16 @@
       "registerLink": "Create an account"
     },
     "register": {
-      "title": "Create account"
+      "title": "Create account",
+      "submit": "Create account",
+      "submitting": "Creating account...",
+      "successTitle": "Check your email",
+      "successMessage": "We've sent you a link to confirm your MARGEN account.",
+      "usernameTaken": "That username is already in use.",
+      "passwordMismatch": "Passwords do not match.",
+      "genericError": "We couldn't create your account. Check your details and try again.",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Log in"
     },
     "emailConfirmed": "Your email has been confirmed. You can now log in."
   },

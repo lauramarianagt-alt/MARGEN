@@ -220,3 +220,55 @@ h1 {
   color: #6f6a63;
   font-size: 1rem;
 }
+
+.form-field select {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid #111111;
+  border-radius: 0;
+  padding: 0.75rem 0;
+  color: #111111;
+  background: transparent;
+  outline: none;
+}
+
+.form-field select:focus {
+  border-bottom-width: 2px;
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  padding-right: 3rem;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  padding: 0.5rem;
+  color: #111111;
+  background: transparent;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.password-toggle:hover {
+  opacity: 0.6;
+}
+
+.password-toggle:focus-visible {
+  outline: 1px solid #111111;
+  outline-offset: 2px;
+}
+
+.password-toggle:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
