@@ -38,6 +38,16 @@ La plataforma estará orientada a contenidos como:
 
 ---
 
+## Desarrollo local
+
+Estas URLs corresponden al entorno local de desarrollo. Para utilizarlas es necesario ejecutar frontend y backend en local.
+
+Frontend: http://localhost:5173
+
+Backend: http://localhost:3000
+
+Health check de la API: http://localhost:3000/api/health
+
 ## Estado actual
 
 El proyecto se encuentra actualmente en desarrollo.
