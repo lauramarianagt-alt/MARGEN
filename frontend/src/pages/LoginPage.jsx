@@ -14,11 +14,7 @@ import { ApiError } from '../services/api.js'
 function LoginPage() {
   const { t } = useTranslation()
 
-  const {
-    isAuthenticated,
-    isLoading,
-    login,
-  } = useAuth()
+  const { isAuthenticated, isLoading, login } = useAuth()
 
   const location = useLocation()
   const navigate = useNavigate()
@@ -26,15 +22,12 @@ function LoginPage() {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [isSubmitting, setIsSubmitting] =
-    useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState(null)
 
-  const emailConfirmed =
-    searchParams.get('emailConfirmed') === 'true'
+  const emailConfirmed = searchParams.get('emailConfirmed') === 'true'
 
-  const destination =
-    location.state?.from?.pathname ?? '/dashboard'
+  const destination = location.state?.from?.pathname ?? '/dashboard'
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -52,17 +45,10 @@ function LoginPage() {
         replace: true,
       })
     } catch (loginError) {
-      if (
-        loginError instanceof ApiError &&
-        loginError.status === 401
-      ) {
-        setError(
-          t('auth.login.invalidCredentials'),
-        )
+      if (loginError instanceof ApiError && loginError.status === 401) {
+        setError(t('auth.login.invalidCredentials'))
       } else {
-        setError(
-          t('auth.login.genericError'),
-        )
+        setError(t('auth.login.genericError'))
       }
     } finally {
       setIsSubmitting(false)
@@ -78,12 +64,7 @@ function LoginPage() {
   }
 
   if (isAuthenticated) {
-    return (
-      <Navigate
-        to="/dashboard"
-        replace
-      />
-    )
+    return <Navigate to="/dashboard" replace />
   }
 
   return (
@@ -92,31 +73,20 @@ function LoginPage() {
         <h1>{t('auth.login.title')}</h1>
 
         {emailConfirmed && (
-          <p
-            className="auth-message auth-message--success"
-            role="status"
-          >
+          <p className="auth-message auth-message--success" role="status">
             {t('auth.emailConfirmed')}
           </p>
         )}
 
         {error && (
-          <p
-            className="auth-message auth-message--error"
-            role="alert"
-          >
+          <p className="auth-message auth-message--error" role="alert">
             {error}
           </p>
         )}
 
-        <form
-          className="auth-form"
-          onSubmit={handleSubmit}
-        >
+        <form className="auth-form" onSubmit={handleSubmit}>
           <div className="form-field">
-            <label htmlFor="email">
-              {t('auth.email')}
-            </label>
+            <label htmlFor="email">{t('auth.email')}</label>
 
             <input
               id="email"
@@ -124,18 +94,14 @@ function LoginPage() {
               type="email"
               autoComplete="email"
               value={email}
-              onChange={(event) =>
-                setEmail(event.target.value)
-              }
+              onChange={(event) => setEmail(event.target.value)}
               required
               disabled={isSubmitting}
             />
           </div>
 
           <div className="form-field">
-            <label htmlFor="password">
-              {t('auth.password')}
-            </label>
+            <label htmlFor="password">{t('auth.password')}</label>
 
             <input
               id="password"
@@ -143,31 +109,20 @@ function LoginPage() {
               type="password"
               autoComplete="current-password"
               value={password}
-              onChange={(event) =>
-                setPassword(event.target.value)
-              }
+              onChange={(event) => setPassword(event.target.value)}
               required
               disabled={isSubmitting}
             />
           </div>
 
-          <button
-            className="auth-submit"
-            type="submit"
-            disabled={isSubmitting}
-          >
-            {isSubmitting
-              ? t('auth.login.submitting')
-              : t('auth.login.submit')}
+          <button className="auth-submit" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? t('auth.login.submitting') : t('auth.login.submit')}
           </button>
         </form>
 
         <p className="auth-alternative">
           {t('auth.login.noAccount')}{' '}
-
-          <Link to="/register">
-            {t('auth.login.registerLink')}
-          </Link>
+          <Link to="/register">{t('auth.login.registerLink')}</Link>
         </p>
       </div>
     </main>

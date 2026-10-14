@@ -10,10 +10,7 @@ export async function requireAuth(req, res, next) {
     })
   }
 
-  const {
-    data,
-    error,
-  } = await supabasePublic.auth.getUser(accessToken)
+  const { data, error } = await supabasePublic.auth.getUser(accessToken)
 
   if (error || !data.user) {
     return res.status(401).json({

@@ -7,10 +7,7 @@ function ProtectedRoute() {
   const { t } = useTranslation()
   const location = useLocation()
 
-  const {
-    isAuthenticated,
-    isLoading,
-  } = useAuth()
+  const { isAuthenticated, isLoading } = useAuth()
 
   if (isLoading) {
     return (

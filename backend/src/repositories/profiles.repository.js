@@ -17,7 +17,8 @@ export async function findProfileByUsername(username) {
 export async function findProfileById(id) {
   const { data, error } = await supabaseAdmin
     .from('profiles')
-    .select(`
+    .select(
+      `
       id,
       username,
       name,
@@ -27,7 +28,8 @@ export async function findProfileById(id) {
       preferred_locale,
       created_at,
       updated_at
-    `)
+    `,
+    )
     .eq('id', id)
     .single()
 
@@ -54,7 +56,8 @@ export async function createProfile({
       surname,
       preferred_locale: preferredLocale,
     })
-    .select(`
+    .select(
+      `
       id,
       username,
       name,
@@ -64,7 +67,8 @@ export async function createProfile({
       preferred_locale,
       created_at,
       updated_at
-    `)
+    `,
+    )
     .single()
 
   if (error) {

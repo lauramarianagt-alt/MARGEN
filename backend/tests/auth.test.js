@@ -1,11 +1,5 @@
 import request from 'supertest'
-import {
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import app from '../src/app.js'
 
@@ -72,16 +66,14 @@ describe('POST /api/auth/register', () => {
       session: null,
     })
 
-    const response = await request(app)
-      .post('/api/auth/register')
-      .send({
-        email: 'laura@example.com',
-        password: 'Password123!',
-        username: 'lauragt',
-        name: 'Laura',
-        surname: 'Guillén',
-        preferredLocale: 'es',
-      })
+    const response = await request(app).post('/api/auth/register').send({
+      email: 'laura@example.com',
+      password: 'Password123!',
+      username: 'lauragt',
+      name: 'Laura',
+      surname: 'Guillén',
+      preferredLocale: 'es',
+    })
 
     expect(response.status).toBe(201)
 
@@ -102,44 +94,36 @@ describe('POST /api/auth/register', () => {
   })
 
   it('rejects invalid registration data', async () => {
-    const response = await request(app)
-      .post('/api/auth/register')
-      .send({
-        email: 'not-an-email',
-        password: '123',
-        username: 'a',
-        name: '',
-        surname: '',
-      })
+    const response = await request(app).post('/api/auth/register').send({
+      email: 'not-an-email',
+      password: '123',
+      username: 'a',
+      name: '',
+      surname: '',
+    })
 
     expect(response.status).toBe(400)
 
-    expect(response.body.error).toBe(
-      'Invalid request data',
-    )
+    expect(response.body.error).toBe('Invalid request data')
 
     expect(registerUser).not.toHaveBeenCalled()
   })
 
   it('returns 409 when username is already in use', async () => {
-    const error = new Error(
-      'Username is already in use',
-    )
+    const error = new Error('Username is already in use')
 
     error.statusCode = 409
 
     registerUser.mockRejectedValue(error)
 
-    const response = await request(app)
-      .post('/api/auth/register')
-      .send({
-        email: 'laura@example.com',
-        password: 'Password123!',
-        username: 'lauragt',
-        name: 'Laura',
-        surname: 'Guillén',
-        preferredLocale: 'es',
-      })
+    const response = await request(app).post('/api/auth/register').send({
+      email: 'laura@example.com',
+      password: 'Password123!',
+      username: 'lauragt',
+      name: 'Laura',
+      surname: 'Guillén',
+      preferredLocale: 'es',
+    })
 
     expect(response.status).toBe(409)
 
@@ -157,12 +141,10 @@ describe('POST /api/auth/login', () => {
       session,
     })
 
-    const response = await request(app)
-      .post('/api/auth/login')
-      .send({
-        email: 'laura@example.com',
-        password: 'Password123!',
-      })
+    const response = await request(app).post('/api/auth/login').send({
+      email: 'laura@example.com',
+      password: 'Password123!',
+    })
 
     expect(response.status).toBe(200)
 
@@ -177,33 +159,25 @@ describe('POST /api/auth/login', () => {
 
     const cookieHeader = cookies.join(';')
 
-    expect(cookieHeader).toContain(
-      'margen_access_token=',
-    )
+    expect(cookieHeader).toContain('margen_access_token=')
 
-    expect(cookieHeader).toContain(
-      'margen_refresh_token=',
-    )
+    expect(cookieHeader).toContain('margen_refresh_token=')
 
     expect(cookieHeader).toContain('HttpOnly')
     expect(cookieHeader).toContain('SameSite=Lax')
   })
 
   it('returns 401 for invalid credentials', async () => {
-    const error = new Error(
-      'Invalid email or password',
-    )
+    const error = new Error('Invalid email or password')
 
     error.statusCode = 401
 
     loginUser.mockRejectedValue(error)
 
-    const response = await request(app)
-      .post('/api/auth/login')
-      .send({
-        email: 'laura@example.com',
-        password: 'WrongPassword123!',
-      })
+    const response = await request(app).post('/api/auth/login').send({
+      email: 'laura@example.com',
+      password: 'WrongPassword123!',
+    })
 
     expect(response.status).toBe(401)
 
@@ -215,8 +189,7 @@ describe('POST /api/auth/login', () => {
 
 describe('GET /api/me', () => {
   it('returns 401 without an access cookie', async () => {
-    const response = await request(app)
-      .get('/api/me')
+    const response = await request(app).get('/api/me')
 
     expect(response.status).toBe(401)
 
@@ -240,10 +213,7 @@ describe('GET /api/me', () => {
 
     const response = await request(app)
       .get('/api/me')
-      .set(
-        'Cookie',
-        'margen_access_token=access-token',
-      )
+      .set('Cookie', 'margen_access_token=access-token')
 
     expect(response.status).toBe(200)
 
@@ -252,13 +222,9 @@ describe('GET /api/me', () => {
       profile,
     })
 
-    expect(
-      supabasePublic.auth.getUser,
-    ).toHaveBeenCalledWith('access-token')
+    expect(supabasePublic.auth.getUser).toHaveBeenCalledWith('access-token')
 
-    expect(
-      getCurrentUser,
-    ).toHaveBeenCalledWith('access-token')
+    expect(getCurrentUser).toHaveBeenCalledWith('access-token')
   })
 })
 
@@ -268,16 +234,11 @@ describe('POST /api/auth/refresh', () => {
 
     const response = await request(app)
       .post('/api/auth/refresh')
-      .set(
-        'Cookie',
-        'margen_refresh_token=refresh-token',
-      )
+      .set('Cookie', 'margen_refresh_token=refresh-token')
 
     expect(response.status).toBe(204)
 
-    expect(
-      refreshUserSession,
-    ).toHaveBeenCalledWith('refresh-token')
+    expect(refreshUserSession).toHaveBeenCalledWith('refresh-token')
 
     const cookies = response.headers['set-cookie']
 
@@ -285,20 +246,15 @@ describe('POST /api/auth/refresh', () => {
 
     const cookieHeader = cookies.join(';')
 
-    expect(cookieHeader).toContain(
-      'margen_access_token=',
-    )
+    expect(cookieHeader).toContain('margen_access_token=')
 
-    expect(cookieHeader).toContain(
-      'margen_refresh_token=',
-    )
+    expect(cookieHeader).toContain('margen_refresh_token=')
 
     expect(cookieHeader).toContain('HttpOnly')
   })
 
   it('returns 401 without a refresh token', async () => {
-    const response = await request(app)
-      .post('/api/auth/refresh')
+    const response = await request(app).post('/api/auth/refresh')
 
     expect(response.status).toBe(401)
 
@@ -310,8 +266,7 @@ describe('POST /api/auth/refresh', () => {
 
 describe('POST /api/auth/logout', () => {
   it('clears authentication cookies', async () => {
-    const response = await request(app)
-      .post('/api/auth/logout')
+    const response = await request(app).post('/api/auth/logout')
 
     expect(response.status).toBe(204)
 
@@ -321,12 +276,8 @@ describe('POST /api/auth/logout', () => {
 
     const cookieHeader = cookies.join(';')
 
-    expect(cookieHeader).toContain(
-      'margen_access_token=',
-    )
+    expect(cookieHeader).toContain('margen_access_token=')
 
-    expect(cookieHeader).toContain(
-      'margen_refresh_token=',
-    )
+    expect(cookieHeader).toContain('margen_refresh_token=')
   })
 })

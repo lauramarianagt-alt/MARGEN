@@ -13,10 +13,7 @@ import {
 } from '../repositories/articles.repository.js'
 
 export class ArticleServiceError extends Error {
-  constructor(
-    status,
-    message,
-  ) {
+  constructor(status, message) {
     super(message)
 
     this.name = 'ArticleServiceError'
@@ -24,74 +21,37 @@ export class ArticleServiceError extends Error {
   }
 }
 
-function hasOwn(
-  object,
-  property,
-) {
-  return Object.prototype.hasOwnProperty.call(
-    object,
-    property,
-  )
+function hasOwn(object, property) {
+  return Object.prototype.hasOwnProperty.call(object, property)
 }
 
 function slugify(value) {
   const slug = value
     .normalize('NFD')
-    .replace(
-      /[\u0300-\u036f]/g,
-      '',
-    )
+    .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .trim()
-    .replace(
-      /[^a-z0-9]+/g,
-      '-',
-    )
-    .replace(
-      /^-+|-+$/g,
-      '',
-    )
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
 
   return slug || 'article'
 }
 
-function getUniqueCategoryIds(
-  categoryIds = [],
-) {
-  return [
-    ...new Set(categoryIds),
-  ]
+function getUniqueCategoryIds(categoryIds = []) {
+  return [...new Set(categoryIds)]
 }
 
-async function ensureCategoriesExist(
-  accessToken,
-  categoryIds,
-) {
-  const uniqueCategoryIds =
-    getUniqueCategoryIds(
-      categoryIds,
-    )
+async function ensureCategoriesExist(accessToken, categoryIds) {
+  const uniqueCategoryIds = getUniqueCategoryIds(categoryIds)
 
-  if (
-    uniqueCategoryIds.length === 0
-  ) {
+  if (uniqueCategoryIds.length === 0) {
     return uniqueCategoryIds
   }
 
-  const categories =
-    await findCategoriesByIds(
-      accessToken,
-      uniqueCategoryIds,
-    )
+  const categories = await findCategoriesByIds(accessToken, uniqueCategoryIds)
 
-  if (
-    categories.length !==
-    uniqueCategoryIds.length
-  ) {
-    throw new ArticleServiceError(
-      400,
-      'One or more categories do not exist',
-    )
+  if (categories.length !== uniqueCategoryIds.length) {
+    throw new ArticleServiceError(400, 'One or more categories do not exist')
   }
 
   return uniqueCategoryIds
@@ -103,129 +63,80 @@ async function generateUniqueSlug(
   title,
   excludedArticleId = null,
 ) {
-  const baseSlug =
-    slugify(title)
+  const baseSlug = slugify(title)
 
-  let candidate =
-    baseSlug
+  let candidate = baseSlug
 
   let suffix = 2
 
   while (true) {
-    const existingArticle =
-      await findArticleBySlug(
-        accessToken,
-        authorId,
-        candidate,
-        excludedArticleId,
-      )
+    const existingArticle = await findArticleBySlug(
+      accessToken,
+      authorId,
+      candidate,
+      excludedArticleId,
+    )
 
     if (!existingArticle) {
       return candidate
     }
 
-    candidate =
-      `${baseSlug}-${suffix}`
+    candidate = `${baseSlug}-${suffix}`
 
     suffix += 1
   }
 }
 
-function resolveCreatePublishedAt(
-  status,
-  publishedAt,
-) {
+function resolveCreatePublishedAt(status, publishedAt) {
   if (status === 'draft') {
     return null
   }
 
   if (publishedAt) {
-    return new Date(
-      publishedAt,
-    ).toISOString()
+    return new Date(publishedAt).toISOString()
   }
 
   return new Date().toISOString()
 }
 
-function resolveUpdatePublishedAt(
-  currentArticle,
-  input,
-) {
-  const nextStatus =
-    input.status ??
-    currentArticle.status
+function resolveUpdatePublishedAt(currentArticle, input) {
+  const nextStatus = input.status ?? currentArticle.status
 
   if (nextStatus === 'draft') {
     return null
   }
 
-  if (
-    hasOwn(
-      input,
-      'publishedAt',
-    )
-  ) {
+  if (hasOwn(input, 'publishedAt')) {
     if (input.publishedAt) {
-      return new Date(
-        input.publishedAt,
-      ).toISOString()
+      return new Date(input.publishedAt).toISOString()
     }
 
     return new Date().toISOString()
   }
 
-  if (
-    currentArticle.status ===
-      'published' &&
-    currentArticle.published_at
-  ) {
+  if (currentArticle.status === 'published' && currentArticle.published_at) {
     return currentArticle.published_at
   }
 
   return new Date().toISOString()
 }
 
-function buildPagination(
-  page = 1,
-  limit = 10,
-) {
-  const safePage = Math.max(
-    1,
-    Number(page) || 1,
-  )
+function buildPagination(page = 1, limit = 10) {
+  const safePage = Math.max(1, Number(page) || 1)
 
-  const safeLimit = Math.min(
-    50,
-    Math.max(
-      1,
-      Number(limit) || 10,
-    ),
-  )
+  const safeLimit = Math.min(50, Math.max(1, Number(limit) || 10))
 
   return {
     page: safePage,
     limit: safeLimit,
-    offset:
-      (safePage - 1) *
-      safeLimit,
+    offset: (safePage - 1) * safeLimit,
   }
 }
 
-export async function listPublicArticles({
-  page = 1,
-  limit = 10,
-} = {}) {
-  const pagination =
-    buildPagination(
-      page,
-      limit,
-    )
+export async function listPublicArticles({ page = 1, limit = 10 } = {}) {
+  const pagination = buildPagination(page, limit)
 
-  const {
-    articles,
-    count,
-  } = await findPublicArticles({
+  const { articles, count } = await findPublicArticles({
     limit: pagination.limit,
     offset: pagination.offset,
   })
@@ -236,13 +147,7 @@ export async function listPublicArticles({
       page: pagination.page,
       limit: pagination.limit,
       total: count,
-      totalPages:
-        count === 0
-          ? 0
-          : Math.ceil(
-              count /
-                pagination.limit,
-            ),
+      totalPages: count === 0 ? 0 : Math.ceil(count / pagination.limit),
     },
   }
 }
@@ -253,25 +158,12 @@ export async function listOwnArticles({
   page = 1,
   limit = 20,
 }) {
-  const pagination =
-    buildPagination(
-      page,
-      limit,
-    )
+  const pagination = buildPagination(page, limit)
 
-  const {
-    articles,
-    count,
-  } = await findOwnArticles(
-    accessToken,
-    userId,
-    {
-      limit:
-        pagination.limit,
-      offset:
-        pagination.offset,
-    },
-  )
+  const { articles, count } = await findOwnArticles(accessToken, userId, {
+    limit: pagination.limit,
+    offset: pagination.offset,
+  })
 
   return {
     articles,
@@ -279,97 +171,49 @@ export async function listOwnArticles({
       page: pagination.page,
       limit: pagination.limit,
       total: count,
-      totalPages:
-        count === 0
-          ? 0
-          : Math.ceil(
-              count /
-                pagination.limit,
-            ),
+      totalPages: count === 0 ? 0 : Math.ceil(count / pagination.limit),
     },
   }
 }
 
-export async function getOwnArticle({
-  accessToken,
-  userId,
-  articleId,
-}) {
-  const article =
-    await findOwnedArticleById(
-      accessToken,
-      articleId,
-      userId,
-    )
+export async function getOwnArticle({ accessToken, userId, articleId }) {
+  const article = await findOwnedArticleById(accessToken, articleId, userId)
 
   if (!article) {
-    throw new ArticleServiceError(
-      404,
-      'Article not found',
-    )
+    throw new ArticleServiceError(404, 'Article not found')
   }
 
   return article
 }
 
-export async function createUserArticle({
-  accessToken,
-  userId,
-  input,
-}) {
-  const categoryIds =
-    await ensureCategoriesExist(
-      accessToken,
-      input.categoryIds,
-    )
+export async function createUserArticle({ accessToken, userId, input }) {
+  const categoryIds = await ensureCategoriesExist(
+    accessToken,
+    input.categoryIds,
+  )
 
-  const slug =
-    await generateUniqueSlug(
-      accessToken,
-      userId,
-      input.title,
-    )
+  const slug = await generateUniqueSlug(accessToken, userId, input.title)
 
-  const status =
-    input.status ?? 'draft'
+  const status = input.status ?? 'draft'
 
   const articleData = {
     author_id: userId,
     title: input.title,
     slug,
-    excerpt:
-      input.excerpt ?? null,
-    content:
-      input.content ?? '',
-    language:
-      input.language ?? 'es',
+    excerpt: input.excerpt ?? null,
+    content: input.content ?? '',
+    language: input.language ?? 'es',
     status,
-    published_at:
-      resolveCreatePublishedAt(
-        status,
-        input.publishedAt,
-      ),
+    published_at: resolveCreatePublishedAt(status, input.publishedAt),
   }
 
-  const article =
-    await createArticle(
-      accessToken,
-      articleData,
-    )
+  const article = await createArticle(accessToken, articleData)
 
   try {
-    await addArticleCategories(
-      accessToken,
-      article.id,
-      categoryIds,
-    )
+    await addArticleCategories(accessToken, article.id, categoryIds)
   } catch (error) {
     try {
-      await deleteArticleById(
-        accessToken,
-        article.id,
-        userId,
-      )
+      await deleteArticleById(accessToken, article.id, userId)
     } catch {
       // Preserve the original error.
     }
@@ -390,124 +234,68 @@ export async function updateUserArticle({
   articleId,
   input,
 }) {
-  const currentArticle =
-    await getOwnArticle({
-      accessToken,
-      userId,
-      articleId,
-    })
+  const currentArticle = await getOwnArticle({
+    accessToken,
+    userId,
+    articleId,
+  })
 
   let categoryIds = null
 
-  if (
-    hasOwn(
-      input,
-      'categoryIds',
-    )
-  ) {
-    categoryIds =
-      await ensureCategoriesExist(
-        accessToken,
-        input.categoryIds,
-      )
+  if (hasOwn(input, 'categoryIds')) {
+    categoryIds = await ensureCategoriesExist(accessToken, input.categoryIds)
   }
 
   const articlePatch = {}
 
-  if (
-    hasOwn(input, 'title')
-  ) {
-    articlePatch.title =
-      input.title
+  if (hasOwn(input, 'title')) {
+    articlePatch.title = input.title
 
-    articlePatch.slug =
-      await generateUniqueSlug(
-        accessToken,
-        userId,
-        input.title,
-        articleId,
-      )
-  }
-
-  if (
-    hasOwn(input, 'excerpt')
-  ) {
-    articlePatch.excerpt =
-      input.excerpt
-  }
-
-  if (
-    hasOwn(input, 'content')
-  ) {
-    articlePatch.content =
-      input.content
-  }
-
-  if (
-    hasOwn(input, 'language')
-  ) {
-    articlePatch.language =
-      input.language
-  }
-
-  if (
-    hasOwn(input, 'status')
-  ) {
-    articlePatch.status =
-      input.status
-  }
-
-  if (
-    hasOwn(input, 'status') ||
-    hasOwn(
-      input,
-      'publishedAt',
-    )
-  ) {
-    articlePatch.published_at =
-      resolveUpdatePublishedAt(
-        currentArticle,
-        input,
-      )
-  }
-
-  if (
-    Object.keys(articlePatch)
-      .length > 0
-  ) {
-    await updateArticleById(
+    articlePatch.slug = await generateUniqueSlug(
       accessToken,
-      articleId,
       userId,
-      articlePatch,
+      input.title,
+      articleId,
     )
+  }
+
+  if (hasOwn(input, 'excerpt')) {
+    articlePatch.excerpt = input.excerpt
+  }
+
+  if (hasOwn(input, 'content')) {
+    articlePatch.content = input.content
+  }
+
+  if (hasOwn(input, 'language')) {
+    articlePatch.language = input.language
+  }
+
+  if (hasOwn(input, 'status')) {
+    articlePatch.status = input.status
+  }
+
+  if (hasOwn(input, 'status') || hasOwn(input, 'publishedAt')) {
+    articlePatch.published_at = resolveUpdatePublishedAt(currentArticle, input)
+  }
+
+  if (Object.keys(articlePatch).length > 0) {
+    await updateArticleById(accessToken, articleId, userId, articlePatch)
   }
 
   if (categoryIds !== null) {
-    const previousCategoryIds =
-      await getArticleCategoryIds(
-        accessToken,
-        articleId,
-      )
-
-    await removeArticleCategories(
+    const previousCategoryIds = await getArticleCategoryIds(
       accessToken,
       articleId,
     )
 
+    await removeArticleCategories(accessToken, articleId)
+
     try {
-      await addArticleCategories(
-        accessToken,
-        articleId,
-        categoryIds,
-      )
+      await addArticleCategories(accessToken, articleId, categoryIds)
     } catch (error) {
       try {
-        await addArticleCategories(
-          accessToken,
-          articleId,
-          previousCategoryIds,
-        )
+        await addArticleCategories(accessToken, articleId, previousCategoryIds)
       } catch {
         // Preserve the original error.
       }
@@ -523,20 +311,12 @@ export async function updateUserArticle({
   })
 }
 
-export async function deleteUserArticle({
-  accessToken,
-  userId,
-  articleId,
-}) {
+export async function deleteUserArticle({ accessToken, userId, articleId }) {
   await getOwnArticle({
     accessToken,
     userId,
     articleId,
   })
 
-  await deleteArticleById(
-    accessToken,
-    articleId,
-    userId,
-  )
+  await deleteArticleById(accessToken, articleId, userId)
 }

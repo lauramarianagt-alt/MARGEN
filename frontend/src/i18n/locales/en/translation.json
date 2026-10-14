@@ -49,12 +49,34 @@
   "dashboard": {
     "title": "My space",
     "welcome": "Hello, {{name}}",
-    "username": "@{{username}}"
+    "username": "@{{username}}",
+    "myArticles": "My articles"
   },
   "common": {
     "loading": "Loading...",
     "error": "Something went wrong",
     "retry": "Try again"
+  },
+  "articles": {
+    "status": {
+      "draft": "Draft",
+      "scheduled": "Scheduled",
+      "published": "Published"
+    },
+    "my": {
+      "title": "My articles",
+      "count": "{{count}} articles",
+      "loading": "Loading articles...",
+      "loadError": "We couldn't load your articles.",
+      "emptyTitle": "No articles yet",
+      "emptyMessage": "Your first article will appear here once you start writing."
+    },
+    "pagination": {
+      "label": "Articles pagination",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {{page}} of {{totalPages}}"
+    }
   },
   "language": {
     "es": "ES",

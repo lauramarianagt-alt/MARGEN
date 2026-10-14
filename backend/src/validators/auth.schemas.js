@@ -10,9 +10,7 @@ const localeSchema = z
 export const registerSchema = z.object({
   email: z.email('Email must be valid'),
 
-  password: z
-    .string()
-    .min(8, 'Password must contain at least 8 characters'),
+  password: z.string().min(8, 'Password must contain at least 8 characters'),
 
   username: z
     .string()
@@ -20,15 +18,9 @@ export const registerSchema = z.object({
     .min(3, 'Username must contain at least 3 characters')
     .max(30, 'Username must contain at most 30 characters'),
 
-  name: z
-    .string()
-    .trim()
-    .min(1, 'Name is required'),
+  name: z.string().trim().min(1, 'Name is required'),
 
-  surname: z
-    .string()
-    .trim()
-    .min(1, 'Surname is required'),
+  surname: z.string().trim().min(1, 'Surname is required'),
 
   preferredLocale: localeSchema.default('es'),
 })
@@ -36,7 +28,5 @@ export const registerSchema = z.object({
 export const loginSchema = z.object({
   email: z.email('Email must be valid'),
 
-  password: z
-    .string()
-    .min(1, 'Password is required'),
+  password: z.string().min(1, 'Password is required'),
 })

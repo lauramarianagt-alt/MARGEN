@@ -1,7 +1,7 @@
 import { Router } from 'express'
 
 import {
-  confirm,  
+  confirm,
   login,
   logout,
   refresh,

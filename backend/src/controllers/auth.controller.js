@@ -15,10 +15,7 @@ import {
   setAuthCookies,
 } from '../utils/auth-cookies.js'
 
-import {
-  loginSchema,
-  registerSchema,
-} from '../validators/auth.schemas.js'
+import { loginSchema, registerSchema } from '../validators/auth.schemas.js'
 
 function sendValidationError(res, error) {
   return res.status(400).json({
@@ -34,11 +31,7 @@ export async function register(req, res) {
   try {
     const input = registerSchema.parse(req.body)
 
-    const {
-      user,
-      profile,
-      session,
-    } = await registerUser(input)
+    const { user, profile, session } = await registerUser(input)
 
     if (session) {
       setAuthCookies(res, session)
@@ -69,11 +62,7 @@ export async function login(req, res) {
   try {
     const input = loginSchema.parse(req.body)
 
-    const {
-      user,
-      profile,
-      session,
-    } = await loginUser(input)
+    const { user, profile, session } = await loginUser(input)
 
     setAuthCookies(res, session)
 
@@ -151,21 +140,14 @@ export async function confirm(req, res) {
       })
     }
 
-    const session = await confirmEmail(
-      tokenHash,
-      type,
-    )
+    const session = await confirmEmail(tokenHash, type)
 
     setAuthCookies(res, session)
 
-    return res.redirect(
-      `${env.frontendUrl}/?emailConfirmed=true`,
-    )
+    return res.redirect(`${env.frontendUrl}/?emailConfirmed=true`)
   } catch (error) {
     console.error('Email confirmation error:', error)
 
-    return res.redirect(
-      `${env.frontendUrl}/?emailConfirmed=false`,
-    )
+    return res.redirect(`${env.frontendUrl}/?emailConfirmed=false`)
   }
 }

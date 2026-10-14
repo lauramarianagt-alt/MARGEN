@@ -1,7 +1,4 @@
-import {
-  createSupabaseUserClient,
-  supabasePublic,
-} from '../config/supabase.js'
+import { createSupabaseUserClient, supabasePublic } from '../config/supabase.js'
 
 const ARTICLE_LIST_SELECT = `
   id,
@@ -62,25 +59,19 @@ const ARTICLE_DETAIL_SELECT = `
 `
 
 function throwDatabaseError(error, context) {
-  const databaseError = new Error(
-    `${context}: ${error.message}`,
-  )
+  const databaseError = new Error(`${context}: ${error.message}`)
 
   databaseError.cause = error
 
   throw databaseError
 }
 
-export async function findCategoriesByIds(
-  accessToken,
-  categoryIds,
-) {
+export async function findCategoriesByIds(accessToken, categoryIds) {
   if (categoryIds.length === 0) {
     return []
   }
 
-  const supabase =
-    createSupabaseUserClient(accessToken)
+  const supabase = createSupabaseUserClient(accessToken)
 
   const { data, error } = await supabase
     .from('categories')
@@ -88,10 +79,7 @@ export async function findCategoriesByIds(
     .in('id', categoryIds)
 
   if (error) {
-    throwDatabaseError(
-      error,
-      'Unable to load categories',
-    )
+    throwDatabaseError(error, 'Unable to load categories')
   }
 
   return data ?? []
@@ -103,8 +91,7 @@ export async function findArticleBySlug(
   slug,
   excludedArticleId = null,
 ) {
-  const supabase =
-    createSupabaseUserClient(accessToken)
+  const supabase = createSupabaseUserClient(accessToken)
 
   let query = supabase
     .from('articles')
@@ -113,31 +100,20 @@ export async function findArticleBySlug(
     .eq('slug', slug)
 
   if (excludedArticleId) {
-    query = query.neq(
-      'id',
-      excludedArticleId,
-    )
+    query = query.neq('id', excludedArticleId)
   }
 
-  const { data, error } =
-    await query.maybeSingle()
+  const { data, error } = await query.maybeSingle()
 
   if (error) {
-    throwDatabaseError(
-      error,
-      'Unable to check article slug',
-    )
+    throwDatabaseError(error, 'Unable to check article slug')
   }
 
   return data
 }
 
-export async function createArticle(
-  accessToken,
-  article,
-) {
-  const supabase =
-    createSupabaseUserClient(accessToken)
+export async function createArticle(accessToken, article) {
+  const supabase = createSupabaseUserClient(accessToken)
 
   const { data, error } = await supabase
     .from('articles')
@@ -146,10 +122,7 @@ export async function createArticle(
     .single()
 
   if (error) {
-    throwDatabaseError(
-      error,
-      'Unable to create article',
-    )
+    throwDatabaseError(error, 'Unable to create article')
   }
 
   return data
@@ -164,15 +137,12 @@ export async function addArticleCategories(
     return []
   }
 
-  const supabase =
-    createSupabaseUserClient(accessToken)
+  const supabase = createSupabaseUserClient(accessToken)
 
-  const rows = categoryIds.map(
-    (categoryId) => ({
-      article_id: articleId,
-      category_id: categoryId,
-    }),
-  )
+  const rows = categoryIds.map((categoryId) => ({
+    article_id: articleId,
+    category_id: categoryId,
+  }))
 
   const { data, error } = await supabase
     .from('article_categories')
@@ -180,21 +150,14 @@ export async function addArticleCategories(
     .select()
 
   if (error) {
-    throwDatabaseError(
-      error,
-      'Unable to assign article categories',
-    )
+    throwDatabaseError(error, 'Unable to assign article categories')
   }
 
   return data ?? []
 }
 
-export async function getArticleCategoryIds(
-  accessToken,
-  articleId,
-) {
-  const supabase =
-    createSupabaseUserClient(accessToken)
+export async function getArticleCategoryIds(accessToken, articleId) {
+  const supabase = createSupabaseUserClient(accessToken)
 
   const { data, error } = await supabase
     .from('article_categories')
@@ -202,24 +165,14 @@ export async function getArticleCategoryIds(
     .eq('article_id', articleId)
 
   if (error) {
-    throwDatabaseError(
-      error,
-      'Unable to load article categories',
-    )
+    throwDatabaseError(error, 'Unable to load article categories')
   }
 
-  return (data ?? []).map(
-    ({ category_id: categoryId }) =>
-      categoryId,
-  )
+  return (data ?? []).map(({ category_id: categoryId }) => categoryId)
 }
 
-export async function removeArticleCategories(
-  accessToken,
-  articleId,
-) {
-  const supabase =
-    createSupabaseUserClient(accessToken)
+export async function removeArticleCategories(accessToken, articleId) {
+  const supabase = createSupabaseUserClient(accessToken)
 
   const { error } = await supabase
     .from('article_categories')
@@ -227,20 +180,12 @@ export async function removeArticleCategories(
     .eq('article_id', articleId)
 
   if (error) {
-    throwDatabaseError(
-      error,
-      'Unable to remove article categories',
-    )
+    throwDatabaseError(error, 'Unable to remove article categories')
   }
 }
 
-export async function findOwnedArticleById(
-  accessToken,
-  articleId,
-  authorId,
-) {
-  const supabase =
-    createSupabaseUserClient(accessToken)
+export async function findOwnedArticleById(accessToken, articleId, authorId) {
+  const supabase = createSupabaseUserClient(accessToken)
 
   const { data, error } = await supabase
     .from('articles')
@@ -250,10 +195,7 @@ export async function findOwnedArticleById(
     .maybeSingle()
 
   if (error) {
-    throwDatabaseError(
-      error,
-      'Unable to load article',
-    )
+    throwDatabaseError(error, 'Unable to load article')
   }
 
   return data
@@ -265,8 +207,7 @@ export async function updateArticleById(
   authorId,
   article,
 ) {
-  const supabase =
-    createSupabaseUserClient(accessToken)
+  const supabase = createSupabaseUserClient(accessToken)
 
   const { data, error } = await supabase
     .from('articles')
@@ -277,22 +218,14 @@ export async function updateArticleById(
     .single()
 
   if (error) {
-    throwDatabaseError(
-      error,
-      'Unable to update article',
-    )
+    throwDatabaseError(error, 'Unable to update article')
   }
 
   return data
 }
 
-export async function deleteArticleById(
-  accessToken,
-  articleId,
-  authorId,
-) {
-  const supabase =
-    createSupabaseUserClient(accessToken)
+export async function deleteArticleById(accessToken, articleId, authorId) {
+  const supabase = createSupabaseUserClient(accessToken)
 
   const { error } = await supabase
     .from('articles')
@@ -301,50 +234,30 @@ export async function deleteArticleById(
     .eq('author_id', authorId)
 
   if (error) {
-    throwDatabaseError(
-      error,
-      'Unable to delete article',
-    )
+    throwDatabaseError(error, 'Unable to delete article')
   }
 }
 
 export async function findOwnArticles(
   accessToken,
   authorId,
-  {
-    limit = 20,
-    offset = 0,
-  } = {},
+  { limit = 20, offset = 0 } = {},
 ) {
-  const supabase =
-    createSupabaseUserClient(accessToken)
+  const supabase = createSupabaseUserClient(accessToken)
 
-  const {
-    data,
-    error,
-    count,
-  } = await supabase
+  const { data, error, count } = await supabase
     .from('articles')
-    .select(
-      ARTICLE_LIST_SELECT,
-      {
-        count: 'exact',
-      },
-    )
+    .select(ARTICLE_LIST_SELECT, {
+      count: 'exact',
+    })
     .eq('author_id', authorId)
     .order('updated_at', {
       ascending: false,
     })
-    .range(
-      offset,
-      offset + limit - 1,
-    )
+    .range(offset, offset + limit - 1)
 
   if (error) {
-    throwDatabaseError(
-      error,
-      'Unable to load user articles',
-    )
+    throwDatabaseError(error, 'Unable to load user articles')
   }
 
   return {
@@ -353,40 +266,23 @@ export async function findOwnArticles(
   }
 }
 
-export async function findPublicArticles({
-  limit = 10,
-  offset = 0,
-} = {}) {
-  const now =
-    new Date().toISOString()
+export async function findPublicArticles({ limit = 10, offset = 0 } = {}) {
+  const now = new Date().toISOString()
 
-  const {
-    data,
-    error,
-    count,
-  } = await supabasePublic
+  const { data, error, count } = await supabasePublic
     .from('articles')
-    .select(
-      ARTICLE_LIST_SELECT,
-      {
-        count: 'exact',
-      },
-    )
+    .select(ARTICLE_LIST_SELECT, {
+      count: 'exact',
+    })
     .eq('status', 'published')
     .lte('published_at', now)
     .order('published_at', {
       ascending: false,
     })
-    .range(
-      offset,
-      offset + limit - 1,
-    )
+    .range(offset, offset + limit - 1)
 
   if (error) {
-    throwDatabaseError(
-      error,
-      'Unable to load public articles',
-    )
+    throwDatabaseError(error, 'Unable to load public articles')
   }
 
   return {

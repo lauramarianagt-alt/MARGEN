@@ -13,9 +13,7 @@ function getInitialLanguage() {
     return storedLanguage
   }
 
-  const browserLanguage = navigator.language
-    .slice(0, 2)
-    .toLowerCase()
+  const browserLanguage = navigator.language.slice(0, 2).toLowerCase()
 
   if (supportedLanguages.includes(browserLanguage)) {
     return browserLanguage
@@ -24,24 +22,22 @@ function getInitialLanguage() {
   return 'es'
 }
 
-i18n
-  .use(initReactI18next)
-  .init({
-    resources: {
-      es: {
-        translation: es,
-      },
-      en: {
-        translation: en,
-      },
+i18n.use(initReactI18next).init({
+  resources: {
+    es: {
+      translation: es,
     },
-
-    lng: getInitialLanguage(),
-    fallbackLng: 'es',
-
-    interpolation: {
-      escapeValue: false,
+    en: {
+      translation: en,
     },
-  })
+  },
+
+  lng: getInitialLanguage(),
+  fallbackLng: 'es',
+
+  interpolation: {
+    escapeValue: false,
+  },
+})
 
 export default i18n

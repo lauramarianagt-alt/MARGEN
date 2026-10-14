@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 
 import { useAuth } from '../hooks/useAuth.js'
 
@@ -8,9 +9,7 @@ function DashboardPage() {
 
   return (
     <main className="page dashboard-page">
-      <p className="eyebrow">
-        {t('dashboard.title')}
-      </p>
+      <p className="eyebrow">{t('dashboard.title')}</p>
 
       <h1>
         {t('dashboard.welcome', {
@@ -23,6 +22,10 @@ function DashboardPage() {
           username: profile.username,
         })}
       </p>
+
+      <Link className="dashboard-link" to="/dashboard/articles">
+        {t('dashboard.myArticles')}
+      </Link>
     </main>
   )
 }

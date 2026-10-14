@@ -5,15 +5,11 @@ function HomePage() {
 
   return (
     <main className="page home-page">
-      <p className="eyebrow">
-        {t('brand.description')}
-      </p>
+      <p className="eyebrow">{t('brand.description')}</p>
 
       <h1>{t('brand.name')}</h1>
 
-      <p className="tagline">
-        {t('brand.tagline')}
-      </p>
+      <p className="tagline">{t('brand.tagline')}</p>
     </main>
   )
 }

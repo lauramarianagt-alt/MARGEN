@@ -1,8 +1,4 @@
-import {
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { ApiError } from '../services/api.js'
 
@@ -19,16 +15,14 @@ function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
 
-  const [status, setStatus] =
-    useState('loading')
+  const [status, setStatus] = useState('loading')
 
   useEffect(() => {
     let active = true
 
     async function loadSession() {
       try {
-        const data =
-          await getCurrentUser()
+        const data = await getCurrentUser()
 
         if (!active) {
           return
@@ -42,14 +36,8 @@ function AuthProvider({ children }) {
           return
         }
 
-        if (
-          !(error instanceof ApiError) ||
-          error.status !== 401
-        ) {
-          console.error(
-            'Unable to restore session:',
-            error,
-          )
+        if (!(error instanceof ApiError) || error.status !== 401) {
+          console.error('Unable to restore session:', error)
         }
 
         setUser(null)
@@ -66,9 +54,7 @@ function AuthProvider({ children }) {
   }, [])
 
   async function login(credentials) {
-    const data = await loginUser(
-      credentials,
-    )
+    const data = await loginUser(credentials)
 
     setUser(data.user)
     setProfile(data.profile)
@@ -97,25 +83,16 @@ function AuthProvider({ children }) {
 
       isLoading: status === 'loading',
 
-      isAuthenticated:
-        status === 'authenticated',
+      isAuthenticated: status === 'authenticated',
 
       login,
       register,
       logout,
     }),
-    [
-      user,
-      profile,
-      status,
-    ],
+    [user, profile, status],
   )
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  )
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
 export default AuthProvider

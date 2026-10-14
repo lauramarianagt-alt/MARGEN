@@ -1,7 +1,4 @@
-import {
-  supabaseAdmin,
-  supabasePublic,
-} from '../config/supabase.js'
+import { supabaseAdmin, supabasePublic } from '../config/supabase.js'
 
 import {
   createProfile,
@@ -25,10 +22,7 @@ export async function registerUser({
     throw error
   }
 
-  const {
-    data,
-    error: signUpError,
-  } = await supabasePublic.auth.signUp({
+  const { data, error: signUpError } = await supabasePublic.auth.signUp({
     email,
     password,
   })
@@ -66,17 +60,12 @@ export async function registerUser({
   }
 }
 
-export async function loginUser({
-  email,
-  password,
-}) {
-  const {
-    data,
-    error: loginError,
-  } = await supabasePublic.auth.signInWithPassword({
-    email,
-    password,
-  })
+export async function loginUser({ email, password }) {
+  const { data, error: loginError } =
+    await supabasePublic.auth.signInWithPassword({
+      email,
+      password,
+    })
 
   if (loginError || !data.session || !data.user) {
     const error = new Error('Invalid email or password')
@@ -94,12 +83,10 @@ export async function loginUser({
 }
 
 export async function refreshUserSession(refreshToken) {
-  const {
-    data,
-    error: refreshError,
-  } = await supabasePublic.auth.refreshSession({
-    refresh_token: refreshToken,
-  })
+  const { data, error: refreshError } =
+    await supabasePublic.auth.refreshSession({
+      refresh_token: refreshToken,
+    })
 
   if (refreshError || !data.session) {
     const error = new Error('Unable to refresh session')
@@ -111,10 +98,8 @@ export async function refreshUserSession(refreshToken) {
 }
 
 export async function getCurrentUser(accessToken) {
-  const {
-    data,
-    error: userError,
-  } = await supabasePublic.auth.getUser(accessToken)
+  const { data, error: userError } =
+    await supabasePublic.auth.getUser(accessToken)
 
   if (userError || !data.user) {
     const error = new Error('Invalid or expired session')
@@ -134,18 +119,13 @@ export async function getCurrentUser(accessToken) {
 }
 
 export async function confirmEmail(tokenHash, type) {
-  const {
-    data,
-    error,
-  } = await supabasePublic.auth.verifyOtp({
+  const { data, error } = await supabasePublic.auth.verifyOtp({
     token_hash: tokenHash,
     type,
   })
 
   if (error || !data.session) {
-    const confirmationError = new Error(
-      'Unable to confirm email',
-    )
+    const confirmationError = new Error('Unable to confirm email')
 
     confirmationError.statusCode = 400
 

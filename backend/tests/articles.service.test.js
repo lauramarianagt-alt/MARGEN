@@ -1,39 +1,20 @@
-import {
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const repositoryMocks =
-  vi.hoisted(() => ({
-    addArticleCategories:
-      vi.fn(),
-    createArticle: vi.fn(),
-    deleteArticleById:
-      vi.fn(),
-    findArticleBySlug:
-      vi.fn(),
-    findCategoriesByIds:
-      vi.fn(),
-    findOwnedArticleById:
-      vi.fn(),
-    findOwnArticles: vi.fn(),
-    findPublicArticles:
-      vi.fn(),
-    getArticleCategoryIds:
-      vi.fn(),
-    removeArticleCategories:
-      vi.fn(),
-    updateArticleById:
-      vi.fn(),
-  }))
+const repositoryMocks = vi.hoisted(() => ({
+  addArticleCategories: vi.fn(),
+  createArticle: vi.fn(),
+  deleteArticleById: vi.fn(),
+  findArticleBySlug: vi.fn(),
+  findCategoriesByIds: vi.fn(),
+  findOwnedArticleById: vi.fn(),
+  findOwnArticles: vi.fn(),
+  findPublicArticles: vi.fn(),
+  getArticleCategoryIds: vi.fn(),
+  removeArticleCategories: vi.fn(),
+  updateArticleById: vi.fn(),
+}))
 
-vi.mock(
-  '../src/repositories/articles.repository.js',
-  () => repositoryMocks,
-)
+vi.mock('../src/repositories/articles.repository.js', () => repositoryMocks)
 
 import {
   ArticleServiceError,
@@ -42,17 +23,13 @@ import {
   updateUserArticle,
 } from '../src/services/articles.service.js'
 
-const USER_ID =
-  '11111111-1111-4111-8111-111111111111'
+const USER_ID = '11111111-1111-4111-8111-111111111111'
 
-const ARTICLE_ID =
-  '22222222-2222-4222-8222-222222222222'
+const ARTICLE_ID = '22222222-2222-4222-8222-222222222222'
 
-const CATEGORY_ID =
-  '33333333-3333-4333-8333-333333333333'
+const CATEGORY_ID = '33333333-3333-4333-8333-333333333333'
 
-const SECOND_CATEGORY_ID =
-  '44444444-4444-4444-8444-444444444444'
+const SECOND_CATEGORY_ID = '44444444-4444-4444-8444-444444444444'
 
 const STORED_ARTICLE = {
   id: ARTICLE_ID,
@@ -71,29 +48,17 @@ describe('Articles service', () => {
   beforeEach(() => {
     vi.clearAllMocks()
 
-    repositoryMocks
-      .findArticleBySlug
-      .mockResolvedValue(null)
+    repositoryMocks.findArticleBySlug.mockResolvedValue(null)
 
-    repositoryMocks
-      .createArticle
-      .mockResolvedValue({
-        id: ARTICLE_ID,
-      })
+    repositoryMocks.createArticle.mockResolvedValue({
+      id: ARTICLE_ID,
+    })
 
-    repositoryMocks
-      .addArticleCategories
-      .mockResolvedValue([])
+    repositoryMocks.addArticleCategories.mockResolvedValue([])
 
-    repositoryMocks
-      .findOwnedArticleById
-      .mockResolvedValue(
-        STORED_ARTICLE,
-      )
+    repositoryMocks.findOwnedArticleById.mockResolvedValue(STORED_ARTICLE)
 
-    repositoryMocks
-      .findCategoriesByIds
-      .mockResolvedValue([])
+    repositoryMocks.findCategoriesByIds.mockResolvedValue([])
   })
 
   it('creates a draft with no publication date', async () => {
@@ -109,21 +74,16 @@ describe('Articles service', () => {
       },
     })
 
-    expect(
-      repositoryMocks.createArticle,
-    ).toHaveBeenCalledWith(
-      'token',
-      {
-        author_id: USER_ID,
-        title: 'Árbitro & Moda',
-        slug: 'arbitro-moda',
-        excerpt: null,
-        content: '',
-        language: 'es',
-        status: 'draft',
-        published_at: null,
-      },
-    )
+    expect(repositoryMocks.createArticle).toHaveBeenCalledWith('token', {
+      author_id: USER_ID,
+      title: 'Árbitro & Moda',
+      slug: 'arbitro-moda',
+      excerpt: null,
+      content: '',
+      language: 'es',
+      status: 'draft',
+      published_at: null,
+    })
   })
 
   it('automatically assigns the authenticated user as author', async () => {
@@ -139,9 +99,7 @@ describe('Articles service', () => {
       },
     })
 
-    expect(
-      repositoryMocks.createArticle,
-    ).toHaveBeenCalledWith(
+    expect(repositoryMocks.createArticle).toHaveBeenCalledWith(
       'token',
       expect.objectContaining({
         author_id: USER_ID,
@@ -150,8 +108,7 @@ describe('Articles service', () => {
   })
 
   it('creates a unique slug when the original slug already exists', async () => {
-    repositoryMocks
-      .findArticleBySlug
+    repositoryMocks.findArticleBySlug
       .mockResolvedValueOnce({
         id: '55555555-5555-4555-8555-555555555555',
       })
@@ -169,9 +126,7 @@ describe('Articles service', () => {
       },
     })
 
-    expect(
-      repositoryMocks.createArticle,
-    ).toHaveBeenCalledWith(
+    expect(repositoryMocks.createArticle).toHaveBeenCalledWith(
       'token',
       expect.objectContaining({
         slug: 'visual-culture-2',
@@ -182,11 +137,7 @@ describe('Articles service', () => {
   it('publishes immediately when no publication date is provided', async () => {
     vi.useFakeTimers()
 
-    vi.setSystemTime(
-      new Date(
-        '2026-10-14T09:00:00.000Z',
-      ),
-    )
+    vi.setSystemTime(new Date('2026-10-14T09:00:00.000Z'))
 
     try {
       await createUserArticle({
@@ -201,14 +152,11 @@ describe('Articles service', () => {
         },
       })
 
-      expect(
-        repositoryMocks.createArticle,
-      ).toHaveBeenCalledWith(
+      expect(repositoryMocks.createArticle).toHaveBeenCalledWith(
         'token',
         expect.objectContaining({
           status: 'published',
-          published_at:
-            '2026-10-14T09:00:00.000Z',
+          published_at: '2026-10-14T09:00:00.000Z',
         }),
       )
     } finally {
@@ -221,37 +169,30 @@ describe('Articles service', () => {
       accessToken: 'token',
       userId: USER_ID,
       input: {
-        title:
-          'The future of independent fashion',
+        title: 'The future of independent fashion',
         content: '',
         language: 'es',
         status: 'published',
-        publishedAt:
-          '2026-10-20T10:00:00+02:00',
+        publishedAt: '2026-10-20T10:00:00+02:00',
         categoryIds: [],
       },
     })
 
-    expect(
-      repositoryMocks.createArticle,
-    ).toHaveBeenCalledWith(
+    expect(repositoryMocks.createArticle).toHaveBeenCalledWith(
       'token',
       expect.objectContaining({
         status: 'published',
-        published_at:
-          '2026-10-20T08:00:00.000Z',
+        published_at: '2026-10-20T08:00:00.000Z',
       }),
     )
   })
 
   it('rejects categories that do not exist', async () => {
-    repositoryMocks
-      .findCategoriesByIds
-      .mockResolvedValue([
-        {
-          id: CATEGORY_ID,
-        },
-      ])
+    repositoryMocks.findCategoriesByIds.mockResolvedValue([
+      {
+        id: CATEGORY_ID,
+      },
+    ])
 
     await expect(
       createUserArticle({
@@ -262,49 +203,34 @@ describe('Articles service', () => {
           content: '',
           language: 'es',
           status: 'draft',
-          categoryIds: [
-            CATEGORY_ID,
-            SECOND_CATEGORY_ID,
-          ],
+          categoryIds: [CATEGORY_ID, SECOND_CATEGORY_ID],
         },
       }),
     ).rejects.toMatchObject({
       status: 400,
-      message:
-        'One or more categories do not exist',
+      message: 'One or more categories do not exist',
     })
 
-    expect(
-      repositoryMocks.createArticle,
-    ).not.toHaveBeenCalled()
+    expect(repositoryMocks.createArticle).not.toHaveBeenCalled()
   })
 
   it('returns pagination metadata for public articles', async () => {
-    repositoryMocks
-      .findPublicArticles
-      .mockResolvedValue({
-        articles: [
-          STORED_ARTICLE,
-        ],
-        count: 21,
-      })
+    repositoryMocks.findPublicArticles.mockResolvedValue({
+      articles: [STORED_ARTICLE],
+      count: 21,
+    })
 
-    const result =
-      await listPublicArticles({
-        page: 2,
-        limit: 10,
-      })
+    const result = await listPublicArticles({
+      page: 2,
+      limit: 10,
+    })
 
-    expect(
-      repositoryMocks.findPublicArticles,
-    ).toHaveBeenCalledWith({
+    expect(repositoryMocks.findPublicArticles).toHaveBeenCalledWith({
       limit: 10,
       offset: 10,
     })
 
-    expect(
-      result.pagination,
-    ).toEqual({
+    expect(result.pagination).toEqual({
       page: 2,
       limit: 10,
       total: 21,
@@ -313,9 +239,7 @@ describe('Articles service', () => {
   })
 
   it('does not allow editing an article that does not belong to the user', async () => {
-    repositoryMocks
-      .findOwnedArticleById
-      .mockResolvedValue(null)
+    repositoryMocks.findOwnedArticleById.mockResolvedValue(null)
 
     await expect(
       updateUserArticle({
@@ -323,16 +247,11 @@ describe('Articles service', () => {
         userId: USER_ID,
         articleId: ARTICLE_ID,
         input: {
-          title:
-            'Attempted update',
+          title: 'Attempted update',
         },
       }),
-    ).rejects.toBeInstanceOf(
-      ArticleServiceError,
-    )
+    ).rejects.toBeInstanceOf(ArticleServiceError)
 
-    expect(
-      repositoryMocks.updateArticleById,
-    ).not.toHaveBeenCalled()
+    expect(repositoryMocks.updateArticleById).not.toHaveBeenCalled()
   })
 })

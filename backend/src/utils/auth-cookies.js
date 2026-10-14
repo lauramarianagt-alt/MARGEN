@@ -15,23 +15,15 @@ export function setAuthCookies(res, session) {
     ? session.expires_in * 1000
     : 60 * 60 * 1000
 
-  res.cookie(
-    ACCESS_TOKEN_COOKIE,
-    session.access_token,
-    {
-      ...getBaseCookieOptions(),
-      maxAge: accessTokenMaxAge,
-    },
-  )
+  res.cookie(ACCESS_TOKEN_COOKIE, session.access_token, {
+    ...getBaseCookieOptions(),
+    maxAge: accessTokenMaxAge,
+  })
 
-  res.cookie(
-    REFRESH_TOKEN_COOKIE,
-    session.refresh_token,
-    {
-      ...getBaseCookieOptions(),
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-    },
-  )
+  res.cookie(REFRESH_TOKEN_COOKIE, session.refresh_token, {
+    ...getBaseCookieOptions(),
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+  })
 }
 
 export function clearAuthCookies(res) {

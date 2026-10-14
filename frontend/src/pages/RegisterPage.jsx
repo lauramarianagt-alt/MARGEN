@@ -1,8 +1,5 @@
 import { useState } from 'react'
-import {
-  Link,
-  Navigate,
-} from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { useAuth } from '../hooks/useAuth.js'
@@ -39,11 +36,7 @@ function EyeIcon({ hidden }) {
       strokeWidth="1.5"
     >
       <path d="M3 12s3.5-5 9-5 9 5 9 5-3.5 5-9 5-9-5-9-5z" />
-      <circle
-        cx="12"
-        cy="12"
-        r="2.5"
-      />
+      <circle cx="12" cy="12" r="2.5" />
     </svg>
   )
 }
@@ -51,16 +44,9 @@ function EyeIcon({ hidden }) {
 function RegisterPage() {
   const { i18n, t } = useTranslation()
 
-  const {
-    isAuthenticated,
-    isLoading,
-    register,
-  } = useAuth()
+  const { isAuthenticated, isLoading, register } = useAuth()
 
-  const initialLanguage =
-    i18n.resolvedLanguage?.startsWith('en')
-      ? 'en'
-      : 'es'
+  const initialLanguage = i18n.resolvedLanguage?.startsWith('en') ? 'en' : 'es'
 
   const [formData, setFormData] = useState({
     name: '',
@@ -72,39 +58,25 @@ function RegisterPage() {
     preferredLocale: initialLanguage,
   })
 
-  const [showPassword, setShowPassword] =
-    useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
-  const [
-    showConfirmPassword,
-    setShowConfirmPassword,
-  ] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
-  const [isSubmitting, setIsSubmitting] =
-    useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [error, setError] = useState(null)
 
-  const [
-    registrationComplete,
-    setRegistrationComplete,
-  ] = useState(false)
+  const [registrationComplete, setRegistrationComplete] = useState(false)
 
   function handleChange(event) {
-    const {
-      name,
-      value,
-    } = event.target
+    const { name, value } = event.target
 
     setFormData((current) => ({
       ...current,
       [name]: value,
     }))
 
-    if (
-      name === 'password' ||
-      name === 'confirmPassword'
-    ) {
+    if (name === 'password' || name === 'confirmPassword') {
       setError(null)
     }
   }
@@ -114,13 +86,8 @@ function RegisterPage() {
 
     setError(null)
 
-    if (
-      formData.password !==
-      formData.confirmPassword
-    ) {
-      setError(
-        t('auth.register.passwordMismatch'),
-      )
+    if (formData.password !== formData.confirmPassword) {
+      setError(t('auth.register.passwordMismatch'))
 
       return
     }
@@ -128,33 +95,20 @@ function RegisterPage() {
     setIsSubmitting(true)
 
     try {
-      const {
-        confirmPassword,
-        ...registrationData
-      } = formData
+      const { confirmPassword, ...registrationData } = formData
 
       void confirmPassword
 
-      const response =
-        await register(registrationData)
+      const response = await register(registrationData)
 
-      if (
-        response.requiresEmailConfirmation
-      ) {
+      if (response.requiresEmailConfirmation) {
         setRegistrationComplete(true)
       }
     } catch (registerError) {
-      if (
-        registerError instanceof ApiError &&
-        registerError.status === 409
-      ) {
-        setError(
-          t('auth.register.usernameTaken'),
-        )
+      if (registerError instanceof ApiError && registerError.status === 409) {
+        setError(t('auth.register.usernameTaken'))
       } else {
-        setError(
-          t('auth.register.genericError'),
-        )
+        setError(t('auth.register.genericError'))
       }
     } finally {
       setIsSubmitting(false)
@@ -170,35 +124,20 @@ function RegisterPage() {
   }
 
   if (isAuthenticated) {
-    return (
-      <Navigate
-        to="/dashboard"
-        replace
-      />
-    )
+    return <Navigate to="/dashboard" replace />
   }
 
   if (registrationComplete) {
     return (
       <main className="page auth-page">
         <div className="auth-container">
-          <h1>
-            {t(
-              'auth.register.successTitle',
-            )}
-          </h1>
+          <h1>{t('auth.register.successTitle')}</h1>
 
           <p className="auth-message auth-message--success">
-            {t(
-              'auth.register.successMessage',
-            )}
+            {t('auth.register.successMessage')}
           </p>
 
-          <Link to="/login">
-            {t(
-              'auth.register.loginLink',
-            )}
-          </Link>
+          <Link to="/login">{t('auth.register.loginLink')}</Link>
         </div>
       </main>
     )
@@ -207,27 +146,17 @@ function RegisterPage() {
   return (
     <main className="page auth-page">
       <div className="auth-container">
-        <h1>
-          {t('auth.register.title')}
-        </h1>
+        <h1>{t('auth.register.title')}</h1>
 
         {error && (
-          <p
-            className="auth-message auth-message--error"
-            role="alert"
-          >
+          <p className="auth-message auth-message--error" role="alert">
             {error}
           </p>
         )}
 
-        <form
-          className="auth-form"
-          onSubmit={handleSubmit}
-        >
+        <form className="auth-form" onSubmit={handleSubmit}>
           <div className="form-field">
-            <label htmlFor="name">
-              {t('auth.name')}
-            </label>
+            <label htmlFor="name">{t('auth.name')}</label>
 
             <input
               id="name"
@@ -242,9 +171,7 @@ function RegisterPage() {
           </div>
 
           <div className="form-field">
-            <label htmlFor="surname">
-              {t('auth.surname')}
-            </label>
+            <label htmlFor="surname">{t('auth.surname')}</label>
 
             <input
               id="surname"
@@ -259,9 +186,7 @@ function RegisterPage() {
           </div>
 
           <div className="form-field">
-            <label htmlFor="username">
-              {t('auth.username')}
-            </label>
+            <label htmlFor="username">{t('auth.username')}</label>
 
             <input
               id="username"
@@ -278,9 +203,7 @@ function RegisterPage() {
           </div>
 
           <div className="form-field">
-            <label htmlFor="email">
-              {t('auth.email')}
-            </label>
+            <label htmlFor="email">{t('auth.email')}</label>
 
             <input
               id="email"
@@ -295,19 +218,13 @@ function RegisterPage() {
           </div>
 
           <div className="form-field">
-            <label htmlFor="password">
-              {t('auth.password')}
-            </label>
+            <label htmlFor="password">{t('auth.password')}</label>
 
             <div className="password-field">
               <input
                 id="password"
                 name="password"
-                type={
-                  showPassword
-                    ? 'text'
-                    : 'password'
-                }
+                type={showPassword ? 'text' : 'password'}
                 autoComplete="new-password"
                 minLength="8"
                 value={formData.password}
@@ -319,52 +236,28 @@ function RegisterPage() {
               <button
                 type="button"
                 className="password-toggle"
-                onClick={() =>
-                  setShowPassword(
-                    (current) => !current,
-                  )
-                }
+                onClick={() => setShowPassword((current) => !current)}
                 aria-label={
-                  showPassword
-                    ? t(
-                        'auth.hidePassword',
-                      )
-                    : t(
-                        'auth.showPassword',
-                      )
+                  showPassword ? t('auth.hidePassword') : t('auth.showPassword')
                 }
-                aria-pressed={
-                  showPassword
-                }
+                aria-pressed={showPassword}
               >
-                <EyeIcon
-                  hidden={showPassword}
-                />
+                <EyeIcon hidden={showPassword} />
               </button>
             </div>
           </div>
 
           <div className="form-field">
-            <label htmlFor="confirmPassword">
-              {t(
-                'auth.confirmPassword',
-              )}
-            </label>
+            <label htmlFor="confirmPassword">{t('auth.confirmPassword')}</label>
 
             <div className="password-field">
               <input
                 id="confirmPassword"
                 name="confirmPassword"
-                type={
-                  showConfirmPassword
-                    ? 'text'
-                    : 'password'
-                }
+                type={showConfirmPassword ? 'text' : 'password'}
                 autoComplete="new-password"
                 minLength="8"
-                value={
-                  formData.confirmPassword
-                }
+                value={formData.confirmPassword}
                 onChange={handleChange}
                 required
                 disabled={isSubmitting}
@@ -373,84 +266,47 @@ function RegisterPage() {
               <button
                 type="button"
                 className="password-toggle"
-                onClick={() =>
-                  setShowConfirmPassword(
-                    (current) => !current,
-                  )
-                }
+                onClick={() => setShowConfirmPassword((current) => !current)}
                 aria-label={
                   showConfirmPassword
-                    ? t(
-                        'auth.hidePassword',
-                      )
-                    : t(
-                        'auth.showPassword',
-                      )
+                    ? t('auth.hidePassword')
+                    : t('auth.showPassword')
                 }
-                aria-pressed={
-                  showConfirmPassword
-                }
+                aria-pressed={showConfirmPassword}
               >
-                <EyeIcon
-                  hidden={
-                    showConfirmPassword
-                  }
-                />
+                <EyeIcon hidden={showConfirmPassword} />
               </button>
             </div>
           </div>
 
           <div className="form-field">
             <label htmlFor="preferredLocale">
-              {t(
-                'auth.preferredLanguage',
-              )}
+              {t('auth.preferredLanguage')}
             </label>
 
             <select
               id="preferredLocale"
               name="preferredLocale"
-              value={
-                formData.preferredLocale
-              }
+              value={formData.preferredLocale}
               onChange={handleChange}
               disabled={isSubmitting}
             >
-              <option value="es">
-                {t('language.es')}
-              </option>
+              <option value="es">{t('language.es')}</option>
 
-              <option value="en">
-                {t('language.en')}
-              </option>
+              <option value="en">{t('language.en')}</option>
             </select>
           </div>
 
-          <button
-            className="auth-submit"
-            type="submit"
-            disabled={isSubmitting}
-          >
+          <button className="auth-submit" type="submit" disabled={isSubmitting}>
             {isSubmitting
-              ? t(
-                  'auth.register.submitting',
-                )
-              : t(
-                  'auth.register.submit',
-                )}
+              ? t('auth.register.submitting')
+              : t('auth.register.submit')}
           </button>
         </form>
 
         <p className="auth-alternative">
-          {t(
-            'auth.register.hasAccount',
-          )}{' '}
-
-          <Link to="/login">
-            {t(
-              'auth.register.loginLink',
-            )}
-          </Link>
+          {t('auth.register.hasAccount')}{' '}
+          <Link to="/login">{t('auth.register.loginLink')}</Link>
         </p>
       </div>
     </main>
