@@ -26,3 +26,9 @@ export function updateArticle(articleId, article) {
     body: JSON.stringify(article),
   })
 }
+
+export function deleteArticle(articleId) {
+  return apiFetch(`/articles/${encodeURIComponent(articleId)}`, {
+    method: 'DELETE',
+  })
+}

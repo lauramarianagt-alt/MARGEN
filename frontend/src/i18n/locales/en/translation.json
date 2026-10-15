@@ -68,6 +68,7 @@
       "count": "{{count}} articles",
       "create": "+ Create article",
       "edit": "Edit",
+      "delete": "Delete",
       "loading": "Loading articles...",
       "loadError": "We couldn't load your articles.",
       "emptyTitle": "No articles yet",
@@ -123,6 +124,14 @@
         "updateSchedule": "Update schedule",
         "saving": "Saving..."
       }
+    },
+    "delete": {
+      "title": "Delete article",
+      "description": "This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "deleting": "Deleting...",
+      "error": "We couldn't delete the article. Please try again."
     }
   },
   "language": {

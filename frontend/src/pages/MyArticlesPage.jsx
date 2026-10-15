@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import ArticleStatus from '../components/ArticleStatus.jsx'
-import { getMyArticles } from '../services/articles.service.js'
+import ConfirmDialog from '../components/ConfirmDialog.jsx'
+import { deleteArticle, getMyArticles } from '../services/articles.service.js'
 
 const PAGE_SIZE = 10
 
@@ -21,8 +22,15 @@ function MyArticlesPage() {
 
   const [page, setPage] = useState(1)
   const [retryKey, setRetryKey] = useState(0)
+
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
+
+  const [articleToDelete, setArticleToDelete] = useState(null)
+
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  const [deleteError, setDeleteError] = useState(null)
 
   useEffect(() => {
     let cancelled = false
@@ -104,6 +112,51 @@ function MyArticlesPage() {
     setRetryKey((current) => current + 1)
   }
 
+  function handleDeleteRequest(article) {
+    setArticleToDelete(article)
+    setDeleteError(null)
+  }
+
+  function handleCancelDelete() {
+    if (isDeleting) {
+      return
+    }
+
+    setArticleToDelete(null)
+    setDeleteError(null)
+  }
+
+  async function handleConfirmDelete() {
+    if (!articleToDelete || isDeleting) {
+      return
+    }
+
+    setIsDeleting(true)
+    setDeleteError(null)
+
+    try {
+      await deleteArticle(articleToDelete.id)
+
+      const deletingLastArticleOnPage = articles.length === 1 && page > 1
+
+      setArticleToDelete(null)
+
+      setIsLoading(true)
+
+      if (deletingLastArticleOnPage) {
+        setPage((current) => Math.max(1, current - 1))
+      } else {
+        setRetryKey((current) => current + 1)
+      }
+    } catch (deleteRequestError) {
+      console.error('Unable to delete article:', deleteRequestError)
+
+      setDeleteError(t('articles.delete.error'))
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
   if (isLoading) {
     return (
       <main className="page articles-page">
@@ -131,102 +184,128 @@ function MyArticlesPage() {
   }
 
   return (
-    <main className="page articles-page">
-      <header className="articles-page__header">
-        <div>
-          <p className="page-eyebrow">{t('dashboard.title')}</p>
+    <>
+      <main className="page articles-page">
+        <header className="articles-page__header">
+          <div>
+            <p className="page-eyebrow">{t('dashboard.title')}</p>
 
-          <h1>{t('articles.my.title')}</h1>
-        </div>
-
-        <div className="articles-page__actions">
-          <p className="articles-count">
-            {t('articles.my.count', {
-              count: pagination.total,
-            })}
-          </p>
-
-          <Link className="articles-create-link" to="/dashboard/articles/new">
-            {t('articles.my.create')}
-          </Link>
-        </div>
-      </header>
-
-      {articles.length === 0 ? (
-        <section className="articles-empty">
-          <h2>{t('articles.my.emptyTitle')}</h2>
-
-          <p>{t('articles.my.emptyMessage')}</p>
-        </section>
-      ) : (
-        <>
-          <div className="articles-list">
-            {articles.map((article) => {
-              const date = article.published_at ?? article.updated_at
-
-              return (
-                <article className="article-row" key={article.id}>
-                  <div className="article-row__main">
-                    <ArticleStatus article={article} />
-
-                    <h2>{article.title}</h2>
-
-                    {article.excerpt && (
-                      <p className="article-row__excerpt">{article.excerpt}</p>
-                    )}
-                  </div>
-
-                  <div className="article-row__meta">
-                    {date && <time dateTime={date}>{formatDate(date)}</time>}
-
-                    <span>{article.language}</span>
-
-                    <div className="article-row__actions">
-                      <Link
-                        className="article-row__edit"
-                        to={`/dashboard/articles/${article.id}/edit`}
-                      >
-                        {t('articles.my.edit')}
-                      </Link>
-                    </div>
-                  </div>
-                </article>
-              )
-            })}
+            <h1>{t('articles.my.title')}</h1>
           </div>
 
-          {pagination.totalPages > 1 && (
-            <nav
-              className="articles-pagination"
-              aria-label={t('articles.pagination.label')}
-            >
-              <button
-                type="button"
-                onClick={handlePreviousPage}
-                disabled={page <= 1}
-              >
-                {t('articles.pagination.previous')}
-              </button>
+          <div className="articles-page__actions">
+            <p className="articles-count">
+              {t('articles.my.count', {
+                count: pagination.total,
+              })}
+            </p>
 
-              <span>
-                {t('articles.pagination.page', {
-                  page: pagination.page,
-                  totalPages: pagination.totalPages,
-                })}
-              </span>
+            <Link className="articles-create-link" to="/dashboard/articles/new">
+              {t('articles.my.create')}
+            </Link>
+          </div>
+        </header>
 
-              <button
-                type="button"
-                onClick={handleNextPage}
-                disabled={page >= pagination.totalPages}
+        {articles.length === 0 ? (
+          <section className="articles-empty">
+            <h2>{t('articles.my.emptyTitle')}</h2>
+
+            <p>{t('articles.my.emptyMessage')}</p>
+          </section>
+        ) : (
+          <>
+            <div className="articles-list">
+              {articles.map((article) => {
+                const date = article.published_at ?? article.updated_at
+
+                return (
+                  <article className="article-row" key={article.id}>
+                    <div className="article-row__main">
+                      <ArticleStatus article={article} />
+
+                      <h2>{article.title}</h2>
+
+                      {article.excerpt && (
+                        <p className="article-row__excerpt">
+                          {article.excerpt}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="article-row__meta">
+                      {date && <time dateTime={date}>{formatDate(date)}</time>}
+
+                      <span>{article.language}</span>
+
+                      <div className="article-row__actions">
+                        <Link
+                          className="article-row__edit"
+                          to={`/dashboard/articles/${article.id}/edit`}
+                        >
+                          {t('articles.my.edit')}
+                        </Link>
+
+                        <button
+                          className="article-row__delete"
+                          type="button"
+                          onClick={() => handleDeleteRequest(article)}
+                        >
+                          {t('articles.my.delete')}
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
+
+            {pagination.totalPages > 1 && (
+              <nav
+                className="articles-pagination"
+                aria-label={t('articles.pagination.label')}
               >
-                {t('articles.pagination.next')}
-              </button>
-            </nav>
-          )}
-        </>
-      )}
-    </main>
+                <button
+                  type="button"
+                  onClick={handlePreviousPage}
+                  disabled={page <= 1}
+                >
+                  {t('articles.pagination.previous')}
+                </button>
+
+                <span>
+                  {t('articles.pagination.page', {
+                    page: pagination.page,
+                    totalPages: pagination.totalPages,
+                  })}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={handleNextPage}
+                  disabled={page >= pagination.totalPages}
+                >
+                  {t('articles.pagination.next')}
+                </button>
+              </nav>
+            )}
+          </>
+        )}
+      </main>
+
+      <ConfirmDialog
+        open={Boolean(articleToDelete)}
+        title={t('articles.delete.title')}
+        description={t('articles.delete.description')}
+        itemName={articleToDelete?.title}
+        confirmLabel={t('articles.delete.confirm')}
+        cancelLabel={t('articles.delete.cancel')}
+        processingLabel={t('articles.delete.deleting')}
+        isProcessing={isDeleting}
+        error={deleteError}
+        onConfirm={() => void handleConfirmDelete()}
+        onCancel={handleCancelDelete}
+      />
+    </>
   )
 }
 

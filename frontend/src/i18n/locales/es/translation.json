@@ -68,6 +68,7 @@
       "count": "{{count}} artículos",
       "create": "+ Crear artículo",
       "edit": "Editar",
+      "delete": "Eliminar",
       "loading": "Cargando artículos...",
       "loadError": "No hemos podido cargar tus artículos.",
       "emptyTitle": "Todavía no hay artículos",
@@ -123,6 +124,14 @@
         "updateSchedule": "Actualizar programación",
         "saving": "Guardando..."
       }
+    },
+    "delete": {
+      "title": "Eliminar artículo",
+      "description": "Esta acción no se puede deshacer.",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar",
+      "deleting": "Eliminando...",
+      "error": "No hemos podido eliminar el artículo. Inténtalo de nuevo."
     }
   },
   "language": {
