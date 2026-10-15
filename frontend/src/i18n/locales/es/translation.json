@@ -29,7 +29,7 @@
       "submitting": "Entrando...",
       "invalidCredentials": "El correo o la contraseña no son correctos.",
       "genericError": "No hemos podido iniciar sesión. Inténtalo de nuevo.",
-      "noAccount": "¿Todavía no tienes cuenta?",
+      "noAccount": "¿Todavía no tienes una cuenta?",
       "registerLink": "Crear una cuenta"
     },
     "register": {
@@ -54,7 +54,7 @@
   },
   "common": {
     "loading": "Cargando...",
-    "error": "Ha ocurrido un error",
+    "error": "Algo ha salido mal",
     "retry": "Intentar de nuevo"
   },
   "articles": {
@@ -63,10 +63,37 @@
       "scheduled": "Programado",
       "published": "Publicado"
     },
+    "my": {
+      "title": "Mis artículos",
+      "count": "{{count}} artículos",
+      "create": "+ Crear artículo",
+      "edit": "Editar",
+      "loading": "Cargando artículos...",
+      "loadError": "No hemos podido cargar tus artículos.",
+      "emptyTitle": "Todavía no hay artículos",
+      "emptyMessage": "Tu primer artículo aparecerá aquí cuando empieces a escribir."
+    },
+    "pagination": {
+      "label": "Paginación de artículos",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "page": "Página {{page}} de {{totalPages}}"
+    },
     "create": {
       "eyebrow": "Mi espacio",
       "title": "Crear artículo",
+      "cancel": "Cancelar"
+    },
+    "edit": {
+      "eyebrow": "Mi espacio",
+      "title": "Editar artículo",
       "cancel": "Cancelar",
+      "back": "Volver a mis artículos",
+      "loading": "Cargando artículo...",
+      "loadError": "No hemos podido cargar el artículo.",
+      "notFound": "No hemos encontrado este artículo."
+    },
+    "form": {
       "submitError": "No hemos podido guardar el artículo. Revisa los datos e inténtalo de nuevo.",
       "fields": {
         "title": "Título",
@@ -89,25 +116,13 @@
       "actions": {
         "saveDraft": "Guardar borrador",
         "savingDraft": "Guardando...",
+        "moveToDraft": "Pasar a borrador",
         "publish": "Publicar",
         "schedule": "Programar",
-        "publishing": "Guardando..."
+        "updatePublished": "Actualizar publicación",
+        "updateSchedule": "Actualizar programación",
+        "saving": "Guardando..."
       }
-    },
-    "my": {
-      "title": "Mis artículos",
-      "count": "{{count}} artículos",
-      "loading": "Cargando artículos...",
-      "loadError": "No hemos podido cargar tus artículos.",
-      "emptyTitle": "Todavía no hay artículos",
-      "emptyMessage": "Cuando escribas tu primer artículo aparecerá aquí.",
-      "create": "Crear artículo"
-    },
-    "pagination": {
-      "label": "Paginación de artículos",
-      "previous": "Anterior",
-      "next": "Siguiente",
-      "page": "Página {{page}} de {{totalPages}}"
     }
   },
   "language": {

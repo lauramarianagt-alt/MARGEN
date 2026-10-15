@@ -622,3 +622,24 @@ h1 {
     width: 100%;
   }
 }
+
+.article-row__actions {
+  margin-top: 0.75rem;
+}
+
+.article-row__edit {
+  color: #111111;
+  text-decoration: none;
+  border-bottom: 1px solid #111111;
+}
+
+.article-row__edit:hover {
+  opacity: 0.6;
+}
+
+.article-load-error-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}

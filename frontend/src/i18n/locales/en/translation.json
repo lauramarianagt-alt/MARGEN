@@ -63,10 +63,37 @@
       "scheduled": "Scheduled",
       "published": "Published"
     },
+    "my": {
+      "title": "My articles",
+      "count": "{{count}} articles",
+      "create": "+ Create article",
+      "edit": "Edit",
+      "loading": "Loading articles...",
+      "loadError": "We couldn't load your articles.",
+      "emptyTitle": "No articles yet",
+      "emptyMessage": "Your first article will appear here once you start writing."
+    },
+    "pagination": {
+      "label": "Articles pagination",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {{page}} of {{totalPages}}"
+    },
     "create": {
       "eyebrow": "My space",
       "title": "Create article",
+      "cancel": "Cancel"
+    },
+    "edit": {
+      "eyebrow": "My space",
+      "title": "Edit article",
       "cancel": "Cancel",
+      "back": "Back to my articles",
+      "loading": "Loading article...",
+      "loadError": "We couldn't load the article.",
+      "notFound": "We couldn't find this article."
+    },
+    "form": {
       "submitError": "We couldn't save the article. Check the information and try again.",
       "fields": {
         "title": "Title",
@@ -89,25 +116,13 @@
       "actions": {
         "saveDraft": "Save draft",
         "savingDraft": "Saving...",
+        "moveToDraft": "Move to draft",
         "publish": "Publish",
         "schedule": "Schedule",
-        "publishing": "Saving..."
+        "updatePublished": "Update publication",
+        "updateSchedule": "Update schedule",
+        "saving": "Saving..."
       }
-    },
-    "my": {
-      "title": "My articles",
-      "count": "{{count}} articles",
-      "loading": "Loading articles...",
-      "loadError": "We couldn't load your articles.",
-      "emptyTitle": "No articles yet",
-      "emptyMessage": "Your first article will appear here once you start writing.",
-      "createButton": "Create article"
-    },
-    "pagination": {
-      "label": "Articles pagination",
-      "previous": "Previous",
-      "next": "Next",
-      "page": "Page {{page}} of {{totalPages}}"
     }
   },
   "language": {

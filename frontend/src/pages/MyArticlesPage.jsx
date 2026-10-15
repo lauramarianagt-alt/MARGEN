@@ -180,6 +180,15 @@ function MyArticlesPage() {
                     {date && <time dateTime={date}>{formatDate(date)}</time>}
 
                     <span>{article.language}</span>
+
+                    <div className="article-row__actions">
+                      <Link
+                        className="article-row__edit"
+                        to={`/dashboard/articles/${article.id}/edit`}
+                      >
+                        {t('articles.my.edit')}
+                      </Link>
+                    </div>
                   </div>
                 </article>
               )

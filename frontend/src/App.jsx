@@ -9,6 +9,7 @@ import LoginPage from './pages/LoginPage.jsx'
 import RegisterPage from './pages/RegisterPage.jsx'
 import MyArticlesPage from './pages/MyArticlesPage.jsx'
 import CreateArticlePage from './pages/CreateArticlePage.jsx'
+import EditArticlePage from './pages/EditArticlePage.jsx'
 
 function App() {
   useEffect(() => {
@@ -32,6 +33,11 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
 
         <Route path="/register" element={<RegisterPage />} />
+
+        <Route
+          path="/dashboard/articles/:id/edit"
+          element={<EditArticlePage />}
+        />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<DashboardPage />} />
