@@ -63,13 +63,45 @@
       "scheduled": "Scheduled",
       "published": "Published"
     },
+    "create": {
+      "eyebrow": "My space",
+      "title": "Create article",
+      "cancel": "Cancel",
+      "submitError": "We couldn't save the article. Check the information and try again.",
+      "fields": {
+        "title": "Title",
+        "excerpt": "Introduction",
+        "content": "Content",
+        "language": "Language",
+        "publicationDate": "Publication date",
+        "categories": "Categories"
+      },
+      "publication": {
+        "now": "If you publish now, the article will become visible immediately.",
+        "selected": "The article will be published using this date.",
+        "scheduled": "Publication will be scheduled for this date."
+      },
+      "categories": {
+        "loading": "Loading categories...",
+        "error": "We couldn't load the categories.",
+        "empty": "No categories are available."
+      },
+      "actions": {
+        "saveDraft": "Save draft",
+        "savingDraft": "Saving...",
+        "publish": "Publish",
+        "schedule": "Schedule",
+        "publishing": "Saving..."
+      }
+    },
     "my": {
       "title": "My articles",
       "count": "{{count}} articles",
       "loading": "Loading articles...",
       "loadError": "We couldn't load your articles.",
       "emptyTitle": "No articles yet",
-      "emptyMessage": "Your first article will appear here once you start writing."
+      "emptyMessage": "Your first article will appear here once you start writing.",
+      "createButton": "Create article"
     },
     "pagination": {
       "label": "Articles pagination",

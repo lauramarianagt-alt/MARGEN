@@ -63,13 +63,45 @@
       "scheduled": "Programado",
       "published": "Publicado"
     },
+    "create": {
+      "eyebrow": "Mi espacio",
+      "title": "Crear artículo",
+      "cancel": "Cancelar",
+      "submitError": "No hemos podido guardar el artículo. Revisa los datos e inténtalo de nuevo.",
+      "fields": {
+        "title": "Título",
+        "excerpt": "Introducción",
+        "content": "Contenido",
+        "language": "Idioma",
+        "publicationDate": "Fecha de publicación",
+        "categories": "Categorías"
+      },
+      "publication": {
+        "now": "Si publicas ahora, el artículo será visible inmediatamente.",
+        "selected": "El artículo se publicará utilizando esta fecha.",
+        "scheduled": "La publicación quedará programada para esta fecha."
+      },
+      "categories": {
+        "loading": "Cargando categorías...",
+        "error": "No hemos podido cargar las categorías.",
+        "empty": "No hay categorías disponibles."
+      },
+      "actions": {
+        "saveDraft": "Guardar borrador",
+        "savingDraft": "Guardando...",
+        "publish": "Publicar",
+        "schedule": "Programar",
+        "publishing": "Guardando..."
+      }
+    },
     "my": {
       "title": "Mis artículos",
       "count": "{{count}} artículos",
       "loading": "Cargando artículos...",
       "loadError": "No hemos podido cargar tus artículos.",
       "emptyTitle": "Todavía no hay artículos",
-      "emptyMessage": "Cuando escribas tu primer artículo aparecerá aquí."
+      "emptyMessage": "Cuando escribas tu primer artículo aparecerá aquí.",
+      "create": "Crear artículo"
     },
     "pagination": {
       "label": "Paginación de artículos",

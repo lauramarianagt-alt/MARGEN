@@ -8,6 +8,7 @@ import HomePage from './pages/HomePage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import RegisterPage from './pages/RegisterPage.jsx'
 import MyArticlesPage from './pages/MyArticlesPage.jsx'
+import CreateArticlePage from './pages/CreateArticlePage.jsx'
 
 function App() {
   useEffect(() => {
@@ -35,6 +36,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/dashboard/articles" element={<MyArticlesPage />} />
+          <Route path="/dashboard/articles/new" element={<CreateArticlePage />} />
         </Route>
       </Route>
     </Routes>

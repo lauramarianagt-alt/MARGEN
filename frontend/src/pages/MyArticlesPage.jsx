@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 
 import ArticleStatus from '../components/ArticleStatus.jsx'
 import { getMyArticles } from '../services/articles.service.js'
@@ -138,11 +139,17 @@ function MyArticlesPage() {
           <h1>{t('articles.my.title')}</h1>
         </div>
 
-        <p className="articles-count">
-          {t('articles.my.count', {
-            count: pagination.total,
-          })}
-        </p>
+        <div className="articles-page__actions">
+          <p className="articles-count">
+            {t('articles.my.count', {
+              count: pagination.total,
+            })}
+          </p>
+
+          <Link className="articles-create-link" to="/dashboard/articles/new">
+            {t('articles.my.create')}
+          </Link>
+        </div>
       </header>
 
       {articles.length === 0 ? (
