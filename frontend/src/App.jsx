@@ -36,7 +36,10 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/dashboard/articles" element={<MyArticlesPage />} />
-          <Route path="/dashboard/articles/new" element={<CreateArticlePage />} />
+          <Route
+            path="/dashboard/articles/new"
+            element={<CreateArticlePage />}
+          />
         </Route>
       </Route>
     </Routes>
