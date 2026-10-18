@@ -5,6 +5,7 @@ import {
   getOwnArticle as getOwnArticleService,
   listOwnArticles as listOwnArticlesService,
   listPublicArticles as listPublicArticlesService,
+  getPublicArticle as getPublicArticleService,
   updateUserArticle,
 } from '../services/articles.service.js'
 
@@ -12,6 +13,7 @@ import {
   articleIdParamSchema,
   createArticleSchema,
   paginationQuerySchema,
+  publicArticleParamsSchema,
   updateArticleSchema,
 } from '../validators/articles.schemas.js'
 
@@ -47,6 +49,24 @@ export async function listPublicArticles(req, res) {
     const result = await listPublicArticlesService(validation.data)
 
     return res.json(result)
+  } catch (error) {
+    return handleArticleError(res, error)
+  }
+}
+
+export async function getPublicArticle(req, res) {
+  const validation = publicArticleParamsSchema.safeParse(req.params)
+
+  if (!validation.success) {
+    return sendValidationError(res, validation)
+  }
+
+  try {
+    const article = await getPublicArticleService(validation.data)
+
+    return res.json({
+      article,
+    })
   } catch (error) {
     return handleArticleError(res, error)
   }

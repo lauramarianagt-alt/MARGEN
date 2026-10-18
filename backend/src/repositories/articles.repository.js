@@ -290,3 +290,36 @@ export async function findPublicArticles({ limit = 10, offset = 0 } = {}) {
     count: count ?? 0,
   }
 }
+
+export async function findPublicAuthorByUsername(username) {
+  const { data, error } = await supabasePublic
+    .from('profiles')
+    .select('id, username')
+    .eq('username', username)
+    .maybeSingle()
+
+  if (error) {
+    throwDatabaseError(error, 'Unable to load public author')
+  }
+
+  return data
+}
+
+export async function findPublicArticleByAuthorAndSlug(authorId, slug) {
+  const now = new Date().toISOString()
+
+  const { data, error } = await supabasePublic
+    .from('articles')
+    .select(ARTICLE_DETAIL_SELECT)
+    .eq('author_id', authorId)
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .lte('published_at', now)
+    .maybeSingle()
+
+  if (error) {
+    throwDatabaseError(error, 'Unable to load public article')
+  }
+
+  return data
+}

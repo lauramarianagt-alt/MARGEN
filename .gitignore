@@ -1,25 +1,25 @@
-# Dependencies
+- Dependencies
 node_modules/
 
-# Environment variables
+- Environment variables
 .env
 .env.*
 !.env.example
 
-# Builds
+- Builds
 dist/
 build/
 
-# Coverage
+- Coverage
 coverage/
 
-# OS
+- OS
 .DS_Store
 
-# Editors
+- Editors
 .vscode/
 .idea/
 
-# Logs
+- Logs
 *.log
 npm-debug.log*

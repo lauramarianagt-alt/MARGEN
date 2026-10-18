@@ -4,6 +4,7 @@ import {
   createArticle,
   deleteArticle,
   getOwnArticle,
+  getPublicArticle,
   listOwnArticles,
   listPublicArticles,
   updateArticle,
@@ -16,6 +17,8 @@ export const articlesRouter = Router()
 export const meArticlesRouter = Router()
 
 articlesRouter.get('/', listPublicArticles)
+
+articlesRouter.get('/:username/:slug', getPublicArticle)
 
 articlesRouter.post('/', requireAuth, createArticle)
 

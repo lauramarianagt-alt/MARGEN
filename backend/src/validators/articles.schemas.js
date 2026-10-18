@@ -6,7 +6,9 @@ const languageSchema = z
 
 const articleStatusSchema = z.enum(['draft', 'published'])
 
-const publishedAtSchema = z.string().datetime({ offset: true })
+const publishedAtSchema = z.string().datetime({
+  offset: true,
+})
 
 const categoryIdsSchema = z.array(z.string().uuid()).max(10)
 
@@ -51,6 +53,17 @@ export const updateArticleSchema = z
 
 export const articleIdParamSchema = z.object({
   id: z.string().uuid(),
+})
+
+export const publicArticleParamsSchema = z.object({
+  username: z.string().trim().min(3).max(30),
+
+  slug: z
+    .string()
+    .trim()
+    .min(1)
+    .max(250)
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Invalid article slug'),
 })
 
 export const paginationQuerySchema = z.object({

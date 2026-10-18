@@ -6,7 +6,9 @@ import {
   findCategoriesByIds,
   findOwnedArticleById,
   findOwnArticles,
+  findPublicArticleByAuthorAndSlug,
   findPublicArticles,
+  findPublicAuthorByUsername,
   getArticleCategoryIds,
   removeArticleCategories,
   updateArticleById,
@@ -150,6 +152,22 @@ export async function listPublicArticles({ page = 1, limit = 10 } = {}) {
       totalPages: count === 0 ? 0 : Math.ceil(count / pagination.limit),
     },
   }
+}
+
+export async function getPublicArticle({ username, slug }) {
+  const author = await findPublicAuthorByUsername(username)
+
+  if (!author) {
+    throw new ArticleServiceError(404, 'Article not found')
+  }
+
+  const article = await findPublicArticleByAuthorAndSlug(author.id, slug)
+
+  if (!article) {
+    throw new ArticleServiceError(404, 'Article not found')
+  }
+
+  return article
 }
 
 export async function listOwnArticles({
