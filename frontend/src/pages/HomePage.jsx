@@ -141,9 +141,7 @@ function HomePage() {
                   </div>
 
                   <h3>
-                    <Link
-                      to={`/articles/${article.author.username}/${article.slug}`}
-                    >
+                    <Link to={`/${article.author.username}/${article.slug}`}>
                       {article.title}
                     </Link>
                   </h3>
@@ -163,7 +161,7 @@ function HomePage() {
 
                     <Link
                       className="public-article-card__read"
-                      to={`/articles/${article.author.username}/${article.slug}`}
+                      to={`/${article.author.username}/${article.slug}`}
                     >
                       {t('articles.public.read')}
                     </Link>

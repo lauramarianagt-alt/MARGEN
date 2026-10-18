@@ -10,6 +10,7 @@ import RegisterPage from './pages/RegisterPage.jsx'
 import MyArticlesPage from './pages/MyArticlesPage.jsx'
 import CreateArticlePage from './pages/CreateArticlePage.jsx'
 import EditArticlePage from './pages/EditArticlePage.jsx'
+import LegacyArticleRedirect from './components/LegacyArticleRedirect.jsx'
 import PublicArticlePage from './pages/PublicArticlePage.jsx'
 
 function App() {
@@ -35,11 +36,12 @@ function App() {
 
         <Route path="/register" element={<RegisterPage />} />
 
+        <Route path="/:username/:slug" element={<PublicArticlePage />} />
+
         <Route
           path="/articles/:username/:slug"
-          element={<PublicArticlePage />}
+          element={<LegacyArticleRedirect />}
         />
-
         <Route
           path="/dashboard/articles/:id/edit"
           element={<EditArticlePage />}
