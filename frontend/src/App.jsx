@@ -10,6 +10,7 @@ import RegisterPage from './pages/RegisterPage.jsx'
 import MyArticlesPage from './pages/MyArticlesPage.jsx'
 import CreateArticlePage from './pages/CreateArticlePage.jsx'
 import EditArticlePage from './pages/EditArticlePage.jsx'
+import PublicArticlePage from './pages/PublicArticlePage.jsx'
 
 function App() {
   useEffect(() => {
@@ -33,6 +34,11 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
 
         <Route path="/register" element={<RegisterPage />} />
+
+        <Route
+          path="/articles/:username/:slug"
+          element={<PublicArticlePage />}
+        />
 
         <Route
           path="/dashboard/articles/:id/edit"

@@ -94,6 +94,24 @@
       "loadError": "We couldn't load the article.",
       "notFound": "We couldn't find this article."
     },
+    "public": {
+      "eyebrow": "Independent fashion & visual culture",
+      "heroTitle": "Discover. Read. Publish.",
+      "heroIntro": "Independent stories, ideas and perspectives on fashion, image and contemporary culture.",
+      "latest": "Latest stories",
+      "loading": "Loading stories...",
+      "loadError": "We couldn't load the articles.",
+      "emptyTitle": "No stories published yet",
+      "emptyMessage": "New articles will appear here when they are published.",
+      "by": "By {{author}}",
+      "read": "Read article"
+    },
+    "detail": {
+      "loading": "Loading article...",
+      "loadError": "We couldn't load this article.",
+      "notFound": "This article is not available",
+      "back": "Back to home"
+    },
     "form": {
       "submitError": "We couldn't save the article. Check the information and try again.",
       "fields": {

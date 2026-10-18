@@ -760,3 +760,227 @@ h1 {
     width: 100%;
   }
 }
+
+.public-home {
+  padding-top: 5rem;
+  padding-bottom: 6rem;
+}
+
+.public-home__hero {
+  max-width: 70rem;
+  padding-bottom: 5rem;
+  border-bottom: 1px solid #d8d2c8;
+}
+
+.public-home__hero h1 {
+  max-width: 12ch;
+  margin: 1rem 0 2rem;
+  font-size: clamp(3.5rem, 9vw, 8rem);
+  line-height: 0.88;
+  letter-spacing: -0.055em;
+}
+
+.public-home__intro {
+  max-width: 42rem;
+  margin: 0;
+  color: #6f6a63;
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
+  line-height: 1.5;
+}
+
+.public-home__stories {
+  padding-top: 4rem;
+}
+
+.public-home__section-header {
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #111111;
+}
+
+.public-home__section-header h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.public-articles-list {
+  display: grid;
+}
+
+.public-article-card {
+  display: grid;
+  gap: 1.25rem;
+  padding: 2.5rem 0;
+  border-bottom: 1px solid #d8d2c8;
+}
+
+.public-article-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  color: #6f6a63;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.public-article-card h3 {
+  max-width: 20ch;
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 4.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+}
+
+.public-article-card h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.public-article-card h3 a:hover {
+  opacity: 0.6;
+}
+
+.public-article-card__excerpt {
+  max-width: 46rem;
+  margin: 0;
+  color: #6f6a63;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.public-article-card__footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  font-size: 0.85rem;
+}
+
+.public-article-card__read {
+  color: #111111;
+  text-decoration: none;
+  border-bottom: 1px solid #111111;
+}
+
+.public-home__empty {
+  padding: 4rem 0;
+}
+
+.public-home__empty h3 {
+  margin-top: 0;
+}
+
+.public-article-page {
+  padding-top: 5rem;
+  padding-bottom: 6rem;
+}
+
+.public-article {
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+.public-article__header {
+  padding-bottom: 4rem;
+  border-bottom: 1px solid #d8d2c8;
+}
+
+.public-article__categories {
+  margin: 0 0 1.5rem;
+  color: #6f6a63;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.public-article__header h1 {
+  max-width: 15ch;
+  margin: 0 0 2rem;
+  font-size: clamp(3rem, 8vw, 7rem);
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+}
+
+.public-article__excerpt {
+  max-width: 46rem;
+  margin: 0 0 2.5rem;
+  color: #6f6a63;
+  font-size: clamp(1.2rem, 2.5vw, 1.65rem);
+  line-height: 1.5;
+}
+
+.public-article__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.public-article__content {
+  max-width: 44rem;
+  margin: 4rem auto;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+.public-article__footer {
+  padding-top: 2rem;
+  border-top: 1px solid #d8d2c8;
+}
+
+.public-article__footer a,
+.public-article-state a {
+  color: #111111;
+  text-decoration: none;
+  border-bottom: 1px solid #111111;
+}
+
+.public-article-state {
+  max-width: 50rem;
+  padding: 5rem 0;
+}
+
+.public-article-state h1 {
+  margin: 1rem 0 3rem;
+  font-size: clamp(3rem, 8vw, 6rem);
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+}
+
+@media (max-width: 700px) {
+  .public-home {
+    padding-top: 3rem;
+  }
+
+  .public-home__hero {
+    padding-bottom: 3rem;
+  }
+
+  .public-home__stories {
+    padding-top: 3rem;
+  }
+
+  .public-article-card__footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .public-article-page {
+    padding-top: 3rem;
+  }
+
+  .public-article__header {
+    padding-bottom: 3rem;
+  }
+
+  .public-article__content {
+    margin: 3rem 0;
+  }
+}

@@ -94,6 +94,24 @@
       "loadError": "No hemos podido cargar el artículo.",
       "notFound": "No hemos encontrado este artículo."
     },
+    "public": {
+      "eyebrow": "Moda independiente y cultura visual",
+      "heroTitle": "Descubre. Lee. Publica.",
+      "heroIntro": "Historias, ideas y perspectivas independientes sobre moda, imagen y cultura contemporánea.",
+      "latest": "Últimas historias",
+      "loading": "Cargando historias...",
+      "loadError": "No hemos podido cargar los artículos.",
+      "emptyTitle": "Todavía no hay historias publicadas",
+      "emptyMessage": "Los nuevos artículos aparecerán aquí cuando sean publicados.",
+      "by": "Por {{author}}",
+      "read": "Leer artículo"
+    },
+    "detail": {
+      "loading": "Cargando artículo...",
+      "loadError": "No hemos podido cargar este artículo.",
+      "notFound": "Este artículo no está disponible",
+      "back": "Volver a inicio"
+    },
     "form": {
       "submitError": "No hemos podido guardar el artículo. Revisa los datos e inténtalo de nuevo.",
       "fields": {
