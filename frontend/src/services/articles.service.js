@@ -1,10 +1,18 @@
 import { apiFetch } from './api.js'
 
-export function getPublicArticles({ page = 1, limit = 10 } = {}) {
+export function getPublicArticles({
+  page = 1,
+  limit = 10,
+  author = null,
+} = {}) {
   const searchParams = new URLSearchParams({
     page: String(page),
     limit: String(limit),
   })
+
+  if (author) {
+    searchParams.set('author', author)
+  }
 
   return apiFetch(`/articles?${searchParams.toString()}`)
 }

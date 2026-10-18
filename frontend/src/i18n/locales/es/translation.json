@@ -57,6 +57,20 @@
     "error": "Algo ha salido mal",
     "retry": "Intentar de nuevo"
   },
+  "authors": {
+    "public": {
+      "eyebrow": "Autora",
+      "loading": "Cargando perfil...",
+      "loadError": "No hemos podido cargar este perfil.",
+      "notFound": "Esta autora no está disponible",
+      "back": "Volver a inicio",
+      "articles": "Artículos publicados",
+      "articleCount": "{{count}} artículos",
+      "emptyTitle": "Todavía no hay artículos publicados",
+      "emptyMessage": "Los artículos de esta autora aparecerán aquí cuando sean publicados.",
+      "paginationLabel": "Paginación de artículos de la autora"
+    }
+  },
   "articles": {
     "status": {
       "draft": "Borrador",

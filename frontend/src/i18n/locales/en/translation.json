@@ -57,6 +57,20 @@
     "error": "Something went wrong",
     "retry": "Try again"
   },
+  "authors": {
+    "public": {
+      "eyebrow": "Author",
+      "loading": "Loading profile...",
+      "loadError": "We couldn't load this profile.",
+      "notFound": "This author is not available",
+      "back": "Back to home",
+      "articles": "Published articles",
+      "articleCount": "{{count}} articles",
+      "emptyTitle": "No published articles yet",
+      "emptyMessage": "This author's articles will appear here when they are published.",
+      "paginationLabel": "Author articles pagination"
+    }
+  },
   "articles": {
     "status": {
       "draft": "Draft",

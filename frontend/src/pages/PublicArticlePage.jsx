@@ -127,6 +127,8 @@ function PublicArticlePage() {
     [article.author?.name, article.author?.surname].filter(Boolean).join(' ') ||
     article.author?.username
 
+  const authorUsername = article.author?.username
+
   const categories =
     article.article_categories
       ?.map((relation) => relation.category)
@@ -149,11 +151,22 @@ function PublicArticlePage() {
           )}
 
           <div className="public-article__meta">
-            <span>
-              {t('articles.public.by', {
-                author: authorName,
-              })}
-            </span>
+            {authorUsername ? (
+              <Link
+                className="public-article__author"
+                to={`/${authorUsername}`}
+              >
+                {t('articles.public.by', {
+                  author: authorName,
+                })}
+              </Link>
+            ) : (
+              <span>
+                {t('articles.public.by', {
+                  author: authorName,
+                })}
+              </span>
+            )}
 
             {article.published_at && (
               <time dateTime={article.published_at}>

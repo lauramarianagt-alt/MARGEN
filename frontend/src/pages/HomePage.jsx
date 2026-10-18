@@ -115,7 +115,11 @@ function HomePage() {
           <div className="public-articles-list">
             {articles.map((article) => {
               const authorName =
-                article.author?.name || article.author?.username
+                [article.author?.name, article.author?.surname]
+                  .filter(Boolean)
+                  .join(' ') || article.author?.username
+
+              const authorUsername = article.author?.username
 
               const categories =
                 article.article_categories
@@ -141,7 +145,7 @@ function HomePage() {
                   </div>
 
                   <h3>
-                    <Link to={`/${article.author.username}/${article.slug}`}>
+                    <Link to={`/${authorUsername}/${article.slug}`}>
                       {article.title}
                     </Link>
                   </h3>
@@ -153,15 +157,26 @@ function HomePage() {
                   )}
 
                   <footer className="public-article-card__footer">
-                    <span>
-                      {t('articles.public.by', {
-                        author: authorName,
-                      })}
-                    </span>
+                    {authorUsername ? (
+                      <Link
+                        className="public-article-card__author"
+                        to={`/${authorUsername}`}
+                      >
+                        {t('articles.public.by', {
+                          author: authorName,
+                        })}
+                      </Link>
+                    ) : (
+                      <span>
+                        {t('articles.public.by', {
+                          author: authorName,
+                        })}
+                      </span>
+                    )}
 
                     <Link
                       className="public-article-card__read"
-                      to={`/${article.author.username}/${article.slug}`}
+                      to={`/${authorUsername}/${article.slug}`}
                     >
                       {t('articles.public.read')}
                     </Link>
