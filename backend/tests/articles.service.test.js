@@ -16,6 +16,11 @@ const repositoryMocks = vi.hoisted(() => ({
 
 vi.mock('../src/repositories/articles.repository.js', () => repositoryMocks)
 
+vi.mock('../src/repositories/authors.repository.js', () => ({
+  findPublicAuthorByUsername: vi.fn(),
+}))
+
+import { findPublicAuthorByUsername } from '../src/repositories/authors.repository.js'
 import {
   ArticleServiceError,
   createUserArticle,
@@ -83,6 +88,76 @@ describe('Articles service', () => {
       language: 'es',
       status: 'draft',
       published_at: null,
+    })
+  })
+
+  it('filters public articles by author username', async () => {
+    findPublicAuthorByUsername.mockResolvedValue({
+      id: 'author-1',
+      username: 'Lau',
+    })
+
+    repositoryMocks.findPublicArticles.mockResolvedValue({
+      articles: [
+        {
+          id: 'article-1',
+          title: 'Fashion deserves more than a feed',
+        },
+      ],
+      count: 1,
+    })
+
+    const result = await listPublicArticles({
+      page: 1,
+      limit: 10,
+      author: 'Lau',
+    })
+
+    expect(findPublicAuthorByUsername).toHaveBeenCalledWith('Lau')
+
+    expect(repositoryMocks.findPublicArticles).toHaveBeenCalledWith({
+      limit: 10,
+      offset: 0,
+      authorId: 'author-1',
+    })
+
+    expect(result).toEqual({
+      articles: [
+        {
+          id: 'article-1',
+          title: 'Fashion deserves more than a feed',
+        },
+      ],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 1,
+        totalPages: 1,
+      },
+    })
+  })
+
+  it('returns an empty public list when the author does not exist', async () => {
+    findPublicAuthorByUsername.mockResolvedValue(null)
+
+    const result = await listPublicArticles({
+      page: 1,
+      limit: 10,
+      author: 'unknown-user',
+    })
+
+    expect(findPublicAuthorByUsername).toHaveBeenCalledWith('unknown-user')
+
+    expect(repositoryMocks.findPublicArticles).not.toHaveBeenCalled()
+
+    expect(result).toEqual({
+      articles: [],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 0,
+      },
     })
   })
 
@@ -228,6 +303,7 @@ describe('Articles service', () => {
     expect(repositoryMocks.findPublicArticles).toHaveBeenCalledWith({
       limit: 10,
       offset: 10,
+      authorId: null,
     })
 
     expect(result.pagination).toEqual({

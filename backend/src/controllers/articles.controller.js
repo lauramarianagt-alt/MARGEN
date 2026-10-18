@@ -13,6 +13,7 @@ import {
   articleIdParamSchema,
   createArticleSchema,
   paginationQuerySchema,
+  publicArticlesQuerySchema,
   publicArticleParamsSchema,
   updateArticleSchema,
 } from '../validators/articles.schemas.js'
@@ -39,7 +40,7 @@ function handleArticleError(res, error) {
 }
 
 export async function listPublicArticles(req, res) {
-  const validation = paginationQuerySchema.safeParse(req.query)
+  const validation = publicArticlesQuerySchema.safeParse(req.query)
 
   if (!validation.success) {
     return sendValidationError(res, validation)

@@ -127,6 +127,42 @@ describe('Articles API', () => {
     })
   })
 
+  it('GET /api/articles filters by author', async () => {
+    articleMocks.listPublicArticles.mockResolvedValue({
+      articles: [],
+      pagination: {
+        page: 2,
+        limit: 5,
+        total: 0,
+        totalPages: 0,
+      },
+    })
+
+    const response = await request(app).get('/api/articles').query({
+      author: 'Lau',
+      page: 2,
+      limit: 5,
+    })
+
+    expect(response.status).toBe(200)
+
+    expect(articleMocks.listPublicArticles).toHaveBeenCalledWith({
+      author: 'Lau',
+      page: 2,
+      limit: 5,
+    })
+  })
+
+  it('GET /api/articles validates the author filter', async () => {
+    const response = await request(app).get('/api/articles').query({
+      author: 'ab',
+    })
+
+    expect(response.status).toBe(400)
+
+    expect(articleMocks.listPublicArticles).not.toHaveBeenCalled()
+  })
+
   it('GET /api/articles rejects an invalid page', async () => {
     const response = await request(app).get('/api/articles?page=0').expect(400)
 

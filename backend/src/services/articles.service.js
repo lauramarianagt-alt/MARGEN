@@ -8,11 +8,12 @@ import {
   findOwnArticles,
   findPublicArticleByAuthorAndSlug,
   findPublicArticles,
-  findPublicAuthorByUsername,
   getArticleCategoryIds,
   removeArticleCategories,
   updateArticleById,
 } from '../repositories/articles.repository.js'
+
+import { findPublicAuthorByUsername } from '../repositories/authors.repository.js'
 
 export class ArticleServiceError extends Error {
   constructor(status, message) {
@@ -135,25 +136,45 @@ function buildPagination(page = 1, limit = 10) {
   }
 }
 
-export async function listPublicArticles({ page = 1, limit = 10 } = {}) {
-  const pagination = buildPagination(page, limit)
+export async function listPublicArticles({ page, limit, author }) {
+  const offset = (page - 1) * limit
+
+  let authorId = null
+
+  if (author) {
+    const publicAuthor = await findPublicAuthorByUsername(author)
+
+    if (!publicAuthor) {
+      return {
+        articles: [],
+        pagination: {
+          page,
+          limit,
+          total: 0,
+          totalPages: 0,
+        },
+      }
+    }
+
+    authorId = publicAuthor.id
+  }
 
   const { articles, count } = await findPublicArticles({
-    limit: pagination.limit,
-    offset: pagination.offset,
+    limit,
+    offset,
+    authorId,
   })
 
   return {
     articles,
     pagination: {
-      page: pagination.page,
-      limit: pagination.limit,
+      page,
+      limit,
       total: count,
-      totalPages: count === 0 ? 0 : Math.ceil(count / pagination.limit),
+      totalPages: Math.ceil(count / limit),
     },
   }
 }
-
 export async function getPublicArticle({ username, slug }) {
   const author = await findPublicAuthorByUsername(username)
 

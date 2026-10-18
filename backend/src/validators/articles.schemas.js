@@ -71,3 +71,7 @@ export const paginationQuerySchema = z.object({
 
   limit: z.coerce.number().int().min(1).max(50).default(10),
 })
+
+export const publicArticlesQuerySchema = paginationQuerySchema.extend({
+  author: z.string().trim().min(3).max(30).optional(),
+})

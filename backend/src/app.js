@@ -9,6 +9,7 @@ import { articlesRouter, meArticlesRouter } from './routes/articles.routes.js'
 
 import authRouter from './routes/auth.routes.js'
 import categoriesRouter from './routes/categories.routes.js'
+import { authorsRouter } from './routes/authors.routes.js'
 
 const app = express()
 
@@ -32,6 +33,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/categories', categoriesRouter)
 app.use('/api/auth', authRouter)
 app.use('/api/articles', articlesRouter)
+app.use('/api/authors', authorsRouter)
 app.use('/api/me/articles', meArticlesRouter)
 
 app.get('/api/me', requireAuth, me)

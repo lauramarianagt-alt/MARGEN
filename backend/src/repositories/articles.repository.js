@@ -266,10 +266,14 @@ export async function findOwnArticles(
   }
 }
 
-export async function findPublicArticles({ limit = 10, offset = 0 } = {}) {
+export async function findPublicArticles({
+  limit = 10,
+  offset = 0,
+  authorId = null,
+} = {}) {
   const now = new Date().toISOString()
 
-  const { data, error, count } = await supabasePublic
+  let query = supabasePublic
     .from('articles')
     .select(ARTICLE_LIST_SELECT, {
       count: 'exact',
@@ -279,7 +283,12 @@ export async function findPublicArticles({ limit = 10, offset = 0 } = {}) {
     .order('published_at', {
       ascending: false,
     })
-    .range(offset, offset + limit - 1)
+
+  if (authorId) {
+    query = query.eq('author_id', authorId)
+  }
+
+  const { data, error, count } = await query.range(offset, offset + limit - 1)
 
   if (error) {
     throwDatabaseError(error, 'Unable to load public articles')
@@ -289,20 +298,6 @@ export async function findPublicArticles({ limit = 10, offset = 0 } = {}) {
     articles: data ?? [],
     count: count ?? 0,
   }
-}
-
-export async function findPublicAuthorByUsername(username) {
-  const { data, error } = await supabasePublic
-    .from('profiles')
-    .select('id, username')
-    .eq('username', username)
-    .maybeSingle()
-
-  if (error) {
-    throwDatabaseError(error, 'Unable to load public author')
-  }
-
-  return data
 }
 
 export async function findPublicArticleByAuthorAndSlug(authorId, slug) {
