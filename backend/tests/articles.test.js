@@ -59,6 +59,11 @@ const USER_ID = '11111111-1111-4111-8111-111111111111'
 
 const ARTICLE_ID = '22222222-2222-4222-8222-222222222222'
 
+const VALID_PNG_BUFFER = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9ZQmcAAAAASUVORK5CYII=',
+  'base64',
+)
+
 const ARTICLE = {
   id: ARTICLE_ID,
   author_id: USER_ID,
@@ -66,6 +71,7 @@ const ARTICLE = {
   slug: 'fashion-deserves-more-than-a-feed',
   excerpt: 'Una reflexión sobre moda y cultura visual.',
   content: 'Contenido editorial de MARGEN.',
+  cover_image_url: null,
   language: 'es',
   status: 'draft',
   published_at: null,
@@ -376,6 +382,108 @@ describe('Articles API', () => {
     })
   })
 
+  it('POST /api/articles creates an article with a valid cover image', async () => {
+    const articleWithCover = {
+      ...ARTICLE,
+      cover_image_url:
+        'https://example.supabase.co/storage/v1/object/public/article-covers/cover.png',
+    }
+
+    articleMocks.createUserArticle.mockResolvedValue(articleWithCover)
+
+    const response = await request(app)
+      .post('/api/articles')
+      .field(
+        'article',
+        JSON.stringify({
+          title: 'Article with cover',
+          categoryIds: [],
+        }),
+      )
+      .attach('cover', VALID_PNG_BUFFER, {
+        filename: 'cover.png',
+        contentType: 'image/png',
+      })
+      .expect(201)
+
+    expect(response.body).toEqual({
+      article: articleWithCover,
+    })
+
+    expect(articleMocks.createUserArticle).toHaveBeenCalledTimes(1)
+
+    const serviceInput = articleMocks.createUserArticle.mock.calls[0][0]
+
+    expect(serviceInput).toMatchObject({
+      accessToken: 'test-access-token',
+      userId: USER_ID,
+      input: {
+        title: 'Article with cover',
+        content: '',
+        language: 'es',
+        status: 'draft',
+        categoryIds: [],
+      },
+    })
+
+    expect(serviceInput.coverFile).toMatchObject({
+      originalname: 'cover.png',
+      detectedMimeType: 'image/png',
+      detectedExtension: 'png',
+      size: VALID_PNG_BUFFER.length,
+    })
+
+    expect(serviceInput.coverFile.buffer).toEqual(VALID_PNG_BUFFER)
+  })
+
+  it('POST /api/articles rejects a file that is not a supported image', async () => {
+    const response = await request(app)
+      .post('/api/articles')
+      .field(
+        'article',
+        JSON.stringify({
+          title: 'Invalid cover',
+          categoryIds: [],
+        }),
+      )
+      .attach('cover', Buffer.from('this is not a real image'), {
+        filename: 'fake.jpg',
+        contentType: 'image/jpeg',
+      })
+      .expect(400)
+
+    expect(response.body).toEqual({
+      error: 'Cover image must be a JPEG, PNG, or WebP file.',
+    })
+
+    expect(articleMocks.createUserArticle).not.toHaveBeenCalled()
+  })
+
+  it('POST /api/articles rejects a cover image larger than 6 MB', async () => {
+    const oversizedFile = Buffer.alloc(6 * 1024 * 1024 + 1)
+
+    const response = await request(app)
+      .post('/api/articles')
+      .field(
+        'article',
+        JSON.stringify({
+          title: 'Oversized cover',
+          categoryIds: [],
+        }),
+      )
+      .attach('cover', oversizedFile, {
+        filename: 'too-large.png',
+        contentType: 'image/png',
+      })
+      .expect(413)
+
+    expect(response.body).toEqual({
+      error: 'Cover image must be 6 MB or smaller.',
+    })
+
+    expect(articleMocks.createUserArticle).not.toHaveBeenCalled()
+  })
+
   it('POST /api/articles validates article data', async () => {
     const response = await request(app)
       .post('/api/articles')
@@ -417,6 +525,56 @@ describe('Articles API', () => {
         status: 'published',
       },
     })
+  })
+
+  it('PATCH /api/articles/:id updates an article with a cover image', async () => {
+    const articleWithCover = {
+      ...ARTICLE,
+      cover_image_url:
+        'https://example.supabase.co/storage/v1/object/public/article-covers/cover.png',
+    }
+
+    articleMocks.updateUserArticle.mockResolvedValue(articleWithCover)
+
+    const response = await request(app)
+      .patch(`/api/articles/${ARTICLE_ID}`)
+      .field(
+        'article',
+        JSON.stringify({
+          title: 'Updated article',
+        }),
+      )
+      .attach('cover', VALID_PNG_BUFFER, {
+        filename: 'updated-cover.png',
+        contentType: 'image/png',
+      })
+      .expect(200)
+
+    expect(response.body).toEqual({
+      article: articleWithCover,
+    })
+
+    expect(articleMocks.updateUserArticle).toHaveBeenCalledTimes(1)
+
+    const serviceInput = articleMocks.updateUserArticle.mock.calls[0][0]
+
+    expect(serviceInput).toMatchObject({
+      accessToken: 'test-access-token',
+      userId: USER_ID,
+      articleId: ARTICLE_ID,
+      input: {
+        title: 'Updated article',
+      },
+    })
+
+    expect(serviceInput.coverFile).toMatchObject({
+      originalname: 'updated-cover.png',
+      detectedMimeType: 'image/png',
+      detectedExtension: 'png',
+      size: VALID_PNG_BUFFER.length,
+    })
+
+    expect(serviceInput.coverFile.buffer).toEqual(VALID_PNG_BUFFER)
   })
 
   it('PATCH /api/articles/:id validates the article id', async () => {

@@ -25,6 +25,50 @@ function sendValidationError(res, validation) {
   })
 }
 
+function sendInvalidMultipartData(res) {
+  return res.status(400).json({
+    error: 'Invalid request data',
+    details: {
+      formErrors: ['Article data must be valid JSON.'],
+      fieldErrors: {},
+    },
+  })
+}
+
+function parseArticleRequestBody(req) {
+  if (!req.is('multipart/form-data')) {
+    return {
+      success: true,
+      data: req.body,
+    }
+  }
+
+  if (typeof req.body?.article !== 'string') {
+    return {
+      success: false,
+    }
+  }
+
+  try {
+    const article = JSON.parse(req.body.article)
+
+    if (!article || typeof article !== 'object' || Array.isArray(article)) {
+      return {
+        success: false,
+      }
+    }
+
+    return {
+      success: true,
+      data: article,
+    }
+  } catch {
+    return {
+      success: false,
+    }
+  }
+}
+
 function handleArticleError(res, error) {
   if (error instanceof ArticleServiceError) {
     return res.status(error.status).json({
@@ -116,18 +160,30 @@ export async function getOwnArticle(req, res) {
 }
 
 export async function createArticle(req, res) {
-  const validation = createArticleSchema.safeParse(req.body)
+  const requestBody = parseArticleRequestBody(req)
+
+  if (!requestBody.success) {
+    return sendInvalidMultipartData(res)
+  }
+
+  const validation = createArticleSchema.safeParse(requestBody.data)
 
   if (!validation.success) {
     return sendValidationError(res, validation)
   }
 
   try {
-    const article = await createUserArticle({
+    const serviceInput = {
       accessToken: req.accessToken,
       userId: req.user.id,
       input: validation.data,
-    })
+    }
+
+    if (req.file) {
+      serviceInput.coverFile = req.file
+    }
+
+    const article = await createUserArticle(serviceInput)
 
     return res.status(201).json({
       article,
@@ -144,19 +200,31 @@ export async function updateArticle(req, res) {
     return sendValidationError(res, paramsValidation)
   }
 
-  const bodyValidation = updateArticleSchema.safeParse(req.body)
+  const requestBody = parseArticleRequestBody(req)
+
+  if (!requestBody.success) {
+    return sendInvalidMultipartData(res)
+  }
+
+  const bodyValidation = updateArticleSchema.safeParse(requestBody.data)
 
   if (!bodyValidation.success) {
     return sendValidationError(res, bodyValidation)
   }
 
   try {
-    const article = await updateUserArticle({
+    const serviceInput = {
       accessToken: req.accessToken,
       userId: req.user.id,
       articleId: paramsValidation.data.id,
       input: bodyValidation.data,
-    })
+    }
+
+    if (req.file) {
+      serviceInput.coverFile = req.file
+    }
+
+    const article = await updateUserArticle(serviceInput)
 
     return res.json({
       article,

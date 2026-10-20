@@ -16,6 +16,12 @@ import {
 import { findPublicAuthorByUsername } from '../repositories/authors.repository.js'
 import { findCategoryBySlug } from '../repositories/categories.repository.js'
 
+import {
+  deleteArticleCover,
+  deleteArticleCoverByPublicUrl,
+  uploadArticleCover,
+} from './article-covers.service.js'
+
 export class ArticleServiceError extends Error {
   constructor(status, message) {
     super(message)
@@ -43,6 +49,26 @@ function slugify(value) {
 
 function getUniqueCategoryIds(categoryIds = []) {
   return [...new Set(categoryIds)]
+}
+
+async function safelyDeleteUploadedCover(filePath) {
+  try {
+    await deleteArticleCover(filePath)
+  } catch (error) {
+    console.error('Unable to clean up uploaded article cover:', error)
+  }
+}
+
+async function safelyDeleteStoredCover(publicUrl) {
+  if (!publicUrl) {
+    return
+  }
+
+  try {
+    await deleteArticleCoverByPublicUrl(publicUrl)
+  } catch (error) {
+    console.error('Unable to clean up stored article cover:', error)
+  }
 }
 
 async function ensureCategoriesExist(accessToken, categoryIds) {
@@ -250,7 +276,12 @@ export async function getOwnArticle({ accessToken, userId, articleId }) {
   return article
 }
 
-export async function createUserArticle({ accessToken, userId, input }) {
+export async function createUserArticle({
+  accessToken,
+  userId,
+  input,
+  coverFile = null,
+}) {
   const categoryIds = await ensureCategoriesExist(
     accessToken,
     input.categoryIds,
@@ -260,26 +291,45 @@ export async function createUserArticle({ accessToken, userId, input }) {
 
   const status = input.status ?? 'draft'
 
-  const articleData = {
-    author_id: userId,
-    title: input.title,
-    slug,
-    excerpt: input.excerpt ?? null,
-    content: input.content ?? '',
-    language: input.language ?? 'es',
-    status,
-    published_at: resolveCreatePublishedAt(status, input.publishedAt),
-  }
-
-  const article = await createArticle(accessToken, articleData)
+  let uploadedCover = null
+  let article = null
 
   try {
-    await addArticleCategories(accessToken, article.id, categoryIds)
-  } catch (error) {
+    if (coverFile) {
+      uploadedCover = await uploadArticleCover({
+        userId,
+        file: coverFile,
+      })
+    }
+
+    const articleData = {
+      author_id: userId,
+      title: input.title,
+      slug,
+      excerpt: input.excerpt ?? null,
+      content: input.content ?? '',
+      cover_image_url: uploadedCover?.publicUrl ?? null,
+      language: input.language ?? 'es',
+      status,
+      published_at: resolveCreatePublishedAt(status, input.publishedAt),
+    }
+
+    article = await createArticle(accessToken, articleData)
+
     try {
-      await deleteArticleById(accessToken, article.id, userId)
-    } catch {
-      // Preserve the original error.
+      await addArticleCategories(accessToken, article.id, categoryIds)
+    } catch (error) {
+      try {
+        await deleteArticleById(accessToken, article.id, userId)
+      } catch {
+        // Preserve the original error.
+      }
+
+      throw error
+    }
+  } catch (error) {
+    if (uploadedCover) {
+      await safelyDeleteUploadedCover(uploadedCover.path)
     }
 
     throw error
@@ -297,6 +347,7 @@ export async function updateUserArticle({
   userId,
   articleId,
   input,
+  coverFile = null,
 }) {
   const currentArticle = await getOwnArticle({
     accessToken,
@@ -343,29 +394,69 @@ export async function updateUserArticle({
     articlePatch.published_at = resolveUpdatePublishedAt(currentArticle, input)
   }
 
-  if (Object.keys(articlePatch).length > 0) {
-    await updateArticleById(accessToken, articleId, userId, articlePatch)
-  }
+  let uploadedCover = null
+  let coverWasPersisted = false
 
-  if (categoryIds !== null) {
-    const previousCategoryIds = await getArticleCategoryIds(
-      accessToken,
-      articleId,
-    )
+  try {
+    if (coverFile) {
+      uploadedCover = await uploadArticleCover({
+        userId,
+        file: coverFile,
+      })
 
-    await removeArticleCategories(accessToken, articleId)
+      articlePatch.cover_image_url = uploadedCover.publicUrl
+    }
 
-    try {
-      await addArticleCategories(accessToken, articleId, categoryIds)
-    } catch (error) {
+    if (Object.keys(articlePatch).length > 0) {
+      await updateArticleById(accessToken, articleId, userId, articlePatch)
+
+      coverWasPersisted = Boolean(uploadedCover)
+    }
+
+    if (categoryIds !== null) {
+      const previousCategoryIds = await getArticleCategoryIds(
+        accessToken,
+        articleId,
+      )
+
+      await removeArticleCategories(accessToken, articleId)
+
       try {
-        await addArticleCategories(accessToken, articleId, previousCategoryIds)
-      } catch {
-        // Preserve the original error.
+        await addArticleCategories(accessToken, articleId, categoryIds)
+      } catch (error) {
+        try {
+          await addArticleCategories(
+            accessToken,
+            articleId,
+            previousCategoryIds,
+          )
+        } catch {
+          // Preserve the original error.
+        }
+
+        throw error
+      }
+    }
+  } catch (error) {
+    if (uploadedCover) {
+      if (coverWasPersisted) {
+        try {
+          await updateArticleById(accessToken, articleId, userId, {
+            cover_image_url: currentArticle.cover_image_url ?? null,
+          })
+        } catch {
+          // Preserve the original error.
+        }
       }
 
-      throw error
+      await safelyDeleteUploadedCover(uploadedCover.path)
     }
+
+    throw error
+  }
+
+  if (uploadedCover && currentArticle.cover_image_url) {
+    await safelyDeleteStoredCover(currentArticle.cover_image_url)
   }
 
   return getOwnArticle({
@@ -376,11 +467,15 @@ export async function updateUserArticle({
 }
 
 export async function deleteUserArticle({ accessToken, userId, articleId }) {
-  await getOwnArticle({
+  const article = await getOwnArticle({
     accessToken,
     userId,
     articleId,
   })
 
   await deleteArticleById(accessToken, articleId, userId)
+
+  if (article.cover_image_url) {
+    await safelyDeleteStoredCover(article.cover_image_url)
+  }
 }

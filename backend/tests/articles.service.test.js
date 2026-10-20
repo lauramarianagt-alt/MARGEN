@@ -14,6 +14,12 @@ const repositoryMocks = vi.hoisted(() => ({
   updateArticleById: vi.fn(),
 }))
 
+const coverMocks = vi.hoisted(() => ({
+  deleteArticleCover: vi.fn(),
+  deleteArticleCoverByPublicUrl: vi.fn(),
+  uploadArticleCover: vi.fn(),
+}))
+
 vi.mock('../src/repositories/articles.repository.js', () => repositoryMocks)
 
 vi.mock('../src/repositories/authors.repository.js', () => ({
@@ -23,6 +29,8 @@ vi.mock('../src/repositories/authors.repository.js', () => ({
 vi.mock('../src/repositories/categories.repository.js', () => ({
   findCategoryBySlug: vi.fn(),
 }))
+
+vi.mock('../src/services/article-covers.service.js', () => coverMocks)
 
 import { findPublicAuthorByUsername } from '../src/repositories/authors.repository.js'
 import { findCategoryBySlug } from '../src/repositories/categories.repository.js'
@@ -48,6 +56,7 @@ const STORED_ARTICLE = {
   slug: 'margen-article',
   excerpt: null,
   content: '',
+  cover_image_url: null,
   language: 'es',
   status: 'draft',
   published_at: null,
@@ -69,6 +78,16 @@ describe('Articles service', () => {
     repositoryMocks.findOwnedArticleById.mockResolvedValue(STORED_ARTICLE)
 
     repositoryMocks.findCategoriesByIds.mockResolvedValue([])
+
+    coverMocks.uploadArticleCover.mockResolvedValue({
+      path: `${USER_ID}/cover.webp`,
+      publicUrl:
+        'https://example.supabase.co/storage/v1/object/public/article-covers/cover.webp',
+    })
+
+    coverMocks.deleteArticleCover.mockResolvedValue(undefined)
+
+    coverMocks.deleteArticleCoverByPublicUrl.mockResolvedValue(true)
   })
 
   it('creates a draft with no publication date', async () => {
@@ -90,6 +109,7 @@ describe('Articles service', () => {
       slug: 'arbitro-moda',
       excerpt: null,
       content: '',
+      cover_image_url: null,
       language: 'es',
       status: 'draft',
       published_at: null,
