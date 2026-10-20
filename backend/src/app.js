@@ -8,8 +8,10 @@ import { requireAuth } from './middleware/require-auth.js'
 import { articlesRouter, meArticlesRouter } from './routes/articles.routes.js'
 
 import authRouter from './routes/auth.routes.js'
-import categoriesRouter from './routes/categories.routes.js'
 import { authorsRouter } from './routes/authors.routes.js'
+import categoriesRouter from './routes/categories.routes.js'
+import commentsRouter from './routes/comments.routes.js'
+import favoritesRouter from './routes/favorites.routes.js'
 
 const app = express()
 
@@ -34,6 +36,8 @@ app.use('/api/categories', categoriesRouter)
 app.use('/api/auth', authRouter)
 app.use('/api/articles', articlesRouter)
 app.use('/api/authors', authorsRouter)
+app.use('/api/favorites', favoritesRouter)
+app.use('/api/comments', commentsRouter)
 app.use('/api/me/articles', meArticlesRouter)
 
 app.get('/api/me', requireAuth, me)
