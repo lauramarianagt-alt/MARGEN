@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { getPublicArticles } from '../services/articles.service.js'
@@ -9,6 +9,7 @@ const PAGE_SIZE = 10
 
 function HomePage() {
   const { i18n, t } = useTranslation()
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const [articles, setArticles] = useState([])
 
@@ -19,14 +20,7 @@ function HomePage() {
     totalPages: 0,
   })
 
-  const [page, setPage] = useState(1)
-
-  const [searchInput, setSearchInput] = useState('')
-  const [searchTerm, setSearchTerm] = useState('')
-  const [searchValidationError, setSearchValidationError] = useState(null)
-
   const [categories, setCategories] = useState([])
-  const [activeCategory, setActiveCategory] = useState('')
   const [isCategoriesLoading, setIsCategoriesLoading] = useState(true)
   const [categoriesError, setCategoriesError] = useState(null)
   const [categoriesRetryKey, setCategoriesRetryKey] = useState(0)
@@ -34,6 +28,13 @@ function HomePage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [retryKey, setRetryKey] = useState(0)
+
+  const searchTerm = searchParams.get('search')?.trim() ?? ''
+  const activeCategory = searchParams.get('category')?.trim() ?? ''
+
+  const pageParam = Number(searchParams.get('page'))
+
+  const page = Number.isInteger(pageParam) && pageParam > 0 ? pageParam : 1
 
   const isSearchActive = searchTerm.length >= 2
   const isCategoryActive = activeCategory.length > 0
@@ -142,6 +143,14 @@ function HomePage() {
     }).format(new Date(dateValue))
   }
 
+  function updateSearchParams(update) {
+    const nextParams = new URLSearchParams(searchParams)
+
+    update(nextParams)
+
+    setSearchParams(nextParams)
+  }
+
   function handleRetry() {
     setIsLoading(true)
     setError(null)
@@ -156,55 +165,14 @@ function HomePage() {
     setCategoriesRetryKey((current) => current + 1)
   }
 
-  function handleSearchInputChange(event) {
-    setSearchInput(event.target.value)
-
-    if (searchValidationError) {
-      setSearchValidationError(null)
-    }
-  }
-
-  function handleSearchSubmit(event) {
-    event.preventDefault()
-
-    const nextSearchTerm = searchInput.trim()
-
-    if (nextSearchTerm.length === 1) {
-      setSearchValidationError(t('articles.search.minLength'))
-
-      return
-    }
-
-    setSearchValidationError(null)
-    setError(null)
-    setIsLoading(true)
-
-    setPage(1)
-
-    if (nextSearchTerm === searchTerm && page === 1) {
-      setRetryKey((current) => current + 1)
-
-      return
-    }
-
-    setSearchTerm(nextSearchTerm)
-  }
-
   function handleClearSearch() {
-    setSearchInput('')
-    setSearchValidationError(null)
-    setError(null)
     setIsLoading(true)
+    setError(null)
 
-    setPage(1)
-
-    if (searchTerm === '' && page === 1) {
-      setRetryKey((current) => current + 1)
-
-      return
-    }
-
-    setSearchTerm('')
+    updateSearchParams((nextParams) => {
+      nextParams.delete('search')
+      nextParams.delete('page')
+    })
   }
 
   function handleCategoryChange(categorySlug) {
@@ -212,24 +180,44 @@ function HomePage() {
       return
     }
 
-    setActiveCategory(categorySlug)
-    setPage(1)
-    setError(null)
     setIsLoading(true)
+    setError(null)
+
+    updateSearchParams((nextParams) => {
+      if (categorySlug) {
+        nextParams.set('category', categorySlug)
+      } else {
+        nextParams.delete('category')
+      }
+
+      nextParams.delete('page')
+    })
   }
 
   function handlePreviousPage() {
     setIsLoading(true)
     setError(null)
 
-    setPage((current) => Math.max(1, current - 1))
+    const previousPage = Math.max(1, page - 1)
+
+    updateSearchParams((nextParams) => {
+      if (previousPage === 1) {
+        nextParams.delete('page')
+      } else {
+        nextParams.set('page', String(previousPage))
+      }
+    })
   }
 
   function handleNextPage() {
     setIsLoading(true)
     setError(null)
 
-    setPage((current) => Math.min(pagination.totalPages, current + 1))
+    const nextPage = Math.min(pagination.totalPages, page + 1)
+
+    updateSearchParams((nextParams) => {
+      nextParams.set('page', String(nextPage))
+    })
   }
 
   return (
@@ -240,49 +228,6 @@ function HomePage() {
         <h1>{t('articles.public.heroTitle')}</h1>
 
         <p className="public-home__intro">{t('articles.public.heroIntro')}</p>
-
-        <form
-          className="public-search"
-          role="search"
-          onSubmit={handleSearchSubmit}
-        >
-          <label className="public-search__label" htmlFor="article-search">
-            {t('articles.search.label')}
-          </label>
-
-          <div className="public-search__controls">
-            <input
-              id="article-search"
-              name="search"
-              type="search"
-              value={searchInput}
-              onChange={handleSearchInputChange}
-              placeholder={t('articles.search.placeholder')}
-              maxLength={100}
-              aria-describedby={
-                searchValidationError ? 'article-search-error' : undefined
-              }
-            />
-
-            <button type="submit">{t('articles.search.submit')}</button>
-
-            {isSearchActive && (
-              <button type="button" onClick={handleClearSearch}>
-                {t('articles.search.clear')}
-              </button>
-            )}
-          </div>
-
-          {searchValidationError && (
-            <p
-              id="article-search-error"
-              className="auth-message auth-message--error"
-              role="alert"
-            >
-              {searchValidationError}
-            </p>
-          )}
-        </form>
 
         <section
           className="public-category-filter"
@@ -370,12 +315,22 @@ function HomePage() {
             </h2>
 
             {isSearchActive && (
-              <p>
-                {t('articles.search.resultCount', {
-                  count: pagination.total,
-                  search: searchTerm,
-                })}
-              </p>
+              <>
+                <p>
+                  {t('articles.search.resultCount', {
+                    count: pagination.total,
+                    search: searchTerm,
+                  })}
+                </p>
+
+                <button
+                  className="navigation-button"
+                  type="button"
+                  onClick={handleClearSearch}
+                >
+                  {t('articles.search.clear')}
+                </button>
+              </>
             )}
 
             {isCategoryActive && selectedCategory && (
