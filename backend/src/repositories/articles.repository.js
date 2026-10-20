@@ -95,6 +95,10 @@ function throwDatabaseError(error, context) {
   throw databaseError
 }
 
+function escapePostgrestSearchValue(value) {
+  return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+}
+
 export async function findCategoriesByIds(accessToken, categoryIds) {
   if (categoryIds.length === 0) {
     return []
@@ -300,6 +304,7 @@ export async function findPublicArticles({
   offset = 0,
   authorId = null,
   categoryId = null,
+  search = null,
 } = {}) {
   const now = new Date().toISOString()
 
@@ -324,6 +329,14 @@ export async function findPublicArticles({
 
   if (categoryId) {
     query = query.eq('article_categories.category_id', categoryId)
+  }
+
+  if (search) {
+    const escapedSearch = escapePostgrestSearchValue(search)
+
+    query = query.or(
+      `title.ilike."%${escapedSearch}%",excerpt.ilike."%${escapedSearch}%"`,
+    )
   }
 
   const { data, error, count } = await query.range(offset, offset + limit - 1)

@@ -209,6 +209,76 @@ describe('Articles API', () => {
     expect(articleMocks.listPublicArticles).not.toHaveBeenCalled()
   })
 
+  it('GET /api/articles filters by search term', async () => {
+    articleMocks.listPublicArticles.mockResolvedValue({
+      articles: [ARTICLE],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 1,
+        totalPages: 1,
+      },
+    })
+
+    const response = await request(app).get('/api/articles').query({
+      search: 'fashion',
+    })
+
+    expect(response.status).toBe(200)
+
+    expect(response.body).toEqual({
+      articles: [ARTICLE],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 1,
+        totalPages: 1,
+      },
+    })
+
+    expect(articleMocks.listPublicArticles).toHaveBeenCalledWith({
+      page: 1,
+      limit: 10,
+      search: 'fashion',
+    })
+  })
+
+  it('GET /api/articles supports multi-word searches', async () => {
+    articleMocks.listPublicArticles.mockResolvedValue({
+      articles: [ARTICLE],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 1,
+        totalPages: 1,
+      },
+    })
+
+    const response = await request(app).get('/api/articles').query({
+      search: 'visual culture',
+    })
+
+    expect(response.status).toBe(200)
+
+    expect(articleMocks.listPublicArticles).toHaveBeenCalledWith({
+      page: 1,
+      limit: 10,
+      search: 'visual culture',
+    })
+  })
+
+  it('GET /api/articles validates the search filter', async () => {
+    const response = await request(app).get('/api/articles').query({
+      search: 'a',
+    })
+
+    expect(response.status).toBe(400)
+
+    expect(response.body.error).toBe('Invalid request data')
+
+    expect(articleMocks.listPublicArticles).not.toHaveBeenCalled()
+  })
+
   it('GET /api/articles rejects an invalid page', async () => {
     const response = await request(app).get('/api/articles?page=0').expect(400)
 

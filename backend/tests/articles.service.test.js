@@ -125,6 +125,7 @@ describe('Articles service', () => {
       offset: 0,
       authorId: 'author-1',
       categoryId: null,
+      search: null,
     })
 
     expect(result).toEqual({
@@ -197,6 +198,7 @@ describe('Articles service', () => {
       offset: 0,
       authorId: null,
       categoryId: CATEGORY_ID,
+      search: null,
     })
 
     expect(result).toEqual({
@@ -272,6 +274,7 @@ describe('Articles service', () => {
       offset: 0,
       authorId: 'author-1',
       categoryId: CATEGORY_ID,
+      search: null,
     })
 
     expect(result).toEqual({
@@ -279,6 +282,154 @@ describe('Articles service', () => {
       pagination: {
         page: 1,
         limit: 10,
+        total: 0,
+        totalPages: 0,
+      },
+    })
+  })
+
+  it('filters public articles by search term', async () => {
+    repositoryMocks.findPublicArticles.mockResolvedValue({
+      articles: [
+        {
+          id: 'article-1',
+          title: 'Independent fashion',
+        },
+      ],
+      count: 1,
+    })
+
+    const result = await listPublicArticles({
+      page: 1,
+      limit: 10,
+      search: 'fashion',
+    })
+
+    expect(repositoryMocks.findPublicArticles).toHaveBeenCalledWith({
+      limit: 10,
+      offset: 0,
+      authorId: null,
+      categoryId: null,
+      search: 'fashion',
+    })
+
+    expect(result).toEqual({
+      articles: [
+        {
+          id: 'article-1',
+          title: 'Independent fashion',
+        },
+      ],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 1,
+        totalPages: 1,
+      },
+    })
+  })
+
+  it('combines search and author filters for public articles', async () => {
+    findPublicAuthorByUsername.mockResolvedValue({
+      id: 'author-1',
+      username: 'Lau',
+    })
+
+    repositoryMocks.findPublicArticles.mockResolvedValue({
+      articles: [],
+      count: 0,
+    })
+
+    await listPublicArticles({
+      page: 1,
+      limit: 10,
+      author: 'Lau',
+      search: 'fashion',
+    })
+
+    expect(findPublicAuthorByUsername).toHaveBeenCalledWith('Lau')
+
+    expect(repositoryMocks.findPublicArticles).toHaveBeenCalledWith({
+      limit: 10,
+      offset: 0,
+      authorId: 'author-1',
+      categoryId: null,
+      search: 'fashion',
+    })
+  })
+
+  it('combines search and category filters for public articles', async () => {
+    findCategoryBySlug.mockResolvedValue({
+      id: CATEGORY_ID,
+      name: 'Visual Culture',
+      slug: 'visual-culture',
+    })
+
+    repositoryMocks.findPublicArticles.mockResolvedValue({
+      articles: [],
+      count: 0,
+    })
+
+    await listPublicArticles({
+      page: 1,
+      limit: 10,
+      category: 'visual-culture',
+      search: 'fashion',
+    })
+
+    expect(findCategoryBySlug).toHaveBeenCalledWith('visual-culture')
+
+    expect(repositoryMocks.findPublicArticles).toHaveBeenCalledWith({
+      limit: 10,
+      offset: 0,
+      authorId: null,
+      categoryId: CATEGORY_ID,
+      search: 'fashion',
+    })
+  })
+
+  it('combines author, category and search filters for public articles', async () => {
+    findPublicAuthorByUsername.mockResolvedValue({
+      id: 'author-1',
+      username: 'Lau',
+    })
+
+    findCategoryBySlug.mockResolvedValue({
+      id: CATEGORY_ID,
+      name: 'Visual Culture',
+      slug: 'visual-culture',
+    })
+
+    repositoryMocks.findPublicArticles.mockResolvedValue({
+      articles: [],
+      count: 0,
+    })
+
+    const result = await listPublicArticles({
+      page: 2,
+      limit: 5,
+      author: 'Lau',
+      category: 'visual-culture',
+      search: 'fashion',
+    })
+
+    expect(findPublicAuthorByUsername).toHaveBeenCalledWith('Lau')
+
+    expect(findCategoryBySlug).toHaveBeenCalledWith('visual-culture')
+
+    expect(repositoryMocks.findPublicArticles).toHaveBeenCalledWith({
+      limit: 5,
+      offset: 5,
+      authorId: 'author-1',
+      categoryId: CATEGORY_ID,
+      search: 'fashion',
+    })
+
+    expect(result).toEqual({
+      articles: [],
+      pagination: {
+        page: 2,
+        limit: 5,
         total: 0,
         totalPages: 0,
       },
@@ -429,6 +580,7 @@ describe('Articles service', () => {
       offset: 10,
       authorId: null,
       categoryId: null,
+      search: null,
     })
 
     expect(result.pagination).toEqual({

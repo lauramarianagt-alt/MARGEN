@@ -19,6 +19,8 @@ const categorySlugSchema = z
   .max(100)
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Invalid category slug')
 
+const articleSearchSchema = z.string().trim().min(2).max(100)
+
 export const createArticleSchema = z
   .object({
     title: z.string().trim().min(1, 'Title is required').max(200),
@@ -82,4 +84,5 @@ export const paginationQuerySchema = z.object({
 export const publicArticlesQuerySchema = paginationQuerySchema.extend({
   author: z.string().trim().min(3).max(30).optional(),
   category: categorySlugSchema.optional(),
+  search: articleSearchSchema.optional(),
 })

@@ -149,7 +149,13 @@ function buildEmptyPublicArticleList(page, limit) {
   }
 }
 
-export async function listPublicArticles({ page, limit, author, category }) {
+export async function listPublicArticles({
+  page,
+  limit,
+  author,
+  category,
+  search,
+}) {
   const offset = (page - 1) * limit
 
   let authorId = null
@@ -180,6 +186,7 @@ export async function listPublicArticles({ page, limit, author, category }) {
     offset,
     authorId,
     categoryId,
+    search: search ?? null,
   })
 
   return {
