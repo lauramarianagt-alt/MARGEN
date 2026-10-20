@@ -28,6 +28,35 @@ const ARTICLE_LIST_SELECT = `
   )
 `
 
+const ARTICLE_LIST_CATEGORY_FILTER_SELECT = `
+  id,
+  author_id,
+  title,
+  slug,
+  excerpt,
+  cover_image_url,
+  language,
+  status,
+  published_at,
+  created_at,
+  updated_at,
+  author:profiles!articles_author_id_fkey (
+    id,
+    username,
+    name,
+    surname,
+    avatar_url
+  ),
+  article_categories!inner (
+    category_id,
+    category:categories (
+      id,
+      name,
+      slug
+    )
+  )
+`
+
 const ARTICLE_DETAIL_SELECT = `
   id,
   author_id,
@@ -270,12 +299,17 @@ export async function findPublicArticles({
   limit = 10,
   offset = 0,
   authorId = null,
+  categoryId = null,
 } = {}) {
   const now = new Date().toISOString()
 
+  const select = categoryId
+    ? ARTICLE_LIST_CATEGORY_FILTER_SELECT
+    : ARTICLE_LIST_SELECT
+
   let query = supabasePublic
     .from('articles')
-    .select(ARTICLE_LIST_SELECT, {
+    .select(select, {
       count: 'exact',
     })
     .eq('status', 'published')
@@ -286,6 +320,10 @@ export async function findPublicArticles({
 
   if (authorId) {
     query = query.eq('author_id', authorId)
+  }
+
+  if (categoryId) {
+    query = query.eq('article_categories.category_id', categoryId)
   }
 
   const { data, error, count } = await query.range(offset, offset + limit - 1)

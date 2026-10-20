@@ -3,9 +3,9 @@ import {
   createUserArticle,
   deleteUserArticle,
   getOwnArticle as getOwnArticleService,
+  getPublicArticle as getPublicArticleService,
   listOwnArticles as listOwnArticlesService,
   listPublicArticles as listPublicArticlesService,
-  getPublicArticle as getPublicArticleService,
   updateUserArticle,
 } from '../services/articles.service.js'
 
@@ -13,8 +13,8 @@ import {
   articleIdParamSchema,
   createArticleSchema,
   paginationQuerySchema,
-  publicArticlesQuerySchema,
   publicArticleParamsSchema,
+  publicArticlesQuerySchema,
   updateArticleSchema,
 } from '../validators/articles.schemas.js'
 

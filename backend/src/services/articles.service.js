@@ -14,6 +14,7 @@ import {
 } from '../repositories/articles.repository.js'
 
 import { findPublicAuthorByUsername } from '../repositories/authors.repository.js'
+import { findCategoryBySlug } from '../repositories/categories.repository.js'
 
 export class ArticleServiceError extends Error {
   constructor(status, message) {
@@ -136,33 +137,49 @@ function buildPagination(page = 1, limit = 10) {
   }
 }
 
-export async function listPublicArticles({ page, limit, author }) {
+function buildEmptyPublicArticleList(page, limit) {
+  return {
+    articles: [],
+    pagination: {
+      page,
+      limit,
+      total: 0,
+      totalPages: 0,
+    },
+  }
+}
+
+export async function listPublicArticles({ page, limit, author, category }) {
   const offset = (page - 1) * limit
 
   let authorId = null
+  let categoryId = null
 
   if (author) {
     const publicAuthor = await findPublicAuthorByUsername(author)
 
     if (!publicAuthor) {
-      return {
-        articles: [],
-        pagination: {
-          page,
-          limit,
-          total: 0,
-          totalPages: 0,
-        },
-      }
+      return buildEmptyPublicArticleList(page, limit)
     }
 
     authorId = publicAuthor.id
+  }
+
+  if (category) {
+    const publicCategory = await findCategoryBySlug(category)
+
+    if (!publicCategory) {
+      return buildEmptyPublicArticleList(page, limit)
+    }
+
+    categoryId = publicCategory.id
   }
 
   const { articles, count } = await findPublicArticles({
     limit,
     offset,
     authorId,
+    categoryId,
   })
 
   return {
@@ -175,6 +192,7 @@ export async function listPublicArticles({ page, limit, author }) {
     },
   }
 }
+
 export async function getPublicArticle({ username, slug }) {
   const author = await findPublicAuthorByUsername(username)
 

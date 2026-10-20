@@ -12,3 +12,17 @@ export async function findAllCategories() {
 
   return data
 }
+
+export async function findCategoryBySlug(slug) {
+  const { data, error } = await supabasePublic
+    .from('categories')
+    .select('id, name, slug, description')
+    .eq('slug', slug)
+    .maybeSingle()
+
+  if (error) {
+    throw new Error(`Unable to fetch category: ${error.message}`)
+  }
+
+  return data
+}

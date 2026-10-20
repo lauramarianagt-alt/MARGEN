@@ -12,6 +12,13 @@ const publishedAtSchema = z.string().datetime({
 
 const categoryIdsSchema = z.array(z.string().uuid()).max(10)
 
+const categorySlugSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(100)
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Invalid category slug')
+
 export const createArticleSchema = z
   .object({
     title: z.string().trim().min(1, 'Title is required').max(200),
@@ -74,4 +81,5 @@ export const paginationQuerySchema = z.object({
 
 export const publicArticlesQuerySchema = paginationQuerySchema.extend({
   author: z.string().trim().min(3).max(30).optional(),
+  category: categorySlugSchema.optional(),
 })

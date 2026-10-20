@@ -20,7 +20,12 @@ vi.mock('../src/repositories/authors.repository.js', () => ({
   findPublicAuthorByUsername: vi.fn(),
 }))
 
+vi.mock('../src/repositories/categories.repository.js', () => ({
+  findCategoryBySlug: vi.fn(),
+}))
+
 import { findPublicAuthorByUsername } from '../src/repositories/authors.repository.js'
+import { findCategoryBySlug } from '../src/repositories/categories.repository.js'
 import {
   ArticleServiceError,
   createUserArticle,
@@ -119,6 +124,7 @@ describe('Articles service', () => {
       limit: 10,
       offset: 0,
       authorId: 'author-1',
+      categoryId: null,
     })
 
     expect(result).toEqual({
@@ -149,6 +155,124 @@ describe('Articles service', () => {
     expect(findPublicAuthorByUsername).toHaveBeenCalledWith('unknown-user')
 
     expect(repositoryMocks.findPublicArticles).not.toHaveBeenCalled()
+
+    expect(result).toEqual({
+      articles: [],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 0,
+      },
+    })
+  })
+
+  it('filters public articles by category slug', async () => {
+    findCategoryBySlug.mockResolvedValue({
+      id: CATEGORY_ID,
+      name: 'Visual Culture',
+      slug: 'visual-culture',
+    })
+
+    repositoryMocks.findPublicArticles.mockResolvedValue({
+      articles: [
+        {
+          id: 'article-1',
+          title: 'Fashion deserves more than a feed',
+        },
+      ],
+      count: 1,
+    })
+
+    const result = await listPublicArticles({
+      page: 1,
+      limit: 10,
+      category: 'visual-culture',
+    })
+
+    expect(findCategoryBySlug).toHaveBeenCalledWith('visual-culture')
+
+    expect(repositoryMocks.findPublicArticles).toHaveBeenCalledWith({
+      limit: 10,
+      offset: 0,
+      authorId: null,
+      categoryId: CATEGORY_ID,
+    })
+
+    expect(result).toEqual({
+      articles: [
+        {
+          id: 'article-1',
+          title: 'Fashion deserves more than a feed',
+        },
+      ],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 1,
+        totalPages: 1,
+      },
+    })
+  })
+
+  it('returns an empty public list when the category does not exist', async () => {
+    findCategoryBySlug.mockResolvedValue(null)
+
+    const result = await listPublicArticles({
+      page: 1,
+      limit: 10,
+      category: 'unknown-category',
+    })
+
+    expect(findCategoryBySlug).toHaveBeenCalledWith('unknown-category')
+
+    expect(repositoryMocks.findPublicArticles).not.toHaveBeenCalled()
+
+    expect(result).toEqual({
+      articles: [],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 0,
+      },
+    })
+  })
+
+  it('combines author and category filters for public articles', async () => {
+    findPublicAuthorByUsername.mockResolvedValue({
+      id: 'author-1',
+      username: 'Lau',
+    })
+
+    findCategoryBySlug.mockResolvedValue({
+      id: CATEGORY_ID,
+      name: 'Visual Culture',
+      slug: 'visual-culture',
+    })
+
+    repositoryMocks.findPublicArticles.mockResolvedValue({
+      articles: [],
+      count: 0,
+    })
+
+    const result = await listPublicArticles({
+      page: 1,
+      limit: 10,
+      author: 'Lau',
+      category: 'visual-culture',
+    })
+
+    expect(findPublicAuthorByUsername).toHaveBeenCalledWith('Lau')
+
+    expect(findCategoryBySlug).toHaveBeenCalledWith('visual-culture')
+
+    expect(repositoryMocks.findPublicArticles).toHaveBeenCalledWith({
+      limit: 10,
+      offset: 0,
+      authorId: 'author-1',
+      categoryId: CATEGORY_ID,
+    })
 
     expect(result).toEqual({
       articles: [],
@@ -304,6 +428,7 @@ describe('Articles service', () => {
       limit: 10,
       offset: 10,
       authorId: null,
+      categoryId: null,
     })
 
     expect(result.pagination).toEqual({
