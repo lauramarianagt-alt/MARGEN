@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { getPublicArticles } from '../services/articles.service.js'
+import { getCategories } from '../services/categories.service.js'
 
 const PAGE_SIZE = 10
 
@@ -24,11 +25,53 @@ function HomePage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [searchValidationError, setSearchValidationError] = useState(null)
 
+  const [categories, setCategories] = useState([])
+  const [activeCategory, setActiveCategory] = useState('')
+  const [isCategoriesLoading, setIsCategoriesLoading] = useState(true)
+  const [categoriesError, setCategoriesError] = useState(null)
+  const [categoriesRetryKey, setCategoriesRetryKey] = useState(0)
+
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [retryKey, setRetryKey] = useState(0)
 
   const isSearchActive = searchTerm.length >= 2
+  const isCategoryActive = activeCategory.length > 0
+
+  const selectedCategory =
+    categories.find((category) => category.slug === activeCategory) ?? null
+
+  useEffect(() => {
+    let cancelled = false
+
+    getCategories()
+      .then((response) => {
+        if (cancelled) {
+          return
+        }
+
+        setCategories(response)
+        setCategoriesError(null)
+      })
+      .catch((loadError) => {
+        if (cancelled) {
+          return
+        }
+
+        console.error('Unable to load public categories:', loadError)
+
+        setCategoriesError(t('articles.filters.loadError'))
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setIsCategoriesLoading(false)
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [categoriesRetryKey, t])
 
   useEffect(() => {
     let cancelled = false
@@ -37,6 +80,7 @@ function HomePage() {
       page,
       limit: PAGE_SIZE,
       search: isSearchActive ? searchTerm : null,
+      category: isCategoryActive ? activeCategory : null,
     })
       .then((response) => {
         if (cancelled) {
@@ -74,7 +118,15 @@ function HomePage() {
     return () => {
       cancelled = true
     }
-  }, [page, searchTerm, isSearchActive, retryKey, t])
+  }, [
+    page,
+    searchTerm,
+    isSearchActive,
+    activeCategory,
+    isCategoryActive,
+    retryKey,
+    t,
+  ])
 
   function formatDate(dateValue) {
     if (!dateValue) {
@@ -95,6 +147,13 @@ function HomePage() {
     setError(null)
 
     setRetryKey((current) => current + 1)
+  }
+
+  function handleCategoriesRetry() {
+    setIsCategoriesLoading(true)
+    setCategoriesError(null)
+
+    setCategoriesRetryKey((current) => current + 1)
   }
 
   function handleSearchInputChange(event) {
@@ -146,6 +205,17 @@ function HomePage() {
     }
 
     setSearchTerm('')
+  }
+
+  function handleCategoryChange(categorySlug) {
+    if (categorySlug === activeCategory) {
+      return
+    }
+
+    setActiveCategory(categorySlug)
+    setPage(1)
+    setError(null)
+    setIsLoading(true)
   }
 
   function handlePreviousPage() {
@@ -213,6 +283,78 @@ function HomePage() {
             </p>
           )}
         </form>
+
+        <section
+          className="public-category-filter"
+          aria-labelledby="category-filter-title"
+        >
+          <h2
+            id="category-filter-title"
+            className="public-category-filter__title"
+          >
+            {t('articles.filters.label')}
+          </h2>
+
+          {isCategoriesLoading && <p>{t('articles.filters.loading')}</p>}
+
+          {!isCategoriesLoading && categoriesError && (
+            <div>
+              <p className="auth-message auth-message--error" role="alert">
+                {categoriesError}
+              </p>
+
+              <button
+                className="navigation-button"
+                type="button"
+                onClick={handleCategoriesRetry}
+              >
+                {t('common.retry')}
+              </button>
+            </div>
+          )}
+
+          {!isCategoriesLoading &&
+            !categoriesError &&
+            categories.length > 0 && (
+              <div
+                className="public-category-filter__options"
+                aria-label={t('articles.filters.label')}
+              >
+                <button
+                  className={`public-category-filter__button${
+                    !isCategoryActive
+                      ? ' public-category-filter__button--active'
+                      : ''
+                  }`}
+                  type="button"
+                  aria-pressed={!isCategoryActive}
+                  onClick={() => handleCategoryChange('')}
+                >
+                  {t('articles.filters.all')}
+                </button>
+
+                {categories.map((category) => {
+                  const isActive = activeCategory === category.slug
+
+                  return (
+                    <button
+                      className={`public-category-filter__button${
+                        isActive
+                          ? ' public-category-filter__button--active'
+                          : ''
+                      }`}
+                      type="button"
+                      key={category.id}
+                      aria-pressed={isActive}
+                      onClick={() => handleCategoryChange(category.slug)}
+                    >
+                      {category.name}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+        </section>
       </section>
 
       <section
@@ -232,6 +374,14 @@ function HomePage() {
                 {t('articles.search.resultCount', {
                   count: pagination.total,
                   search: searchTerm,
+                })}
+              </p>
+            )}
+
+            {isCategoryActive && selectedCategory && (
+              <p>
+                {t('articles.filters.active', {
+                  category: selectedCategory.name,
                 })}
               </p>
             )}
@@ -261,7 +411,9 @@ function HomePage() {
             <h3>
               {isSearchActive
                 ? t('articles.search.emptyTitle')
-                : t('articles.public.emptyTitle')}
+                : isCategoryActive
+                  ? t('articles.filters.emptyTitle')
+                  : t('articles.public.emptyTitle')}
             </h3>
 
             <p>
@@ -269,7 +421,11 @@ function HomePage() {
                 ? t('articles.search.emptyMessage', {
                     search: searchTerm,
                   })
-                : t('articles.public.emptyMessage')}
+                : isCategoryActive && selectedCategory
+                  ? t('articles.filters.emptyMessage', {
+                      category: selectedCategory.name,
+                    })
+                  : t('articles.public.emptyMessage')}
             </p>
           </div>
         )}
@@ -285,7 +441,7 @@ function HomePage() {
 
                 const authorUsername = article.author?.username
 
-                const categories =
+                const articleCategories =
                   article.article_categories
                     ?.map((relation) => relation.category)
                     .filter(Boolean) ?? []
@@ -293,9 +449,9 @@ function HomePage() {
                 return (
                   <article className="public-article-card" key={article.id}>
                     <div className="public-article-card__meta">
-                      {categories.length > 0 && (
+                      {articleCategories.length > 0 && (
                         <span>
-                          {categories.map((category, index) => (
+                          {articleCategories.map((category, index) => (
                             <span key={category.id}>
                               {index > 0 && ' · '}
 

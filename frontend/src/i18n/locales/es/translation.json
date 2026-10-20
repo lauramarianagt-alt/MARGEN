@@ -115,9 +115,19 @@
       "clear": "Limpiar",
       "minLength": "Escribe al menos 2 caracteres para buscar.",
       "results": "Resultados de búsqueda",
-      "resultCount": "{{count}} resultados para “{{search}}”",
+      "resultCount_one": "{{count}} resultado para “{{search}}”",
+      "resultCount_other": "{{count}} resultados para “{{search}}”",
       "emptyTitle": "No hemos encontrado resultados",
       "emptyMessage": "No hay artículos publicados que coincidan con “{{search}}”."
+    },
+    "filters": {
+      "label": "Explorar por categoría",
+      "loading": "Cargando categorías...",
+      "loadError": "No hemos podido cargar las categorías.",
+      "all": "Todas",
+      "active": "Categoría: {{category}}",
+      "emptyTitle": "No hay artículos en esta categoría",
+      "emptyMessage": "Todavía no hay artículos publicados en “{{category}}”."
     },
     "create": {
       "eyebrow": "Mi espacio",

@@ -115,9 +115,19 @@
       "clear": "Clear",
       "minLength": "Enter at least 2 characters to search.",
       "results": "Search results",
-      "resultCount": "{{count}} results for “{{search}}”",
+      "resultCount_one": "{{count}} result for “{{search}}”",
+      "resultCount_other": "{{count}} results for “{{search}}”",
       "emptyTitle": "No results found",
       "emptyMessage": "There are no published articles matching “{{search}}”."
+    },
+    "filters": {
+      "label": "Explore by category",
+      "loading": "Loading categories...",
+      "loadError": "We couldn't load the categories.",
+      "all": "All",
+      "active": "Category: {{category}}",
+      "emptyTitle": "No articles in this category",
+      "emptyMessage": "There are no published articles in “{{category}}” yet."
     },
     "create": {
       "eyebrow": "My space",
