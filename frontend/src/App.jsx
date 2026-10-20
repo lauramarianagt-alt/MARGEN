@@ -12,6 +12,7 @@ import LoginPage from './pages/LoginPage.jsx'
 import MyArticlesPage from './pages/MyArticlesPage.jsx'
 import PublicArticlePage from './pages/PublicArticlePage.jsx'
 import PublicAuthorPage from './pages/PublicAuthorPage.jsx'
+import PublicCategoryPage from './pages/PublicCategoryPage.jsx'
 import RegisterPage from './pages/RegisterPage.jsx'
 
 function App() {
@@ -36,6 +37,8 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
 
         <Route path="/register" element={<RegisterPage />} />
+
+        <Route path="/categories/:slug" element={<PublicCategoryPage />} />
 
         <Route path="/:username" element={<PublicAuthorPage />} />
 

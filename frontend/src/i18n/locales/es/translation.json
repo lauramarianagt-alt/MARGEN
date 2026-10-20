@@ -71,6 +71,20 @@
       "paginationLabel": "Paginación de artículos de la autora"
     }
   },
+  "categories": {
+    "public": {
+      "eyebrow": "Categoría",
+      "loading": "Cargando categoría...",
+      "loadError": "No hemos podido cargar esta categoría.",
+      "notFound": "Esta categoría no está disponible",
+      "back": "Volver a inicio",
+      "articles": "Artículos publicados",
+      "articleCount": "{{count}} artículos",
+      "emptyTitle": "Todavía no hay artículos publicados",
+      "emptyMessage": "Los artículos de esta categoría aparecerán aquí cuando sean publicados.",
+      "paginationLabel": "Paginación de artículos de la categoría"
+    }
+  },
   "articles": {
     "status": {
       "draft": "Borrador",

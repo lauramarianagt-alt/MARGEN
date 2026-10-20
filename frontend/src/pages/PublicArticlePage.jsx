@@ -140,7 +140,15 @@ function PublicArticlePage() {
         <header className="public-article__header">
           {categories.length > 0 && (
             <p className="public-article__categories">
-              {categories.map((category) => category.name).join(' · ')}
+              {categories.map((category, index) => (
+                <span key={category.id}>
+                  {index > 0 && ' · '}
+
+                  <Link to={`/categories/${category.slug}`}>
+                    {category.name}
+                  </Link>
+                </span>
+              ))}
             </p>
           )}
 

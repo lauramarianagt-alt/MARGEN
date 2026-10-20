@@ -9,3 +9,9 @@ export async function getCategories() {
 
   return response.categories ?? []
 }
+
+export async function getPublicCategory(slug) {
+  const response = await apiFetch(`/categories/${encodeURIComponent(slug)}`)
+
+  return response.category
+}

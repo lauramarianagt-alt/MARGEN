@@ -71,6 +71,20 @@
       "paginationLabel": "Author articles pagination"
     }
   },
+  "categories": {
+    "public": {
+      "eyebrow": "Category",
+      "loading": "Loading category...",
+      "loadError": "We couldn't load this category.",
+      "notFound": "This category is not available",
+      "back": "Back to home",
+      "articles": "Published articles",
+      "articleCount": "{{count}} articles",
+      "emptyTitle": "No published articles yet",
+      "emptyMessage": "Articles in this category will appear here when they are published.",
+      "paginationLabel": "Category articles pagination"
+    }
+  },
   "articles": {
     "status": {
       "draft": "Draft",

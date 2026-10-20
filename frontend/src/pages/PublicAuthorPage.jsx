@@ -221,9 +221,18 @@ function PublicAuthorPage() {
                     <div className="public-article-card__meta">
                       {categories.length > 0 && (
                         <span>
-                          {categories
-                            .map((category) => category.name)
-                            .join(' · ')}
+                          {categories.map((category, index) => (
+                            <span key={category.id}>
+                              {index > 0 && ' · '}
+
+                              <Link
+                                className="public-article-card__category"
+                                to={`/categories/${category.slug}`}
+                              >
+                                {category.name}
+                              </Link>
+                            </span>
+                          ))}
                         </span>
                       )}
 
