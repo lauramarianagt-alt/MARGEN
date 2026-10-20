@@ -446,8 +446,32 @@ function HomePage() {
                     ?.map((relation) => relation.category)
                     .filter(Boolean) ?? []
 
+                const articlePath = authorUsername
+                  ? `/${authorUsername}/${article.slug}`
+                  : null
+
                 return (
                   <article className="public-article-card" key={article.id}>
+                    {article.cover_image_url && (
+                      <div className="public-article-card__cover">
+                        {articlePath ? (
+                          <Link to={articlePath}>
+                            <img
+                              src={article.cover_image_url}
+                              alt={article.title}
+                              loading="lazy"
+                            />
+                          </Link>
+                        ) : (
+                          <img
+                            src={article.cover_image_url}
+                            alt={article.title}
+                            loading="lazy"
+                          />
+                        )}
+                      </div>
+                    )}
+
                     <div className="public-article-card__meta">
                       {articleCategories.length > 0 && (
                         <span>
@@ -474,10 +498,8 @@ function HomePage() {
                     </div>
 
                     <h3>
-                      {authorUsername ? (
-                        <Link to={`/${authorUsername}/${article.slug}`}>
-                          {article.title}
-                        </Link>
+                      {articlePath ? (
+                        <Link to={articlePath}>{article.title}</Link>
                       ) : (
                         article.title
                       )}
@@ -507,10 +529,10 @@ function HomePage() {
                         </span>
                       )}
 
-                      {authorUsername && (
+                      {articlePath && (
                         <Link
                           className="public-article-card__read"
-                          to={`/${authorUsername}/${article.slug}`}
+                          to={articlePath}
                         >
                           {t('articles.public.read')}
                         </Link>

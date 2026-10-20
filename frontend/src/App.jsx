@@ -1,11 +1,10 @@
 import { useEffect } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 
 import LegacyArticleRedirect from './components/LegacyArticleRedirect.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import RootLayout from './layouts/RootLayout.jsx'
 import CreateArticlePage from './pages/CreateArticlePage.jsx'
-import DashboardPage from './pages/DashboardPage.jsx'
 import EditArticlePage from './pages/EditArticlePage.jsx'
 import HomePage from './pages/HomePage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
@@ -50,9 +49,12 @@ function App() {
         />
 
         <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/dashboard" element={<MyArticlesPage />} />
 
-          <Route path="/dashboard/articles" element={<MyArticlesPage />} />
+          <Route
+            path="/dashboard/articles"
+            element={<Navigate to="/dashboard" replace />}
+          />
 
           <Route
             path="/dashboard/articles/new"

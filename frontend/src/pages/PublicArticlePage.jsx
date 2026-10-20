@@ -186,6 +186,12 @@ function PublicArticlePage() {
           </div>
         </header>
 
+        {article.cover_image_url && (
+          <div className="public-article__cover">
+            <img src={article.cover_image_url} alt={article.title} />
+          </div>
+        )}
+
         <div className="public-article__content">{article.content}</div>
 
         <footer className="public-article__footer">

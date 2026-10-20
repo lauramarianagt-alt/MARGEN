@@ -216,8 +216,22 @@ function PublicAuthorPage() {
                 const articleUsername =
                   article.author?.username ?? author.username
 
+                const articlePath = `/${articleUsername}/${article.slug}`
+
                 return (
                   <article className="public-article-card" key={article.id}>
+                    {article.cover_image_url && (
+                      <div className="public-article-card__cover">
+                        <Link to={articlePath}>
+                          <img
+                            src={article.cover_image_url}
+                            alt={article.title}
+                            loading="lazy"
+                          />
+                        </Link>
+                      </div>
+                    )}
+
                     <div className="public-article-card__meta">
                       {categories.length > 0 && (
                         <span>
@@ -244,9 +258,7 @@ function PublicAuthorPage() {
                     </div>
 
                     <h3>
-                      <Link to={`/${articleUsername}/${article.slug}`}>
-                        {article.title}
-                      </Link>
+                      <Link to={articlePath}>{article.title}</Link>
                     </h3>
 
                     {article.excerpt && (
@@ -264,7 +276,7 @@ function PublicAuthorPage() {
 
                       <Link
                         className="public-article-card__read"
-                        to={`/${articleUsername}/${article.slug}`}
+                        to={articlePath}
                       >
                         {t('articles.public.read')}
                       </Link>

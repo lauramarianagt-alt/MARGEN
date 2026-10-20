@@ -69,6 +69,7 @@ function EditArticlePage() {
           },
           initialStatus: article.status,
           initialPublicationMode: publicationMode,
+          initialCoverImageUrl: article.cover_image_url ?? null,
         })
 
         setLoadError(null)
@@ -107,8 +108,8 @@ function EditArticlePage() {
     setRetryKey((current) => current + 1)
   }
 
-  async function handleUpdate(article) {
-    return updateArticle(articleId, article)
+  async function handleUpdate(article, coverFile) {
+    return updateArticle(articleId, article, coverFile)
   }
 
   function handleSuccess() {
@@ -169,6 +170,7 @@ function EditArticlePage() {
         initialValues={editorState.initialValues}
         initialPublicationMode={editorState.initialPublicationMode}
         initialStatus={editorState.initialStatus}
+        initialCoverImageUrl={editorState.initialCoverImageUrl}
         mode="edit"
         onSubmit={handleUpdate}
         onSuccess={handleSuccess}

@@ -241,8 +241,32 @@ function PublicCategoryPage() {
                   article.author?.username ||
                   ''
 
+                const articlePath = articleUsername
+                  ? `/${articleUsername}/${article.slug}`
+                  : null
+
                 return (
                   <article className="public-article-card" key={article.id}>
+                    {article.cover_image_url && (
+                      <div className="public-article-card__cover">
+                        {articlePath ? (
+                          <Link to={articlePath}>
+                            <img
+                              src={article.cover_image_url}
+                              alt={article.title}
+                              loading="lazy"
+                            />
+                          </Link>
+                        ) : (
+                          <img
+                            src={article.cover_image_url}
+                            alt={article.title}
+                            loading="lazy"
+                          />
+                        )}
+                      </div>
+                    )}
+
                     <div className="public-article-card__meta">
                       {categories.length > 0 && (
                         <span>
@@ -260,10 +284,8 @@ function PublicCategoryPage() {
                     </div>
 
                     <h3>
-                      {articleUsername ? (
-                        <Link to={`/${articleUsername}/${article.slug}`}>
-                          {article.title}
-                        </Link>
+                      {articlePath ? (
+                        <Link to={articlePath}>{article.title}</Link>
                       ) : (
                         article.title
                       )}
@@ -290,10 +312,10 @@ function PublicCategoryPage() {
                         </span>
                       )}
 
-                      {articleUsername && (
+                      {articlePath && (
                         <Link
                           className="public-article-card__read"
-                          to={`/${articleUsername}/${article.slug}`}
+                          to={articlePath}
                         >
                           {t('articles.public.read')}
                         </Link>

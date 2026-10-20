@@ -19,8 +19,8 @@ function CreateArticlePage() {
     publicationDate: '',
   }
 
-  async function handleCreate(article) {
-    return createArticle(article)
+  async function handleCreate(article, coverFile) {
+    return createArticle(article, coverFile)
   }
 
   function handleSuccess() {

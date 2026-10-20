@@ -4,12 +4,14 @@ import { useTranslation } from 'react-i18next'
 
 import ArticleStatus from '../components/ArticleStatus.jsx'
 import ConfirmDialog from '../components/ConfirmDialog.jsx'
+import { useAuth } from '../hooks/useAuth.js'
 import { deleteArticle, getMyArticles } from '../services/articles.service.js'
 
 const PAGE_SIZE = 10
 
 function MyArticlesPage() {
   const { i18n, t } = useTranslation()
+  const { profile } = useAuth()
 
   const [articles, setArticles] = useState([])
 
@@ -27,9 +29,7 @@ function MyArticlesPage() {
   const [error, setError] = useState(null)
 
   const [articleToDelete, setArticleToDelete] = useState(null)
-
   const [isDeleting, setIsDeleting] = useState(false)
-
   const [deleteError, setDeleteError] = useState(null)
 
   useEffect(() => {
@@ -140,7 +140,6 @@ function MyArticlesPage() {
       const deletingLastArticleOnPage = articles.length === 1 && page > 1
 
       setArticleToDelete(null)
-
       setIsLoading(true)
 
       if (deletingLastArticleOnPage) {
@@ -157,40 +156,28 @@ function MyArticlesPage() {
     }
   }
 
-  if (isLoading) {
-    return (
-      <main className="page articles-page">
-        <p>{t('articles.my.loading')}</p>
-      </main>
-    )
-  }
-
-  if (error) {
-    return (
-      <main className="page articles-page">
-        <p className="auth-message auth-message--error" role="alert">
-          {error}
-        </p>
-
-        <button
-          className="navigation-button"
-          type="button"
-          onClick={handleRetry}
-        >
-          {t('common.retry')}
-        </button>
-      </main>
-    )
-  }
-
   return (
     <>
-      <main className="page articles-page">
+      <main className="page dashboard-page articles-page">
+        <section className="dashboard-overview">
+          <p className="page-eyebrow">{t('dashboard.title')}</p>
+
+          <h1>
+            {t('dashboard.welcome', {
+              name: profile.name,
+            })}
+          </h1>
+
+          <p className="dashboard-username">
+            {t('dashboard.username', {
+              username: profile.username,
+            })}
+          </p>
+        </section>
+
         <header className="articles-page__header">
           <div>
-            <p className="page-eyebrow">{t('dashboard.title')}</p>
-
-            <h1>{t('articles.my.title')}</h1>
+            <h2>{t('articles.my.title')}</h2>
           </div>
 
           <div className="articles-page__actions">
@@ -206,13 +193,33 @@ function MyArticlesPage() {
           </div>
         </header>
 
-        {articles.length === 0 ? (
+        {isLoading && <p>{t('articles.my.loading')}</p>}
+
+        {!isLoading && error && (
+          <div>
+            <p className="auth-message auth-message--error" role="alert">
+              {error}
+            </p>
+
+            <button
+              className="navigation-button"
+              type="button"
+              onClick={handleRetry}
+            >
+              {t('common.retry')}
+            </button>
+          </div>
+        )}
+
+        {!isLoading && !error && articles.length === 0 && (
           <section className="articles-empty">
             <h2>{t('articles.my.emptyTitle')}</h2>
 
             <p>{t('articles.my.emptyMessage')}</p>
           </section>
-        ) : (
+        )}
+
+        {!isLoading && !error && articles.length > 0 && (
           <>
             <div className="articles-list">
               {articles.map((article) => {
@@ -220,6 +227,16 @@ function MyArticlesPage() {
 
                 return (
                   <article className="article-row" key={article.id}>
+                    {article.cover_image_url && (
+                      <div className="article-row__cover">
+                        <img
+                          src={article.cover_image_url}
+                          alt=""
+                          loading="lazy"
+                        />
+                      </div>
+                    )}
+
                     <div className="article-row__main">
                       <ArticleStatus article={article} />
 

@@ -166,10 +166,19 @@
       "fields": {
         "title": "Título",
         "excerpt": "Introducción",
+        "cover": "Imagen de portada",
         "content": "Contenido",
         "language": "Idioma",
         "publicationDate": "Fecha de publicación",
         "categories": "Categorías"
+      },
+      "cover": {
+        "help": "JPEG, PNG o WebP. Máximo 6 MB.",
+        "selected": "Archivo seleccionado: {{filename}}",
+        "invalidType": "La portada debe ser una imagen JPEG, PNG o WebP.",
+        "tooLarge": "La portada debe pesar 6 MB o menos.",
+        "current": "Portada actual",
+        "currentAlt": "Portada actual del artículo"
       },
       "publication": {
         "now": "Si publicas ahora, el artículo será visible inmediatamente.",

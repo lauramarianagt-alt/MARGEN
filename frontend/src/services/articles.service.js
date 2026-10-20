@@ -1,5 +1,18 @@
 import { apiFetch } from './api.js'
 
+function buildArticleRequestBody(article, coverFile = null) {
+  if (!coverFile) {
+    return JSON.stringify(article)
+  }
+
+  const formData = new FormData()
+
+  formData.append('article', JSON.stringify(article))
+  formData.append('cover', coverFile)
+
+  return formData
+}
+
 export function getPublicArticles({
   page = 1,
   limit = 10,
@@ -46,17 +59,17 @@ export function getMyArticle(articleId) {
   return apiFetch(`/me/articles/${encodeURIComponent(articleId)}`)
 }
 
-export function createArticle(article) {
+export function createArticle(article, coverFile = null) {
   return apiFetch('/articles', {
     method: 'POST',
-    body: JSON.stringify(article),
+    body: buildArticleRequestBody(article, coverFile),
   })
 }
 
-export function updateArticle(articleId, article) {
+export function updateArticle(articleId, article, coverFile = null) {
   return apiFetch(`/articles/${encodeURIComponent(articleId)}`, {
     method: 'PATCH',
-    body: JSON.stringify(article),
+    body: buildArticleRequestBody(article, coverFile),
   })
 }
 

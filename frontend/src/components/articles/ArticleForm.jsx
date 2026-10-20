@@ -3,10 +3,15 @@ import { useTranslation } from 'react-i18next'
 
 import { getCategories } from '../../services/categories.service.js'
 
+const MAX_COVER_SIZE_BYTES = 6 * 1024 * 1024
+
+const ALLOWED_COVER_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
+
 function ArticleForm({
   initialValues,
   initialPublicationMode = 'now',
   initialStatus = 'draft',
+  initialCoverImageUrl = null,
   mode = 'create',
   onSubmit,
   onSuccess,
@@ -16,6 +21,9 @@ function ArticleForm({
   const [formData, setFormData] = useState(initialValues)
 
   const [publicationMode, setPublicationMode] = useState(initialPublicationMode)
+
+  const [coverFile, setCoverFile] = useState(null)
+  const [coverError, setCoverError] = useState(null)
 
   const [categories, setCategories] = useState([])
   const [categoriesLoading, setCategoriesLoading] = useState(true)
@@ -78,6 +86,39 @@ function ArticleForm({
     setSubmitError(false)
   }
 
+  function handleCoverChange(event) {
+    const [file] = event.target.files ?? []
+
+    setCoverError(null)
+    setSubmitError(false)
+
+    if (!file) {
+      setCoverFile(null)
+
+      return
+    }
+
+    if (!ALLOWED_COVER_TYPES.has(file.type)) {
+      setCoverFile(null)
+      setCoverError(t('articles.form.cover.invalidType'))
+
+      event.target.value = ''
+
+      return
+    }
+
+    if (file.size > MAX_COVER_SIZE_BYTES) {
+      setCoverFile(null)
+      setCoverError(t('articles.form.cover.tooLarge'))
+
+      event.target.value = ''
+
+      return
+    }
+
+    setCoverFile(file)
+  }
+
   function handleCategoryChange(event) {
     const { checked, value } = event.target
 
@@ -125,7 +166,7 @@ function ArticleForm({
     }
 
     try {
-      const result = await onSubmit(article)
+      const result = await onSubmit(article, coverFile)
 
       setIsSubmitting(false)
       setSubmissionType(null)
@@ -222,6 +263,55 @@ function ArticleForm({
           <span className="article-editor-counter">
             {formData.excerpt.length}/600
           </span>
+        </div>
+
+        <div className="article-editor-field">
+          <label htmlFor="cover">{t('articles.form.fields.cover')}</label>
+
+          {initialCoverImageUrl && !coverFile && (
+            <div className="article-editor-cover-current">
+              <img
+                src={initialCoverImageUrl}
+                alt={t('articles.form.cover.currentAlt')}
+              />
+
+              <p>{t('articles.form.cover.current')}</p>
+            </div>
+          )}
+
+          <input
+            id="cover"
+            name="cover"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={handleCoverChange}
+            disabled={isSubmitting}
+            aria-describedby={
+              coverError ? 'article-cover-error' : 'article-cover-help'
+            }
+          />
+
+          <p id="article-cover-help" className="article-editor-help">
+            {t('articles.form.cover.help')}
+          </p>
+
+          {coverFile && (
+            <p className="article-editor-help">
+              {t('articles.form.cover.selected', {
+                filename: coverFile.name,
+              })}
+            </p>
+          )}
+
+          {coverError && (
+            <p
+              id="article-cover-error"
+              className="auth-message auth-message--error"
+              role="alert"
+            >
+              {coverError}
+            </p>
+          )}
         </div>
 
         <div className="article-editor-field">

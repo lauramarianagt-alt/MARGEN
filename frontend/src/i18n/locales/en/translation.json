@@ -166,10 +166,19 @@
       "fields": {
         "title": "Title",
         "excerpt": "Introduction",
+        "cover": "Cover image",
         "content": "Content",
         "language": "Language",
         "publicationDate": "Publication date",
         "categories": "Categories"
+      },
+      "cover": {
+        "help": "JPEG, PNG or WebP. Maximum 6 MB.",
+        "selected": "Selected file: {{filename}}",
+        "invalidType": "The cover must be a JPEG, PNG or WebP image.",
+        "tooLarge": "The cover must be 6 MB or smaller.",
+        "current": "Current cover",
+        "currentAlt": "Current article cover"
       },
       "publication": {
         "now": "If you publish now, the article will become visible immediately.",

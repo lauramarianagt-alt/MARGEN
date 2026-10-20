@@ -11,15 +11,20 @@ export class ApiError extends Error {
 }
 
 async function request(path, options = {}) {
+  const { headers: optionHeaders, ...fetchOptions } = options
+
+  const headers = new Headers(optionHeaders ?? {})
+
+  const isFormData = options.body instanceof FormData
+
+  if (options.body && !isFormData && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json')
+  }
+
   const response = await fetch(`${API_URL}${path}`, {
+    ...fetchOptions,
     credentials: 'include',
-
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-
-    ...options,
+    headers,
   })
 
   if (response.status === 204) {
