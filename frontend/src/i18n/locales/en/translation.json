@@ -50,7 +50,8 @@
     "title": "My space",
     "welcome": "Hello, {{name}}",
     "username": "@{{username}}",
-    "myArticles": "My articles"
+    "myArticles": "My articles",
+    "sections": "My space sections"
   },
   "common": {
     "loading": "Loading...",
@@ -209,6 +210,49 @@
       "deleting": "Deleting...",
       "error": "We couldn't delete the article. Please try again."
     }
+  },
+  "social": {
+    "title": "Interactions",
+    "loadError": "We couldn't load the interactions.",
+    "stateError": "We couldn't load your interaction state.",
+    "loginPrompt": "Log in to save, like and comment.",
+    "ownArticle": "You can save your own article, but likes and comments are reserved for other authors.",
+    "favorite": {
+      "add": "☆ Save",
+      "remove": "★ Saved",
+      "error": "We couldn't update the favorite."
+    },
+    "like": {
+      "label": "Like",
+      "error": "We couldn't update the like."
+    },
+    "comments": {
+      "title": "Comments",
+      "loading": "Loading comments...",
+      "empty": "No comments yet.",
+      "formLabel": "Add a comment",
+      "placeholder": "Share your perspective...",
+      "publish": "Publish comment",
+      "publishing": "Publishing...",
+      "delete": "Delete",
+      "createError": "We couldn't publish the comment.",
+      "deleteError": "We couldn't delete the comment."
+    }
+  },
+  "favorites": {
+    "title": "Favorites",
+    "count": "{{count}} saved",
+    "loading": "Loading favorites...",
+    "loadError": "We couldn't load your favorites.",
+    "removeError": "We couldn't remove the favorite.",
+    "emptyTitle": "You haven't saved anything yet.",
+    "emptyMessage": "Save articles you want to read again and they'll appear here.",
+    "unavailable": "Article unavailable",
+    "unavailableMessage": "This article is no longer publicly available.",
+    "read": "Read",
+    "edit": "Edit",
+    "remove": "Remove",
+    "paginationLabel": "Favorites pagination"
   },
   "language": {
     "es": "ES",

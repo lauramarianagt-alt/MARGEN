@@ -50,7 +50,8 @@
     "title": "Mi espacio",
     "welcome": "Hola, {{name}}",
     "username": "@{{username}}",
-    "myArticles": "Mis artículos"
+    "myArticles": "Mis artículos",
+    "sections": "Secciones de Mi espacio"
   },
   "common": {
     "loading": "Cargando...",
@@ -209,6 +210,49 @@
       "deleting": "Eliminando...",
       "error": "No hemos podido eliminar el artículo. Inténtalo de nuevo."
     }
+  },
+  "social": {
+    "title": "Interacciones",
+    "loadError": "No se pudieron cargar las interacciones.",
+    "stateError": "No se pudo cargar tu estado de interacción.",
+    "loginPrompt": "Inicia sesión para guardar, dar me gusta y comentar.",
+    "ownArticle": "Puedes guardar tu artículo, pero los likes y comentarios están reservados para otras autoras.",
+    "favorite": {
+      "add": "☆ Guardar",
+      "remove": "★ Guardado",
+      "error": "No se pudo actualizar el favorito."
+    },
+    "like": {
+      "label": "Me gusta",
+      "error": "No se pudo actualizar el me gusta."
+    },
+    "comments": {
+      "title": "Comentarios",
+      "loading": "Cargando comentarios...",
+      "empty": "Todavía no hay comentarios.",
+      "formLabel": "Añade un comentario",
+      "placeholder": "Comparte tu perspectiva...",
+      "publish": "Publicar comentario",
+      "publishing": "Publicando...",
+      "delete": "Eliminar",
+      "createError": "No se pudo publicar el comentario.",
+      "deleteError": "No se pudo eliminar el comentario."
+    }
+  },
+  "favorites": {
+    "title": "Favoritos",
+    "count": "{{count}} guardados",
+    "loading": "Cargando favoritos...",
+    "loadError": "No se pudieron cargar tus favoritos.",
+    "removeError": "No se pudo eliminar el favorito.",
+    "emptyTitle": "Todavía no has guardado nada.",
+    "emptyMessage": "Guarda artículos que quieras volver a leer y aparecerán aquí.",
+    "unavailable": "Artículo no disponible",
+    "unavailableMessage": "Este artículo ya no está disponible públicamente.",
+    "read": "Leer",
+    "edit": "Editar",
+    "remove": "Quitar",
+    "paginationLabel": "Paginación de favoritos"
   },
   "language": {
     "es": "ES",
