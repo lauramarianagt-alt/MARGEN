@@ -5,6 +5,7 @@ export function getPublicArticles({
   limit = 10,
   author = null,
   category = null,
+  search = null,
 } = {}) {
   const searchParams = new URLSearchParams({
     page: String(page),
@@ -17,6 +18,10 @@ export function getPublicArticles({
 
   if (category) {
     searchParams.set('category', category)
+  }
+
+  if (search) {
+    searchParams.set('search', search)
   }
 
   return apiFetch(`/articles?${searchParams.toString()}`)

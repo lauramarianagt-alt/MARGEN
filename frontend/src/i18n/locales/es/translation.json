@@ -108,6 +108,17 @@
       "next": "Siguiente",
       "page": "Página {{page}} de {{totalPages}}"
     },
+    "search": {
+      "label": "Buscar artículos",
+      "placeholder": "Busca por título o introducción",
+      "submit": "Buscar",
+      "clear": "Limpiar",
+      "minLength": "Escribe al menos 2 caracteres para buscar.",
+      "results": "Resultados de búsqueda",
+      "resultCount": "{{count}} resultados para “{{search}}”",
+      "emptyTitle": "No hemos encontrado resultados",
+      "emptyMessage": "No hay artículos publicados que coincidan con “{{search}}”."
+    },
     "create": {
       "eyebrow": "Mi espacio",
       "title": "Crear artículo",

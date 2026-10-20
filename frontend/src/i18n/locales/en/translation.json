@@ -108,6 +108,17 @@
       "next": "Next",
       "page": "Page {{page}} of {{totalPages}}"
     },
+    "search": {
+      "label": "Search articles",
+      "placeholder": "Search by title or introduction",
+      "submit": "Search",
+      "clear": "Clear",
+      "minLength": "Enter at least 2 characters to search.",
+      "results": "Search results",
+      "resultCount": "{{count}} results for “{{search}}”",
+      "emptyTitle": "No results found",
+      "emptyMessage": "There are no published articles matching “{{search}}”."
+    },
     "create": {
       "eyebrow": "My space",
       "title": "Create article",
