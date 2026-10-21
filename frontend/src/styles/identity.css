@@ -2,6 +2,30 @@
 .public-home--search .public-home__hero .public-category-filter {
   margin-top: 0;
 }
+.public-home .search-clear-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0.5rem 0.875rem;
+  border: 1px solid var(--ink);
+  color: var(--paper);
+  background: var(--ink);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 180ms ease;
+}
+.public-home .search-clear-button:hover {
+  opacity: 0.8;
+}
+.public-home .search-clear-button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
 
 .site-header .brand {
   display: inline-flex;

@@ -385,7 +385,7 @@ function HomePage() {
                 </p>
 
                 <button
-                  className="navigation-button"
+                  className="navigation-button search-clear-button"
                   type="button"
                   onClick={handleClearSearch}
                 >
