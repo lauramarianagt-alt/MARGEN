@@ -334,5 +334,13 @@
     "fileError": "Choose a JPEG, PNG or WebP image up to 6 MB.",
     "limit": "A gallery can contain up to 12 images.",
     "createHelp": "After saving your article, open its editor to add the image gallery."
+  },
+  "following": {
+    "follow": "Follow author",
+    "unfollow": "Unfollow author",
+    "saving": "Saving…",
+    "error": "Unable to update following. Please try again.",
+    "forYou": "Stories for you",
+    "feedNote": "The authors you follow come first. Then, new perspectives to discover."
   }
 }

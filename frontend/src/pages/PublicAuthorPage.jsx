@@ -1,3 +1,4 @@
+import FollowAuthorButton from '../components/FollowAuthorButton.jsx'
 import ResponsiveImage from '../components/ResponsiveImage.jsx'
 import { useEffect, useState } from 'react'
 import { usePageMetadata } from '../hooks/usePageMetadata.js'
@@ -192,6 +193,7 @@ function PublicAuthorPage() {
         <p className="public-author__username">@{author.username}</p>
 
         {author.bio && <p className="public-author__bio">{author.bio}</p>}
+        <FollowAuthorButton author={author} />
       </header>
 
       <section

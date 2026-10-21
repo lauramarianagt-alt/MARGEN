@@ -1,3 +1,5 @@
+import { useAuth } from '../hooks/useAuth.js'
+import { getPersonalizedFeed } from '../services/following.service.js'
 import { useEffect, useState } from 'react'
 import { usePageMetadata } from '../hooks/usePageMetadata.js'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -32,6 +34,7 @@ const EDITORIAL_RHYTHM = [
 
 function HomePage() {
   const { i18n, t } = useTranslation()
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth()
   const [searchParams, setSearchParams] = useSearchParams()
 
   const [articles, setArticles] = useState([])
@@ -102,7 +105,11 @@ function HomePage() {
   useEffect(() => {
     let cancelled = false
 
-    getPublicArticles({
+    if (isAuthLoading) return
+    const loadArticles = isAuthenticated
+      ? getPersonalizedFeed
+      : getPublicArticles
+    loadArticles({
       page,
       limit: PAGE_SIZE,
       search: isSearchActive ? searchTerm : null,
@@ -145,6 +152,8 @@ function HomePage() {
       cancelled = true
     }
   }, [
+    isAuthenticated,
+    isAuthLoading,
     page,
     searchTerm,
     isSearchActive,
@@ -361,9 +370,16 @@ function HomePage() {
             <h2 id="latest-stories-title">
               {isSearchActive
                 ? t('articles.search.results')
-                : t('articles.public.latest')}
+                : isAuthenticated
+                  ? t('following.forYou')
+                  : t('articles.public.latest')}
             </h2>
 
+            {isAuthenticated && !isSearchActive && (
+              <p className="personalized-feed-note">
+                {t('following.feedNote')}
+              </p>
+            )}
             {isSearchActive && (
               <>
                 <p>
@@ -444,8 +460,10 @@ function HomePage() {
             <div className="public-articles-list">
               {articles.map((article, articleIndex) => {
                 const layout =
-                  EDITORIAL_LAYOUTS[article.slug] ??
-                  EDITORIAL_RHYTHM[articleIndex % EDITORIAL_RHYTHM.length]
+                  articleIndex < 3
+                    ? EDITORIAL_RHYTHM[articleIndex]
+                    : (EDITORIAL_LAYOUTS[article.slug] ??
+                      EDITORIAL_RHYTHM[articleIndex % EDITORIAL_RHYTHM.length])
                 const showCover =
                   article.cover_image_url &&
                   !['typographic', 'quote'].includes(layout)

@@ -35,6 +35,11 @@ const auth = vi.hoisted(() => ({
   register: vi.fn(),
   logout: vi.fn(),
 }))
+vi.mock('../src/services/following.service.js', () => ({
+  getPersonalizedFeed: (...args) => mocks.getPublicArticles(...args),
+  getFollowing: vi.fn().mockResolvedValue({ following: false }),
+  setFollowing: vi.fn(),
+}))
 vi.mock('../src/services/galleries.service.js', () => ({
   getPublicGallery: vi.fn().mockResolvedValue({ images: [] }),
 }))

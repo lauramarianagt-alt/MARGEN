@@ -334,5 +334,13 @@
     "fileError": "Elige una imagen JPEG, PNG o WebP de hasta 6 MB.",
     "limit": "La galería admite un máximo de 12 imágenes.",
     "createHelp": "Después de guardar el artículo, abre su edición para añadir la galería de imágenes."
+  },
+  "following": {
+    "follow": "Seguir autora",
+    "unfollow": "Dejar de seguir",
+    "saving": "Guardando…",
+    "error": "No hemos podido actualizar el seguimiento. Inténtalo de nuevo.",
+    "forYou": "Historias para ti",
+    "feedNote": "Primero, las autoras que sigues. Después, otras miradas por descubrir."
   }
 }

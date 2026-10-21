@@ -1038,3 +1038,47 @@
     padding-top: 1.75rem;
   }
 }
+
+.follow-author {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin-top: 1.75rem;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  font: inherit;
+  font-size: 0.75rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+.follow-author[aria-pressed='true'] {
+  background: transparent;
+  color: var(--ink);
+}
+.follow-author:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+.follow-author-control p,
+.personalized-feed-note {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+.public-home {
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+}
+.site-header {
+  padding-inline: max(2rem, calc((100vw - 1376px) / 2));
+}
+@media (max-width: 700px) {
+  .site-header {
+    padding-inline: 1.25rem;
+  }
+}

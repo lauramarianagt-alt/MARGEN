@@ -13,6 +13,7 @@ Web publicada: [margen-editorial.duckdns.org](https://margen-editorial.duckdns.o
 - Artículos con URL `/:username/:slug`, portadas, introducción, contenido e idioma.
 - Galerías de hasta 12 imágenes por artículo: texto alternativo, créditos, miniaturas, teclado y deslizamiento táctil.
 - Edición del nombre, apellidos y biografía del perfil propio.
+- Seguimiento privado de autoras: sus artículos publicados aparecen primero en el inicio personalizado.
 - Portadas y galerías convertidas a WebP con versiones de hasta 640 y 1600 píxeles.
 - Portada editorial con composiciones variadas; títulos Helvetica/sans serif, textos Newsreader y cabecera móvil desplegable.
 - Secciones de Belleza y Cosmética, además de moda y cultura visual.
@@ -36,7 +37,7 @@ PostgreSQL y Storage. Frontend y backend tienen sus propios lockfiles.
 ### 1. Base de datos
 
 En un proyecto de desarrollo nuevo, aplica en orden los archivos de
-`backend/supabase/migrations/0001_initial_schema.sql` a `0009_beauty_categories.sql`.
+`backend/supabase/migrations/0001_initial_schema.sql` a `0010_author_follows.sql`.
 La migración 0005 añade comentarios, favoritos, me gusta y el bucket público
 `article-covers`. Las subidas y eliminaciones de portadas se realizan en el servidor.
 
@@ -61,6 +62,10 @@ el pie de foto desde el cliente. Añade también la edición de nombre, apellido
 biografía del perfil propio. No incluye cambios de correo, usuario o contraseña.
 La migración 0009 añade Belleza y Cosmética sin sustituir las categorías existentes.
 Aplica estas ampliaciones antes de desplegar el backend que utiliza sus columnas.
+
+La migración 0010 añade el seguimiento privado de autoras y una función con
+permisos del usuario para ordenar el inicio antes de paginar. Conserva búsqueda,
+categorías y recuentos, y excluye borradores y publicaciones futuras.
 
 ### 2. Backend
 
@@ -171,7 +176,7 @@ separado; un `git pull` no cambia la base de datos.
 - Recuperación de contraseña y edición/baja de cuenta desde la interfaz.
 - Editor de texto enriquecido y controles de maquetación elegidos por cada autora.
 - SEO con metadatos renderizados en el servidor o prerenderizados, Open Graph y sitemap.
-- Seguimiento de autores, notificaciones, menciones y subrayados.
+- Notificaciones, menciones y subrayados.
 - Pruebas automatizadas de navegador, integración con Supabase de pruebas y CI/CD.
 - Más contenido editorial y fotografías aportadas por sus autoras.
 

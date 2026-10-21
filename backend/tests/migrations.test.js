@@ -56,8 +56,10 @@ beforeAll(async () => {
     '0007_public_like_visibility.sql',
     '0008_editorial_galleries.sql',
     '0009_beauty_categories.sql',
+    '0010_author_follows.sql',
   ])
     await db.exec(await migration(file))
+  await db.exec(await migration('0010_author_follows.sql'))
   await db.exec(await migration('0008_editorial_galleries.sql'))
   // Verify that additive migrations also accept an existing schema.
   await db.exec(await migration('0005_social_and_storage.sql'))
@@ -391,5 +393,116 @@ describe('Editorial gallery RLS', () => {
     expect(
       (await db.query('select id from public.gallery_images')).rows,
     ).toEqual([])
+  })
+})
+
+describe('Private follows and personalized article ordering', () => {
+  async function follow(follower = A, author = B) {
+    return db.query(
+      'insert into public.author_follows (follower_id,author_id) values ($1,$2) on conflict do nothing',
+      [follower, author],
+    )
+  }
+  async function feed(limit = 10, offset = 0, search = null, category = null) {
+    return (
+      await db.query(
+        'select public.personalized_articles($1,$2,$3,$4) as feed',
+        [limit, offset, search, category],
+      )
+    ).rows[0].feed
+  }
+  it('keeps follow lists private to their owner', async () => {
+    await follow(A, B)
+    await follow(B, A)
+    await asRole('authenticated', A)
+    expect(
+      (await db.query('select follower_id from public.author_follows')).rows,
+    ).toEqual([{ follower_id: A }])
+  })
+  it('denies anonymous access to follows and the personalized function', async () => {
+    await asRole('anon')
+    await expect(
+      db.query('select * from public.author_follows'),
+    ).rejects.toMatchObject({ code: '42501' })
+  })
+  it('denies anonymous execution of the personalized function', async () => {
+    await asRole('anon')
+    await expect(feed()).rejects.toMatchObject({ code: '42501' })
+  })
+  it('rejects forged follow ownership', async () => {
+    await asRole('authenticated', A)
+    await expect(follow(B, A)).rejects.toMatchObject({ code: '42501' })
+  })
+  it('prevents self-following', async () => {
+    await asRole('authenticated', A)
+    await expect(follow(A, A)).rejects.toMatchObject({ code: '23514' })
+  })
+  it('allows idempotent follows while preserving another member relationships', async () => {
+    await follow(B, A)
+    await asRole('authenticated', A)
+    await follow(A, B)
+    await follow(A, B)
+    expect(
+      (await db.query('select author_id from public.author_follows')).rows,
+    ).toEqual([{ author_id: B }])
+    expect(
+      (
+        await db.query(
+          'delete from public.author_follows where follower_id=$1 returning author_id',
+          [B],
+        )
+      ).rows,
+    ).toEqual([])
+  })
+  it('prioritizes followed authors before newer unfollowed stories and keeps pagination stable', async () => {
+    await db.query(
+      "update public.articles set published_at=now()-interval '1 hour' where id=$1",
+      [PA],
+    )
+    await follow()
+    await asRole('authenticated', A)
+    const first = await feed(1, 0),
+      second = await feed(1, 1),
+      pastEnd = await feed(1, 20)
+    expect(first.total).toBe(2)
+    expect(first.articles.map((a) => a.id)).toEqual([PB])
+    expect(first.articles[0].is_followed).toBe(true)
+    expect(first.articles[0].author.username).toBe('writer_b')
+    expect(first.articles[0].cover_image_variants).toEqual([])
+    expect(second.articles.map((a) => a.id)).toEqual([PA])
+    expect(second.articles[0].is_followed).toBe(false)
+    expect(pastEnd).toEqual({ articles: [], total: 2 })
+  })
+  it('excludes drafts and scheduled stories, including the reader own work', async () => {
+    await follow()
+    await asRole('authenticated', A)
+    const result = await feed()
+    expect(result.articles.map((a) => a.id).sort()).toEqual([PA, PB].sort())
+  })
+  it('applies search and category filtering before counting and ordering', async () => {
+    const category = (
+      await db.query("select id from public.categories where slug='beauty'")
+    ).rows[0]
+    await db.query(
+      'insert into public.article_categories (article_id,category_id) values ($1,$2)',
+      [PB, category.id],
+    )
+    await follow()
+    await asRole('authenticated', A)
+    expect(
+      (await feed(10, 0, null, 'beauty')).articles.map((a) => a.id),
+    ).toEqual([PB])
+    expect(await feed(10, 0, 'Public A', 'beauty')).toEqual({
+      articles: [],
+      total: 0,
+    })
+    expect((await feed(10, 0, 'Public B')).total).toBe(1)
+  })
+  it('uses the signed-in reader follows rather than another member preferences', async () => {
+    await follow(A, B)
+    await follow(B, A)
+    await asRole('authenticated', B)
+    const result = await feed()
+    expect(result.articles[0]).toMatchObject({ id: PA, is_followed: true })
   })
 })

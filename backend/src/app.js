@@ -13,6 +13,7 @@ import categoriesRouter from './routes/categories.routes.js'
 import commentsRouter from './routes/comments.routes.js'
 import favoritesRouter from './routes/favorites.routes.js'
 import galleriesRouter from './routes/galleries.routes.js'
+import followingRouter from './routes/following.routes.js'
 
 const app = express()
 
@@ -33,6 +34,7 @@ app.get('/api/health', (req, res) => {
   })
 })
 
+app.use('/api', followingRouter)
 app.use('/api', galleriesRouter)
 app.use('/api/categories', categoriesRouter)
 app.use('/api/auth', authRouter)
