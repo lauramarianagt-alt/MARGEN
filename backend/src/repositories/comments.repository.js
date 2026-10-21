@@ -58,7 +58,10 @@ export async function findPublicCommentsByArticleId(
     })
     .eq('article_id', articleId)
     .order('created_at', {
-      ascending: true,
+      ascending: false,
+    })
+    .order('id', {
+      ascending: false,
     })
     .range(offset, offset + limit - 1)
 

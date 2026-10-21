@@ -365,13 +365,6 @@ export async function updateUserArticle({
 
   if (hasOwn(input, 'title')) {
     articlePatch.title = input.title
-
-    articlePatch.slug = await generateUniqueSlug(
-      accessToken,
-      userId,
-      input.title,
-      articleId,
-    )
   }
 
   if (hasOwn(input, 'excerpt')) {

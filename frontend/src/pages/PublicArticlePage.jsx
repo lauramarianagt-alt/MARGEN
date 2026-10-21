@@ -36,6 +36,12 @@ function PublicArticlePage() {
 
   const [comments, setComments] = useState([])
   const [commentTotal, setCommentTotal] = useState(0)
+  const [commentsPagination, setCommentsPagination] = useState({
+    page: 1,
+    limit: 10,
+    totalPages: 0,
+  })
+  const [commentsRetryKey, setCommentsRetryKey] = useState(0)
   const [commentContent, setCommentContent] = useState('')
 
   const [isSocialLoading, setIsSocialLoading] = useState(false)
@@ -99,7 +105,10 @@ function PublicArticlePage() {
       try {
         const [likesResponse, commentsResponse] = await Promise.all([
           getArticleLikes(article.id),
-          getArticleComments(article.id),
+          getArticleComments(article.id, {
+            page: commentsPagination.page,
+            limit: commentsPagination.limit,
+          }),
         ])
 
         if (cancelled) {
@@ -109,6 +118,10 @@ function PublicArticlePage() {
         setLikeCount(likesResponse.count)
         setComments(commentsResponse.comments)
         setCommentTotal(commentsResponse.pagination.total)
+        setCommentsPagination((current) => ({
+          ...current,
+          totalPages: commentsResponse.pagination.totalPages,
+        }))
         setSocialError(null)
       } catch (loadError) {
         if (cancelled) {
@@ -130,7 +143,13 @@ function PublicArticlePage() {
     return () => {
       cancelled = true
     }
-  }, [article?.id, t])
+  }, [
+    article?.id,
+    commentsPagination.page,
+    commentsPagination.limit,
+    commentsRetryKey,
+    t,
+  ])
 
   useEffect(() => {
     if (!article?.id || isAuthLoading) {
@@ -286,11 +305,14 @@ function PublicArticlePage() {
     setSocialError(null)
 
     try {
-      const response = await addComment(article.id, content)
+      await addComment(article.id, content)
 
-      setComments((currentComments) => [...currentComments, response.comment])
+      setCommentsPagination((current) => ({
+        ...current,
+        page: 1,
+      }))
 
-      setCommentTotal((currentTotal) => currentTotal + 1)
+      setCommentsRetryKey((current) => current + 1)
       setCommentContent('')
     } catch (actionError) {
       console.error('Unable to create comment:', actionError)
@@ -312,11 +334,14 @@ function PublicArticlePage() {
     try {
       await deleteComment(commentId)
 
-      setComments((currentComments) =>
-        currentComments.filter((comment) => comment.id !== commentId),
-      )
+      if (comments.length === 1 && commentsPagination.page > 1) {
+        setCommentsPagination((current) => ({
+          ...current,
+          page: Math.max(1, current.page - 1),
+        }))
+      }
 
-      setCommentTotal((currentTotal) => Math.max(0, currentTotal - 1))
+      setCommentsRetryKey((current) => current + 1)
     } catch (actionError) {
       console.error('Unable to delete comment:', actionError)
 
@@ -560,6 +585,48 @@ function PublicArticlePage() {
                       )
                     })}
                   </div>
+                )}
+
+                {commentsPagination.totalPages > 1 && (
+                  <nav
+                    className="articles-pagination"
+                    aria-label={t('social.comments.title')}
+                  >
+                    <button
+                      type="button"
+                      disabled={commentsPagination.page <= 1}
+                      onClick={() =>
+                        setCommentsPagination((current) => ({
+                          ...current,
+                          page: Math.max(1, current.page - 1),
+                        }))
+                      }
+                    >
+                      {t('articles.pagination.previous')}
+                    </button>
+
+                    <span>
+                      {t('articles.pagination.page', {
+                        page: commentsPagination.page,
+                        totalPages: commentsPagination.totalPages,
+                      })}
+                    </span>
+
+                    <button
+                      type="button"
+                      disabled={
+                        commentsPagination.page >= commentsPagination.totalPages
+                      }
+                      onClick={() =>
+                        setCommentsPagination((current) => ({
+                          ...current,
+                          page: Math.min(current.totalPages, current.page + 1),
+                        }))
+                      }
+                    >
+                      {t('articles.pagination.next')}
+                    </button>
+                  </nav>
                 )}
 
                 {isAuthenticated && !isOwnArticle && (

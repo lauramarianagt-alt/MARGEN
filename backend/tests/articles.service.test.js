@@ -611,6 +611,32 @@ describe('Articles service', () => {
     })
   })
 
+  it('keeps the slug when editing a published article title', async () => {
+    repositoryMocks.findOwnedArticleById.mockResolvedValue({
+      ...STORED_ARTICLE,
+      status: 'published',
+      published_at: '2026-10-01T00:00:00.000Z',
+    })
+
+    await updateUserArticle({
+      accessToken: 'token',
+      userId: USER_ID,
+      articleId: ARTICLE_ID,
+      input: {
+        title: 'Nuevo título',
+      },
+    })
+
+    expect(repositoryMocks.updateArticleById).toHaveBeenCalledWith(
+      'token',
+      ARTICLE_ID,
+      USER_ID,
+      {
+        title: 'Nuevo título',
+      },
+    )
+  })
+
   it('does not allow editing an article that does not belong to the user', async () => {
     repositoryMocks.findOwnedArticleById.mockResolvedValue(null)
 
