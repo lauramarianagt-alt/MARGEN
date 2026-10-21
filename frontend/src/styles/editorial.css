@@ -283,13 +283,14 @@
 }
 
 .article-action[aria-pressed='true'] {
-  color: var(--paper);
-  background-color: var(--ink);
+  color: var(--reading-ink);
+  background-color: rgb(17 17 17 / 10%);
+  border-color: rgb(17 17 17 / 20%);
 }
 
 .article-action[aria-pressed='true']:hover:not(:disabled),
 .article-action[aria-pressed='true']:focus-visible {
-  background-color: #34312d;
+  background-color: rgb(17 17 17 / 16%);
 }
 
 .article-action:disabled {
