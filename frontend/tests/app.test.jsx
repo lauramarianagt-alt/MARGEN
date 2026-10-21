@@ -288,6 +288,46 @@ describe('Reader and member flows', () => {
     expect(document.documentElement.lang).toBe('en')
     expect(document.title).toContain('MARGEN')
   })
+  it('keeps a short category bar and filters additional categories without losing the search', async () => {
+    mocks.getCategories.mockResolvedValue([
+      category,
+      { id: 'beauty', slug: 'beauty', name: 'Beauty' },
+      { id: 'visual', slug: 'visual-culture', name: 'Visual culture' },
+      { id: 'cosmetics', slug: 'cosmetics', name: 'Cosmetics' },
+      { id: 'photography', slug: 'photography', name: 'Photography' },
+    ])
+    renderApp('/?search=style&page=2')
+    const select = await screen.findByRole('combobox', {
+      name: 'Más categorías',
+    })
+    expect(
+      screen.getByRole('button', { name: 'Diseño', exact: true }),
+    ).toBeTruthy()
+    expect(
+      screen.queryByRole('button', { name: 'Cosmética', exact: true }),
+    ).toBeNull()
+    fireEvent.change(select, { target: { value: 'cosmetics' } })
+    await waitFor(() =>
+      expect(mocks.getPublicArticles).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          category: 'cosmetics',
+          search: 'style',
+          page: 1,
+        }),
+      ),
+    )
+    await waitFor(() =>
+      expect(
+        screen.getByRole('combobox', { name: 'Más categorías' }).value,
+      ).toBe('cosmetics'),
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Todas', exact: true }))
+    await waitFor(() =>
+      expect(mocks.getPublicArticles).toHaveBeenLastCalledWith(
+        expect.objectContaining({ category: null, search: 'style', page: 1 }),
+      ),
+    )
+  })
   it('redirects an anonymous member-area request to login', async () => {
     auth.isAuthenticated = false
     renderApp('/dashboard')

@@ -112,7 +112,7 @@
     "my": {
       "title": "My articles",
       "count": "{{count}} articles",
-      "create": "+ Create article",
+      "create": "Create article",
       "edit": "Edit",
       "delete": "Delete",
       "loading": "Loading articles...",
@@ -145,7 +145,8 @@
       "all": "All",
       "active": "Category: {{category}}",
       "emptyTitle": "No articles in this category",
-      "emptyMessage": "There are no published articles in “{{category}}” yet."
+      "emptyMessage": "There are no published articles in “{{category}}” yet.",
+      "more": "More categories"
     },
     "create": {
       "eyebrow": "My space",

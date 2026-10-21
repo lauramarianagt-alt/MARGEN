@@ -112,7 +112,7 @@
     "my": {
       "title": "Mis artículos",
       "count": "{{count}} artículos",
-      "create": "+ Crear artículo",
+      "create": "Crear artículo",
       "edit": "Editar",
       "delete": "Eliminar",
       "loading": "Cargando artículos...",
@@ -145,7 +145,8 @@
       "all": "Todas",
       "active": "Categoría: {{category}}",
       "emptyTitle": "No hay artículos en esta categoría",
-      "emptyMessage": "Todavía no hay artículos publicados en “{{category}}”."
+      "emptyMessage": "Todavía no hay artículos publicados en “{{category}}”.",
+      "more": "Más categorías"
     },
     "create": {
       "eyebrow": "Mi espacio",

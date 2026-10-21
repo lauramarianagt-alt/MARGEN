@@ -361,7 +361,10 @@ function MyArticlesPage() {
                 const date = article.published_at ?? article.updated_at
 
                 return (
-                  <article className="article-row" key={article.id}>
+                  <article
+                    className="article-row article-row--owned"
+                    key={article.id}
+                  >
                     {article.cover_image_url && (
                       <div className="article-row__cover">
                         <ResponsiveImage

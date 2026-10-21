@@ -12,6 +12,7 @@ import { getPublicArticles } from '../services/articles.service.js'
 import { getCategories } from '../services/categories.service.js'
 
 const PAGE_SIZE = 10
+const FEATURED_CATEGORIES = ['design', 'beauty', 'visual-culture']
 
 // Art direction for the opening issue; new stories use the same varied rhythm.
 const EDITORIAL_LAYOUTS = {
@@ -65,6 +66,18 @@ function HomePage() {
 
   const isSearchActive = searchTerm.length >= 2
   const isCategoryActive = activeCategory.length > 0
+
+  const featuredCategories = FEATURED_CATEGORIES.map((slug) =>
+    categories.find((category) => category.slug === slug),
+  ).filter(Boolean)
+  const moreCategories = categories.filter(
+    (category) => !FEATURED_CATEGORIES.includes(category.slug),
+  )
+  const moreCategoryValue = moreCategories.some(
+    (category) => category.slug === activeCategory,
+  )
+    ? activeCategory
+    : ''
 
   const selectedCategory =
     categories.find((category) => category.slug === activeCategory) ?? null
@@ -296,40 +309,63 @@ function HomePage() {
                 className="public-category-filter__options"
                 aria-label={t('articles.filters.label')}
               >
-                <button
-                  className={`public-category-filter__button${
-                    !isCategoryActive
-                      ? ' public-category-filter__button--active'
-                      : ''
-                  }`}
-                  type="button"
-                  aria-pressed={!isCategoryActive}
-                  onClick={() => handleCategoryChange('')}
-                >
-                  {t('articles.filters.all')}
-                </button>
+                <div className="public-category-filter__shortcuts">
+                  <button
+                    className={`public-category-filter__button${
+                      !isCategoryActive
+                        ? ' public-category-filter__button--active'
+                        : ''
+                    }`}
+                    type="button"
+                    aria-pressed={!isCategoryActive}
+                    onClick={() => handleCategoryChange('')}
+                  >
+                    {t('articles.filters.all')}
+                  </button>
 
-                {categories.map((category) => {
-                  const isActive = activeCategory === category.slug
+                  {featuredCategories.map((category) => {
+                    const isActive = activeCategory === category.slug
 
-                  return (
-                    <button
-                      className={`public-category-filter__button${
-                        isActive
-                          ? ' public-category-filter__button--active'
-                          : ''
-                      }`}
-                      type="button"
-                      key={category.id}
-                      aria-pressed={isActive}
-                      onClick={() => handleCategoryChange(category.slug)}
-                    >
-                      {t(`categories.names.${category.slug}`, {
-                        defaultValue: category.name,
-                      })}
-                    </button>
-                  )
-                })}
+                    return (
+                      <button
+                        className={`public-category-filter__button${
+                          isActive
+                            ? ' public-category-filter__button--active'
+                            : ''
+                        }`}
+                        type="button"
+                        key={category.id}
+                        aria-pressed={isActive}
+                        onClick={() => handleCategoryChange(category.slug)}
+                      >
+                        {t(`categories.names.${category.slug}`, {
+                          defaultValue: category.name,
+                        })}
+                      </button>
+                    )
+                  })}
+                </div>
+                {moreCategories.length > 0 && (
+                  <select
+                    className={`public-category-filter__select${moreCategoryValue ? ' public-category-filter__select--active' : ''}`}
+                    aria-label={t('articles.filters.more')}
+                    value={moreCategoryValue}
+                    onChange={(event) =>
+                      handleCategoryChange(event.target.value)
+                    }
+                  >
+                    <option value="" disabled>
+                      {t('articles.filters.more')}
+                    </option>
+                    {moreCategories.map((category) => (
+                      <option key={category.id} value={category.slug}>
+                        {t(`categories.names.${category.slug}`, {
+                          defaultValue: category.name,
+                        })}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
             )}
         </section>
