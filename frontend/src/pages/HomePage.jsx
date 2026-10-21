@@ -1,3 +1,4 @@
+import CategoryMenu from '../components/CategoryMenu.jsx'
 import FeaturedArticlesCarousel from '../components/FeaturedArticlesCarousel.jsx'
 import { useAuth } from '../hooks/useAuth.js'
 import { getPersonalizedFeed } from '../services/following.service.js'
@@ -346,25 +347,11 @@ function HomePage() {
                   })}
                 </div>
                 {moreCategories.length > 0 && (
-                  <select
-                    className={`public-category-filter__select${moreCategoryValue ? ' public-category-filter__select--active' : ''}`}
-                    aria-label={t('articles.filters.more')}
+                  <CategoryMenu
+                    categories={moreCategories}
                     value={moreCategoryValue}
-                    onChange={(event) =>
-                      handleCategoryChange(event.target.value)
-                    }
-                  >
-                    <option value="" disabled>
-                      {t('articles.filters.more')}
-                    </option>
-                    {moreCategories.map((category) => (
-                      <option key={category.id} value={category.slug}>
-                        {t(`categories.names.${category.slug}`, {
-                          defaultValue: category.name,
-                        })}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={handleCategoryChange}
+                  />
                 )}
               </div>
             )}
@@ -581,7 +568,7 @@ function HomePage() {
                           })}
                         </Link>
                       ) : (
-                        <span>
+                        <span className="public-article-card__author">
                           {t('articles.public.by', {
                             author: authorName,
                           })}

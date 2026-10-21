@@ -1,3 +1,4 @@
+import WritingField from './WritingField.jsx'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -314,19 +315,11 @@ function ArticleForm({
           )}
         </div>
 
-        <div className="article-editor-field">
-          <label htmlFor="content">{t('articles.form.fields.content')}</label>
-
-          <textarea
-            id="content"
-            name="content"
-            rows="14"
-            maxLength="100000"
-            value={formData.content}
-            onChange={handleChange}
-            disabled={isSubmitting}
-          />
-        </div>
+        <WritingField
+          value={formData.content}
+          onChange={handleChange}
+          disabled={isSubmitting}
+        />
 
         <div className="article-editor-grid">
           <div className="article-editor-field">

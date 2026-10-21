@@ -358,5 +358,11 @@
     "next": "Next story",
     "goTo": "Show: {{title}}",
     "retry": "Reload featured stories"
+  },
+  "writing": {
+    "words_one": "{{count}} word",
+    "words_other": "{{count}} words",
+    "help": "Write your story. Leave a blank line between paragraphs.",
+    "placeholder": "Start with an idea, a scene or a question…"
   }
 }

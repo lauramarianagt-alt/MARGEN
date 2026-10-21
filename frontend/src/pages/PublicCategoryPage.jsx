@@ -312,13 +312,16 @@ function PublicCategoryPage() {
 
                     <footer className="public-article-card__footer">
                       {articleUsername ? (
-                        <Link to={`/${articleUsername}`}>
+                        <Link
+                          className="public-article-card__author"
+                          to={`/${articleUsername}`}
+                        >
                           {t('articles.public.by', {
                             author: authorName,
                           })}
                         </Link>
                       ) : (
-                        <span>
+                        <span className="public-article-card__author">
                           {t('articles.public.by', {
                             author: authorName,
                           })}

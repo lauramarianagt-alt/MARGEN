@@ -297,7 +297,7 @@ describe('Reader and member flows', () => {
       { id: 'photography', slug: 'photography', name: 'Photography' },
     ])
     renderApp('/?search=style&page=2')
-    const select = await screen.findByRole('combobox', {
+    const select = await screen.findByRole('button', {
       name: 'Más categorías',
     })
     expect(
@@ -306,7 +306,8 @@ describe('Reader and member flows', () => {
     expect(
       screen.queryByRole('button', { name: 'Cosmética', exact: true }),
     ).toBeNull()
-    fireEvent.change(select, { target: { value: 'cosmetics' } })
+    fireEvent.click(select)
+    fireEvent.click(screen.getByRole('menuitemradio', { name: 'Cosmética' }))
     await waitFor(() =>
       expect(mocks.getPublicArticles).toHaveBeenLastCalledWith(
         expect.objectContaining({
@@ -318,8 +319,9 @@ describe('Reader and member flows', () => {
     )
     await waitFor(() =>
       expect(
-        screen.getByRole('combobox', { name: 'Más categorías' }).value,
-      ).toBe('cosmetics'),
+        screen.getByRole('button', { name: 'Más categorías: Cosmética' })
+          .textContent,
+      ).toContain('Cosmética'),
     )
     fireEvent.click(screen.getByRole('button', { name: 'Todas', exact: true }))
     await waitFor(() =>

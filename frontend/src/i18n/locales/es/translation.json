@@ -358,5 +358,11 @@
     "next": "Historia siguiente",
     "goTo": "Ver: {{title}}",
     "retry": "Volver a cargar las historias destacadas"
+  },
+  "writing": {
+    "words_one": "{{count}} palabra",
+    "words_other": "{{count}} palabras",
+    "help": "Escribe tu historia. Deja una línea en blanco para separar los párrafos.",
+    "placeholder": "Empieza con una idea, una escena o una pregunta…"
   }
 }

@@ -282,7 +282,7 @@ function PublicAuthorPage() {
                     )}
 
                     <footer className="public-article-card__footer">
-                      <span>
+                      <span className="public-article-card__author">
                         {t('articles.public.by', {
                           author: displayName,
                         })}

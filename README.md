@@ -15,7 +15,7 @@ Web publicada: [margen-editorial.duckdns.org](https://margen-editorial.duckdns.o
 - Edición del nombre, apellidos y biografía del perfil propio.
 - Seguimiento privado de autoras: sus artículos publicados aparecen primero en el inicio personalizado.
 - Portadas y galerías convertidas a WebP con versiones de hasta 640 y 1600 píxeles.
-- Portada editorial con composiciones variadas; títulos Helvetica/sans serif, textos Newsreader y cabecera móvil desplegable.
+- Portada editorial con composiciones variadas; títulos Helvetica/sans serif, textos Source Serif 4 en gris oscuro y cabecera móvil desplegable.
 - Secciones de Belleza y Cosmética, además de moda y cultura visual.
 - Registro, confirmación por correo, login, logout y renovación de sesión.
 - Área privada: crear, editar y borrar artículos propios; borradores y publicación futura.
@@ -198,3 +198,6 @@ La página 404 de React tampoco cambia el estado HTTP 200 del fallback de Nginx.
 Requiere aplicar `backend/supabase/migrations/0011_featured_articles.sql` una vez en Supabase. La función usa permisos del lector y devuelve conteos agregados, sin identidades de votantes. El carrusel permite flechas, indicadores, teclado y deslizamiento; no avanza automáticamente.
 
 «Mi espacio» reúne las secciones, la creación de artículos y la edición del perfil en una barra. En móvil las acciones pasan a una segunda fila. La cabecera alinea los controles y sitúa el indicador de navegación sobre su línea inferior.
+
+
+El filtro de categorías usa un menú propio en marfil, con opciones negras y estado de foco/puntero negro con texto marfil. Incluye navegación por flechas, Inicio/Fin y Escape. El editor de contenido ofrece una superficie de escritura sin borde que adapta su altura al texto y muestra el número de palabras. El contenido conserva sus párrafos en texto plano.
