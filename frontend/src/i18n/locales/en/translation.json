@@ -11,7 +11,10 @@
     "register": "Create account",
     "dashboard": "My space",
     "logout": "Log out",
-    "loggingOut": "Logging out..."
+    "loggingOut": "Logging out...",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "label": "Main navigation"
   },
   "auth": {
     "email": "Email",
@@ -95,7 +98,9 @@
       "photography": "Photography",
       "sustainability": "Sustainability",
       "interviews": "Interviews",
-      "design": "Design"
+      "design": "Design",
+      "beauty": "Beauty",
+      "cosmetics": "Cosmetics"
     }
   },
   "articles": {
@@ -269,10 +274,65 @@
   },
   "language": {
     "es": "ES",
-    "en": "EN"
+    "en": "EN",
+    "choose": "Language"
   },
   "notFound": {
     "title": "This page does not exist",
     "back": "Back to home"
+  },
+  "magazine": {
+    "edition": "Open edition",
+    "baseline": "Fashion. Image. Perspective.",
+    "explore": "Explore stories",
+    "contribute": "Be part of MARGEN",
+    "heroAlt": "An editorial portrait with a black jacket and stone architecture.",
+    "imageCredit": "Original composition generated with AI for MARGEN."
+  },
+  "profile": {
+    "eyebrow": "My space",
+    "title": "Your editorial profile",
+    "back": "Back to my space",
+    "intro": "Introduce your point of view and tell readers what defines your work. Your name and biography appear on your public profile.",
+    "view": "View my public profile",
+    "name": "First name",
+    "surname": "Last name",
+    "bio": "Biography",
+    "save": "Save profile",
+    "saving": "Saving…",
+    "saved": "Your profile has been updated.",
+    "error": "We could not save your profile. Please try again.",
+    "editLink": "Edit profile"
+  },
+  "gallery": {
+    "title": "The story in images",
+    "carousel": "image carousel",
+    "counter": "{{current}} / {{total}}",
+    "previous": "Previous image",
+    "next": "Next image",
+    "goTo": "View image {{number}}",
+    "loading": "Loading gallery…",
+    "loadError": "We could not load the gallery.",
+    "manage": "Manage gallery",
+    "visualStory": "Your perspective, in images",
+    "manageArticle": "Article gallery",
+    "help": "Up to 12 images per gallery, in upload order. JPEG, PNG or WebP, up to 6 MB each. Add image credits in the caption.",
+    "empty": "Start with an image that tells a story.",
+    "alt": "Image description",
+    "altHelp": "Describe what is pictured for readers who use screen readers.",
+    "caption": "Caption and credits (optional)",
+    "file": "Choose image",
+    "upload": "Add to gallery",
+    "uploading": "Uploading image…",
+    "saveText": "Save text",
+    "remove": "Remove",
+    "confirmDelete": "Remove this image from your gallery?",
+    "confirmRemove": "Yes, remove image",
+    "cancel": "Cancel",
+    "saved": "Changes saved.",
+    "actionError": "We could not save the change. Check the image and try again.",
+    "fileError": "Choose a JPEG, PNG or WebP image up to 6 MB.",
+    "limit": "A gallery can contain up to 12 images.",
+    "createHelp": "After saving your article, open its editor to add the image gallery."
   }
 }

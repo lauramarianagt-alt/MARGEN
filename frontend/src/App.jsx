@@ -13,6 +13,7 @@ import NotFoundPage from './pages/NotFoundPage.jsx'
 import PublicArticlePage from './pages/PublicArticlePage.jsx'
 import PublicAuthorPage from './pages/PublicAuthorPage.jsx'
 import PublicCategoryPage from './pages/PublicCategoryPage.jsx'
+import ProfilePage from './pages/ProfilePage.jsx'
 import RegisterPage from './pages/RegisterPage.jsx'
 
 function App() {
@@ -54,6 +55,7 @@ function App() {
 
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<MyArticlesPage />} />
+          <Route path="/dashboard/profile" element={<ProfilePage />} />
 
           <Route
             path="/dashboard/articles"

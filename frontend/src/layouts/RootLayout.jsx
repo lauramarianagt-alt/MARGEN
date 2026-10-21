@@ -1,5 +1,11 @@
-import { useState } from 'react'
-import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { useRef, useState } from 'react'
+import {
+  Link,
+  NavLink,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { useAuth } from '../hooks/useAuth.js'
@@ -12,6 +18,9 @@ function RootLayout() {
   const { isAuthenticated, isLoading, logout } = useAuth()
 
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const menuToggle = useRef(null)
+  const searchToggle = useRef(null)
 
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchInput, setSearchInput] = useState('')
@@ -56,6 +65,7 @@ function RootLayout() {
     )
 
     setSearchError(null)
+    setIsMenuOpen(false)
     setIsSearchOpen(true)
   }
 
@@ -96,12 +106,31 @@ function RootLayout() {
 
   return (
     <>
-      <header className="site-header">
-        <NavLink to="/" className="brand">
+      <header
+        className="site-header"
+        onKeyDown={(event) => {
+          if (event.key !== 'Escape') return
+          if (isMenuOpen) {
+            setIsMenuOpen(false)
+            menuToggle.current?.focus()
+          }
+          if (isSearchOpen) {
+            setIsSearchOpen(false)
+            setSearchError(null)
+            searchToggle.current?.focus()
+          }
+        }}
+      >
+        <NavLink to="/" className="brand" onClick={() => setIsMenuOpen(false)}>
           {t('brand.name')}
         </NavLink>
 
-        <nav className="main-navigation">
+        <nav
+          id="main-navigation"
+          className={`main-navigation${isMenuOpen ? ' main-navigation--open' : ''}`}
+          aria-label={t('navigation.label')}
+          onClick={() => setIsMenuOpen(false)}
+        >
           <NavLink to="/">{t('navigation.home')}</NavLink>
 
           {!isLoading && !isAuthenticated && (
@@ -134,6 +163,7 @@ function RootLayout() {
           <div className="header-search">
             {isSearchOpen && (
               <form
+                id="header-search-form"
                 className="header-search__form"
                 role="search"
                 onSubmit={handleSearchSubmit}
@@ -177,7 +207,9 @@ function RootLayout() {
             )}
 
             <button
+              ref={searchToggle}
               className="header-search__toggle"
+              aria-controls="header-search-form"
               type="button"
               onClick={handleSearchToggle}
               aria-expanded={isSearchOpen}
@@ -235,7 +267,11 @@ function RootLayout() {
             )}
           </div>
 
-          <div className="language-switcher">
+          <div
+            className="language-switcher"
+            role="group"
+            aria-label={t('language.choose')}
+          >
             <button
               type="button"
               onClick={() => changeLanguage('es')}
@@ -252,10 +288,55 @@ function RootLayout() {
               {t('language.en')}
             </button>
           </div>
+          <button
+            ref={menuToggle}
+            className="menu-toggle"
+            type="button"
+            aria-controls="main-navigation"
+            aria-expanded={isMenuOpen}
+            aria-label={t(
+              isMenuOpen ? 'navigation.closeMenu' : 'navigation.openMenu',
+            )}
+            onClick={() => {
+              setIsMenuOpen((open) => !open)
+              setIsSearchOpen(false)
+              setSearchError(null)
+            }}
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            >
+              {isMenuOpen ? (
+                <>
+                  <path d="m6 6 12 12" />
+                  <path d="m18 6-12 12" />
+                </>
+              ) : (
+                <>
+                  <path d="M4 8h16" />
+                  <path d="M4 16h16" />
+                </>
+              )}
+            </svg>
+          </button>
         </div>
       </header>
 
       <Outlet key={`${location.pathname}${location.search}`} />
+      <footer className="site-footer">
+        <Link to="/" className="site-footer__brand">
+          MARGEN
+        </Link>
+        <p>{t('brand.description')}</p>
+        <Link to="/dashboard">{t('magazine.contribute')} ↗</Link>
+      </footer>
     </>
   )
 }

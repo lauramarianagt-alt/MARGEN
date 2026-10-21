@@ -31,6 +31,12 @@ vi.mock('../src/repositories/categories.repository.js', () => ({
 }))
 
 vi.mock('../src/services/article-covers.service.js', () => coverMocks)
+vi.mock('../src/repositories/galleries.repository.js', () => ({
+  findArticleGalleryFiles: vi.fn().mockResolvedValue([]),
+}))
+vi.mock('../src/services/editorial-images.service.js', () => ({
+  removeEditorialImages: vi.fn().mockResolvedValue(undefined),
+}))
 
 import { findPublicAuthorByUsername } from '../src/repositories/authors.repository.js'
 import { findCategoryBySlug } from '../src/repositories/categories.repository.js'

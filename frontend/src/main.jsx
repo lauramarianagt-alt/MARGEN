@@ -4,6 +4,8 @@ import { BrowserRouter } from 'react-router-dom'
 
 import AuthProvider from './context/AuthProvider.jsx'
 
+import '@fontsource-variable/manrope'
+import '@fontsource-variable/newsreader'
 import './i18n/index.js'
 import './index.css'
 

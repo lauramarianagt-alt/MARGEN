@@ -1,3 +1,4 @@
+import ResponsiveImage from '../components/ResponsiveImage.jsx'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -325,6 +326,7 @@ function MyArticlesPage() {
               })}
             </p>
 
+            <Link to="/dashboard/profile">{t('profile.editLink')}</Link>
             <Link className="articles-create-link" to="/dashboard/articles/new">
               {t('articles.my.create')}
             </Link>
@@ -367,8 +369,8 @@ function MyArticlesPage() {
                   <article className="article-row" key={article.id}>
                     {article.cover_image_url && (
                       <div className="article-row__cover">
-                        <img
-                          src={article.cover_image_url}
+                        <ResponsiveImage
+                          article={article}
                           alt=""
                           loading="lazy"
                         />
@@ -563,8 +565,8 @@ function MyArticlesPage() {
                         to={articlePath}
                         aria-label={article.title}
                       >
-                        <img
-                          src={article.cover_image_url}
+                        <ResponsiveImage
+                          article={article}
                           alt=""
                           loading="lazy"
                         />

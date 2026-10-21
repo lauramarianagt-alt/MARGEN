@@ -70,7 +70,10 @@ function parseArticleRequestBody(req) {
 }
 
 function handleArticleError(res, error) {
-  if (error instanceof ArticleServiceError) {
+  if (
+    error instanceof ArticleServiceError ||
+    error.name === 'EditorialImageError'
+  ) {
     return res.status(error.status).json({
       error: error.message,
     })

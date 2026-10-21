@@ -1,3 +1,5 @@
+import PublicGallery from '../components/gallery/PublicGallery.jsx'
+import ResponsiveImage from '../components/ResponsiveImage.jsx'
 import { useEffect, useState } from 'react'
 import { usePageMetadata } from '../hooks/usePageMetadata.js'
 import { Link, useParams } from 'react-router-dom'
@@ -472,11 +474,12 @@ function PublicArticlePage() {
 
         {article.cover_image_url && (
           <div className="public-article__cover">
-            <img src={article.cover_image_url} alt={article.title} />
+            <ResponsiveImage article={article} alt={article.title} />
           </div>
         )}
 
         <div className="public-article__content">{article.content}</div>
+        <PublicGallery id={article.id} />
 
         <section
           className="public-article__social"

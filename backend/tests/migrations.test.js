@@ -54,8 +54,11 @@ beforeAll(async () => {
     '0005_social_and_storage.sql',
     '0006_profile_usernames.sql',
     '0007_public_like_visibility.sql',
+    '0008_editorial_galleries.sql',
+    '0009_beauty_categories.sql',
   ])
     await db.exec(await migration(file))
+  await db.exec(await migration('0008_editorial_galleries.sql'))
   // Verify that additive migrations also accept an existing schema.
   await db.exec(await migration('0005_social_and_storage.sql'))
   await db.exec(await migration('0006_profile_usernames.sql'))
@@ -294,5 +297,99 @@ describe('Fresh migrations and two-user RLS permissions', () => {
     await expect(
       db.query("update public.profiles set username='LOGIN' where id=$1", [A]),
     ).rejects.toMatchObject({ code: '23514' })
+  })
+})
+
+async function addGallery(ownerId, articleId = PA, alt = 'A fabric study') {
+  return db.query(
+    `insert into public.gallery_images (owner_id,article_id,image_url,thumbnail_url,storage_path,thumbnail_path,width,height,thumbnail_width,alt_text)
+ values ($1,$2,'https://example.test/image.webp','https://example.test/thumb.webp',$4,$5,1600,1000,640,$3) returning id`,
+    [
+      ownerId,
+      articleId,
+      alt,
+      `${ownerId}/image-1600.webp`,
+      `${ownerId}/image-640.webp`,
+    ],
+  )
+}
+describe('Editorial gallery RLS', () => {
+  it('shows published-article galleries, hiding draft and future images', async () => {
+    await addGallery(A, PA)
+    await addGallery(A, DA)
+    await addGallery(A, FA)
+    await asRole('anon')
+    const { rows } = await db.query(
+      'select article_id from public.gallery_images',
+    )
+    expect(rows).toEqual([{ article_id: PA }])
+  })
+  it('lets an author view images in their own drafts', async () => {
+    await addGallery(A, DA)
+    await asRole('authenticated', A)
+    expect(
+      (await db.query('select id from public.gallery_images')).rows,
+    ).toHaveLength(1)
+  })
+  it('prevents changing or deleting another member captions', async () => {
+    await addGallery(A)
+    await asRole('authenticated', B)
+    expect(
+      (
+        await db.query(
+          "update public.gallery_images set caption='Changed' returning id",
+        )
+      ).rows,
+    ).toEqual([])
+    expect(
+      (await db.query('delete from public.gallery_images returning id')).rows,
+    ).toEqual([])
+  })
+  it('rejects adding images to an article owned by another member', async () => {
+    await asRole('authenticated', A)
+    await expect(addGallery(A, PB)).rejects.toMatchObject({ code: '42501' })
+  })
+  it('rejects a forged owner ID', async () => {
+    await asRole('authenticated', A)
+    await expect(addGallery(B, PB)).rejects.toMatchObject({ code: '42501' })
+  })
+  it('allows editing descriptions but forbids replacing stored paths through the Data API', async () => {
+    await addGallery(A)
+    await asRole('authenticated', A)
+    expect(
+      (
+        await db.query(
+          "update public.gallery_images set alt_text='An updated description' returning alt_text",
+        )
+      ).rows,
+    ).toEqual([{ alt_text: 'An updated description' }])
+    await expect(
+      db.query(
+        "update public.gallery_images set storage_path='other/file.webp'",
+      ),
+    ).rejects.toMatchObject({ code: '42501' })
+  })
+  it('enforces the twelve-image limit at the database boundary', async () => {
+    await asRole('authenticated', A)
+    for (let i = 0; i < 12; i++) await addGallery(A)
+    await expect(addGallery(A)).rejects.toMatchObject({ code: 'P0001' })
+  })
+  it('keeps each article quota independent', async () => {
+    await asRole('authenticated', A)
+    for (let i = 0; i < 12; i++) await addGallery(A)
+    expect((await addGallery(A, DA)).rows).toHaveLength(1)
+  })
+  it('requires a non-blank image description', async () => {
+    await asRole('authenticated', A)
+    await expect(addGallery(A, PA, '   ')).rejects.toMatchObject({
+      code: '23514',
+    })
+  })
+  it('cascades gallery records when an article is deleted', async () => {
+    await addGallery(A, PA)
+    await db.query('delete from public.articles where id=$1', [PA])
+    expect(
+      (await db.query('select id from public.gallery_images')).rows,
+    ).toEqual([])
   })
 })

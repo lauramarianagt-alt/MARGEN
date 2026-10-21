@@ -9,6 +9,8 @@ import {
   registerUser,
 } from '../services/auth.service.js'
 
+import { saveProfile } from '../services/galleries.service.js'
+
 import { AuthContext } from './auth-context.js'
 
 function AuthProvider({ children }) {
@@ -63,6 +65,12 @@ function AuthProvider({ children }) {
     return data
   }
 
+  async function updateProfile(input) {
+    const data = await saveProfile(input)
+    setProfile(data.profile)
+    return data.profile
+  }
+
   async function register(data) {
     return registerUser(data)
   }
@@ -88,6 +96,7 @@ function AuthProvider({ children }) {
       login,
       register,
       logout,
+      updateProfile,
     }),
     [user, profile, status],
   )

@@ -3,10 +3,32 @@ import { usePageMetadata } from '../hooks/usePageMetadata.js'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
+import ResponsiveImage from '../components/ResponsiveImage.jsx'
+
 import { getPublicArticles } from '../services/articles.service.js'
 import { getCategories } from '../services/categories.service.js'
 
 const PAGE_SIZE = 10
+
+// Art direction for the opening issue; new stories use the same varied rhythm.
+const EDITORIAL_LAYOUTS = {
+  'the-dressing-table-as-a-personal-archive': 'panorama',
+  'la-cosmetica-tambien-se-disena': 'portrait',
+  title: 'standard',
+  netflix: 'typographic',
+  creations: 'standard',
+  'visual-culture': 'portrait',
+  'the-future-of-independent-fashion': 'standard',
+  'fashion-deserves-more-than-a-feed': 'quote',
+}
+const EDITORIAL_RHYTHM = [
+  'panorama',
+  'portrait',
+  'standard',
+  'typographic',
+  'quote',
+  'standard',
+]
 
 function HomePage() {
   const { i18n, t } = useTranslation()
@@ -226,11 +248,34 @@ function HomePage() {
   return (
     <main className="page public-home">
       <section className="public-home__hero">
-        <p className="page-eyebrow">{t('articles.public.eyebrow')}</p>
-
-        <h1>{t('articles.public.heroTitle')}</h1>
-
-        <p className="public-home__intro">{t('articles.public.heroIntro')}</p>
+        <div className="public-home__opening">
+          <div>
+            <p className="page-eyebrow">{t('articles.public.eyebrow')}</p>
+            <h1
+              className="public-home__headline"
+              aria-label={t('articles.public.heroTitle')}
+            >
+              {t('articles.public.heroTitle')
+                .split(' ')
+                .map((word) => (
+                  <span key={word}>{word}</span>
+                ))}
+            </h1>
+            <p className="public-home__intro">
+              {t('articles.public.heroIntro')}
+            </p>
+          </div>
+          <figure className="public-home__opening-image">
+            <img
+              src="/images/margen-editorial.webp"
+              alt={t('magazine.heroAlt')}
+              width="1536"
+              height="1024"
+              fetchPriority="high"
+            />
+            <figcaption>{t('magazine.imageCredit')}</figcaption>
+          </figure>
+        </div>
 
         <section
           className="public-category-filter"
@@ -397,7 +442,13 @@ function HomePage() {
         {!isLoading && !error && articles.length > 0 && (
           <>
             <div className="public-articles-list">
-              {articles.map((article) => {
+              {articles.map((article, articleIndex) => {
+                const layout =
+                  EDITORIAL_LAYOUTS[article.slug] ??
+                  EDITORIAL_RHYTHM[articleIndex % EDITORIAL_RHYTHM.length]
+                const showCover =
+                  article.cover_image_url &&
+                  !['typographic', 'quote'].includes(layout)
                 const authorName =
                   [article.author?.name, article.author?.surname]
                     .filter(Boolean)
@@ -415,20 +466,29 @@ function HomePage() {
                   : null
 
                 return (
-                  <article className="public-article-card" key={article.id}>
-                    {article.cover_image_url && (
+                  <article
+                    className="public-article-card"
+                    data-layout={layout}
+                    key={article.id}
+                  >
+                    {showCover && (
                       <div className="public-article-card__cover">
                         {articlePath ? (
                           <Link to={articlePath}>
-                            <img
-                              src={article.cover_image_url}
+                            <ResponsiveImage
+                              article={article}
+                              sizes={
+                                layout === 'panorama'
+                                  ? '(max-width: 700px) 100vw, 1200px'
+                                  : '(max-width: 700px) 100vw, 600px'
+                              }
                               alt={article.title}
                               loading="lazy"
                             />
                           </Link>
                         ) : (
-                          <img
-                            src={article.cover_image_url}
+                          <ResponsiveImage
+                            article={article}
                             alt={article.title}
                             loading="lazy"
                           />
@@ -471,11 +531,16 @@ function HomePage() {
                       )}
                     </h3>
 
-                    {article.excerpt && (
-                      <p className="public-article-card__excerpt">
-                        {article.excerpt}
-                      </p>
-                    )}
+                    {article.excerpt &&
+                      (layout === 'quote' ? (
+                        <blockquote className="public-article-card__pullquote">
+                          <p>{article.excerpt}</p>
+                        </blockquote>
+                      ) : (
+                        <p className="public-article-card__excerpt">
+                          {article.excerpt}
+                        </p>
+                      ))}
 
                     <footer className="public-article-card__footer">
                       {authorUsername ? (

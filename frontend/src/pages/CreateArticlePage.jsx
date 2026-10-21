@@ -43,6 +43,7 @@ function CreateArticlePage() {
         </Link>
       </header>
 
+      <p className="article-editor-help">{t('gallery.createHelp')}</p>
       <ArticleForm
         initialValues={initialValues}
         onSubmit={handleCreate}

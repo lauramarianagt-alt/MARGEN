@@ -1,3 +1,4 @@
+import GalleryManager from '../components/gallery/GalleryManager.jsx'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -175,6 +176,7 @@ function EditArticlePage() {
         onSubmit={handleUpdate}
         onSuccess={handleSuccess}
       />
+      <GalleryManager articleId={articleId} />
     </main>
   )
 }

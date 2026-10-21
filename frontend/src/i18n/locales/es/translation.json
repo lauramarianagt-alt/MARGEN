@@ -11,7 +11,10 @@
     "register": "Crear cuenta",
     "dashboard": "Mi espacio",
     "logout": "Cerrar sesión",
-    "loggingOut": "Cerrando sesión..."
+    "loggingOut": "Cerrando sesión...",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "label": "Navegación principal"
   },
   "auth": {
     "email": "Correo electrónico",
@@ -95,7 +98,9 @@
       "photography": "Fotografía",
       "sustainability": "Sostenibilidad",
       "interviews": "Entrevistas",
-      "design": "Diseño"
+      "design": "Diseño",
+      "beauty": "Belleza",
+      "cosmetics": "Cosmética"
     }
   },
   "articles": {
@@ -269,10 +274,65 @@
   },
   "language": {
     "es": "ES",
-    "en": "EN"
+    "en": "EN",
+    "choose": "Idioma"
   },
   "notFound": {
     "title": "Esta página no existe",
     "back": "Volver a inicio"
+  },
+  "magazine": {
+    "edition": "Edición abierta",
+    "baseline": "Moda. Imagen. Criterio.",
+    "explore": "Explorar historias",
+    "contribute": "Forma parte de MARGEN",
+    "heroAlt": "Retrato editorial con una chaqueta negra y arquitectura de piedra.",
+    "imageCredit": "Composición original generada con IA para MARGEN."
+  },
+  "profile": {
+    "eyebrow": "Mi espacio",
+    "title": "Tu perfil editorial",
+    "back": "Volver a mi espacio",
+    "intro": "Presenta tu mirada y cuenta qué define tu trabajo. Tu nombre y tu biografía aparecerán en tu perfil público.",
+    "view": "Ver mi perfil público",
+    "name": "Nombre",
+    "surname": "Apellidos",
+    "bio": "Biografía",
+    "save": "Guardar perfil",
+    "saving": "Guardando…",
+    "saved": "Tu perfil se ha actualizado.",
+    "error": "No hemos podido guardar tu perfil. Inténtalo de nuevo.",
+    "editLink": "Editar perfil"
+  },
+  "gallery": {
+    "title": "La historia en imágenes",
+    "carousel": "carrusel de imágenes",
+    "counter": "{{current}} / {{total}}",
+    "previous": "Imagen anterior",
+    "next": "Imagen siguiente",
+    "goTo": "Ver imagen {{number}}",
+    "loading": "Cargando galería…",
+    "loadError": "No hemos podido cargar la galería.",
+    "manage": "Gestionar galería",
+    "visualStory": "Tu mirada, en imágenes",
+    "manageArticle": "Galería del artículo",
+    "help": "Hasta 12 imágenes por galería, en orden de subida. JPEG, PNG o WebP, máximo 6 MB por archivo. Añade los créditos en el pie de foto.",
+    "empty": "Empieza con una imagen que cuente algo.",
+    "alt": "Descripción de la imagen",
+    "altHelp": "Describe lo que aparece para quienes usan lectores de pantalla.",
+    "caption": "Pie de foto y créditos (opcional)",
+    "file": "Seleccionar imagen",
+    "upload": "Añadir a la galería",
+    "uploading": "Subiendo imagen…",
+    "saveText": "Guardar textos",
+    "remove": "Eliminar",
+    "confirmDelete": "¿Quieres eliminar esta imagen de tu galería?",
+    "confirmRemove": "Sí, eliminar imagen",
+    "cancel": "Cancelar",
+    "saved": "Cambios guardados.",
+    "actionError": "No hemos podido guardar el cambio. Revisa la imagen e inténtalo de nuevo.",
+    "fileError": "Elige una imagen JPEG, PNG o WebP de hasta 6 MB.",
+    "limit": "La galería admite un máximo de 12 imágenes.",
+    "createHelp": "Después de guardar el artículo, abre su edición para añadir la galería de imágenes."
   }
 }

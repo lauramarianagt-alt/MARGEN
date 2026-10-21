@@ -1,3 +1,4 @@
+import ResponsiveImage from '../components/ResponsiveImage.jsx'
 import { useEffect, useState } from 'react'
 import { usePageMetadata } from '../hooks/usePageMetadata.js'
 import { Link, useParams } from 'react-router-dom'
@@ -232,8 +233,8 @@ function PublicAuthorPage() {
                     {article.cover_image_url && (
                       <div className="public-article-card__cover">
                         <Link to={articlePath}>
-                          <img
-                            src={article.cover_image_url}
+                          <ResponsiveImage
+                            article={article}
                             alt={article.title}
                             loading="lazy"
                           />

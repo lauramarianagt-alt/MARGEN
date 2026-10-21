@@ -35,6 +35,9 @@ const auth = vi.hoisted(() => ({
   register: vi.fn(),
   logout: vi.fn(),
 }))
+vi.mock('../src/services/galleries.service.js', () => ({
+  getPublicGallery: vi.fn().mockResolvedValue({ images: [] }),
+}))
 vi.mock('../src/hooks/useAuth.js', () => ({ useAuth: () => auth }))
 vi.mock('../src/services/articles.service.js', async (original) => ({
   ...(await original()),
@@ -329,6 +332,43 @@ describe('Reader and member flows', () => {
     fireEvent.submit(container.querySelector('form'))
     expect((await screen.findByRole('alert')).textContent).toBe(
       'Ese nombre no es válido o está reservado. Elige otro.',
+    )
+  })
+})
+
+describe('Compact navigation controls', () => {
+  it('opens navigation, closes it with Escape, and returns focus', async () => {
+    renderApp('/')
+    await screen.findByRole('heading', { name: article.title })
+    const toggle = screen.getByRole('button', { name: 'Abrir menú' })
+    fireEvent.click(toggle)
+    expect(
+      screen
+        .getByRole('button', { name: 'Cerrar menú' })
+        .getAttribute('aria-expanded'),
+    ).toBe('true')
+    fireEvent.keyDown(toggle, { key: 'Escape' })
+    expect(
+      screen
+        .getByRole('button', { name: 'Abrir menú' })
+        .getAttribute('aria-expanded'),
+    ).toBe('false')
+    expect(document.activeElement).toBe(toggle)
+  })
+  it('closes navigation when opening search and restores search focus on Escape', async () => {
+    renderApp('/')
+    await screen.findByRole('heading', { name: article.title })
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir menú' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Buscar artículos' }))
+    expect(
+      screen
+        .getByRole('button', { name: 'Abrir menú' })
+        .getAttribute('aria-expanded'),
+    ).toBe('false')
+    fireEvent.keyDown(screen.getByRole('searchbox'), { key: 'Escape' })
+    expect(screen.queryByRole('searchbox')).toBeNull()
+    expect(document.activeElement).toBe(
+      screen.getByRole('button', { name: 'Buscar artículos' }),
     )
   })
 })

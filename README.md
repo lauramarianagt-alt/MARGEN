@@ -11,6 +11,11 @@ Web publicada: [margen-editorial.duckdns.org](https://margen-editorial.duckdns.o
 
 - Web pública: últimos artículos, búsqueda, categorías y perfiles de autor con paginación.
 - Artículos con URL `/:username/:slug`, portadas, introducción, contenido e idioma.
+- Galerías de hasta 12 imágenes por artículo: texto alternativo, créditos, miniaturas, teclado y deslizamiento táctil.
+- Edición del nombre, apellidos y biografía del perfil propio.
+- Portadas y galerías convertidas a WebP con versiones de hasta 640 y 1600 píxeles.
+- Portada editorial con composiciones variadas; títulos Helvetica/sans serif, textos Newsreader y cabecera móvil desplegable.
+- Secciones de Belleza y Cosmética, además de moda y cultura visual.
 - Registro, confirmación por correo, login, logout y renovación de sesión.
 - Área privada: crear, editar y borrar artículos propios; borradores y publicación futura.
 - Comentarios paginados, favoritos privados y me gusta; permisos comprobados en servicios.
@@ -31,7 +36,7 @@ PostgreSQL y Storage. Frontend y backend tienen sus propios lockfiles.
 ### 1. Base de datos
 
 En un proyecto de desarrollo nuevo, aplica en orden los archivos de
-`backend/supabase/migrations/0001_initial_schema.sql` a `0007_public_like_visibility.sql`.
+`backend/supabase/migrations/0001_initial_schema.sql` a `0009_beauty_categories.sql`.
 La migración 0005 añade comentarios, favoritos, me gusta y el bucket público
 `article-covers`. Las subidas y eliminaciones de portadas se realizan en el servidor.
 
@@ -49,6 +54,13 @@ validación al registrar usuarios.
 La migración 0007 restringe la lectura de me gusta a artículos ya publicados.
 Permite actualizar esa política en una base existente sin recrear tablas ni tocar
 las demás políticas sociales.
+
+La migración 0008 añade las galerías de artículos y las variantes de portada. Activa
+RLS, limita cada galería a 12 imágenes y permite editar únicamente la descripción y
+el pie de foto desde el cliente. Añade también la edición de nombre, apellidos y
+biografía del perfil propio. No incluye cambios de correo, usuario o contraseña.
+La migración 0009 añade Belleza y Cosmética sin sustituir las categorías existentes.
+Aplica estas ampliaciones antes de desplegar el backend que utiliza sus columnas.
 
 ### 2. Backend
 
@@ -135,6 +147,7 @@ cd ../frontend
 npm ci
 npm run build
 sudo rsync -a dist/assets/ /var/www/margen/assets/
+sudo rsync -a dist/images/ /var/www/margen/images/
 sudo install -m 644 dist/index.html /var/www/margen/index.html
 pm2 restart margen-api
 curl --fail https://margen-editorial.duckdns.org/api/health
@@ -156,11 +169,16 @@ separado; un `git pull` no cambia la base de datos.
 ## Próximas mejoras
 
 - Recuperación de contraseña y edición/baja de cuenta desde la interfaz.
-- Editor de texto enriquecido y variantes de imagen para distintos dispositivos.
+- Editor de texto enriquecido y controles de maquetación elegidos por cada autora.
 - SEO con metadatos renderizados en el servidor o prerenderizados, Open Graph y sitemap.
 - Seguimiento de autores, notificaciones, menciones y subrayados.
 - Pruebas automatizadas de navegador, integración con Supabase de pruebas y CI/CD.
-- Contenido editorial de demostración y créditos de fotografía.
+- Más contenido editorial y fotografías aportadas por sus autoras.
+
+Las imágenes de demostración nuevas se identifican como composiciones generadas
+con IA; los créditos del frontend están en `frontend/public/images/CREDITS.md`.
+Las galerías se gestionan al editar un artículo ya guardado. La edición del perfil
+se abre desde «Mi espacio → Editar perfil».
 
 Las etiquetas y metadatos básicos en el navegador no equivalen a SEO completo:
 el contenido público sigue siendo una SPA renderizada en el cliente.

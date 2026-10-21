@@ -1,3 +1,5 @@
+import { findArticleGalleryFiles } from '../repositories/galleries.repository.js'
+import { removeEditorialImages } from './editorial-images.service.js'
 import {
   addArticleCategories,
   createArticle,
@@ -59,13 +61,13 @@ async function safelyDeleteUploadedCover(filePath) {
   }
 }
 
-async function safelyDeleteStoredCover(publicUrl) {
+async function safelyDeleteStoredCover(publicUrl, userId) {
   if (!publicUrl) {
     return
   }
 
   try {
-    await deleteArticleCoverByPublicUrl(publicUrl)
+    await deleteArticleCoverByPublicUrl(publicUrl, userId)
   } catch (error) {
     console.error('Unable to clean up stored article cover:', error)
   }
@@ -314,6 +316,8 @@ export async function createUserArticle({
       published_at: resolveCreatePublishedAt(status, input.publishedAt),
     }
 
+    if (uploadedCover?.variants)
+      articleData.cover_image_variants = uploadedCover.variants
     article = await createArticle(accessToken, articleData)
 
     try {
@@ -398,6 +402,8 @@ export async function updateUserArticle({
       })
 
       articlePatch.cover_image_url = uploadedCover.publicUrl
+      if (uploadedCover.variants)
+        articlePatch.cover_image_variants = uploadedCover.variants
     }
 
     if (Object.keys(articlePatch).length > 0) {
@@ -436,6 +442,12 @@ export async function updateUserArticle({
         try {
           await updateArticleById(accessToken, articleId, userId, {
             cover_image_url: currentArticle.cover_image_url ?? null,
+            ...(uploadedCover.variants
+              ? {
+                  cover_image_variants:
+                    currentArticle.cover_image_variants ?? [],
+                }
+              : {}),
           })
         } catch {
           // Preserve the original error.
@@ -449,7 +461,7 @@ export async function updateUserArticle({
   }
 
   if (uploadedCover && currentArticle.cover_image_url) {
-    await safelyDeleteStoredCover(currentArticle.cover_image_url)
+    await safelyDeleteStoredCover(currentArticle.cover_image_url, userId)
   }
 
   return getOwnArticle({
@@ -466,9 +478,14 @@ export async function deleteUserArticle({ accessToken, userId, articleId }) {
     articleId,
   })
 
+  const galleryFiles = await findArticleGalleryFiles(accessToken, articleId)
   await deleteArticleById(accessToken, articleId, userId)
+  await removeEditorialImages(
+    galleryFiles.flatMap((image) => [image.storage_path, image.thumbnail_path]),
+    userId,
+  )
 
   if (article.cover_image_url) {
-    await safelyDeleteStoredCover(article.cover_image_url)
+    await safelyDeleteStoredCover(article.cover_image_url, userId)
   }
 }
