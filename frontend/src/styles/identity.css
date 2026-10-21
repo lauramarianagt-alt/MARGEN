@@ -50,6 +50,17 @@
 .site-header__tools {
   gap: 0.75rem;
 }
+.notification-link__label {
+  display: none;
+}
+.notification-link {
+  width: 32px;
+}
+.notification-count {
+  position: absolute;
+  top: calc(50% - 19px);
+  right: -3px;
+}
 .header-logout {
   width: 32px;
   padding: 0;

@@ -8,6 +8,7 @@ export default function NotificationLink({ onClick }) {
     <NavLink
       to="/dashboard/notifications"
       className="notification-link"
+      title={t('notifications.title')}
       onClick={onClick}
       aria-label={
         unreadCount > 0
