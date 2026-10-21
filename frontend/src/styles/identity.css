@@ -42,6 +42,11 @@
 .main-navigation a::after {
   bottom: -9px;
 }
+@media (min-width: 701px) {
+  .site-header .language-switcher button::after {
+    bottom: -9px;
+  }
+}
 .site-header__tools {
   gap: 0.75rem;
 }
@@ -126,7 +131,7 @@
   .site-header .brand {
     grid-column: 1 / -1;
     grid-row: 1;
-    justify-self: start;
+    justify-self: center;
   }
   .brand__lockup {
     width: 210px;
@@ -134,7 +139,7 @@
   .site-header__tools {
     grid-column: 1 / -1;
     grid-row: 2;
-    justify-self: end;
+    justify-self: center;
     gap: 0;
     min-height: 44px;
   }
