@@ -137,3 +137,44 @@ it('makes HTTPS source URLs readable links while keeping executable schemes lite
   expect(container.querySelectorAll('a')).toHaveLength(1)
   expect(container.textContent).toContain('javascript:alert(1)')
 })
+
+it('preserves an attributed source link across saving and editing, stripping unsafe attributes', () => {
+  const saved = JSON.stringify({
+    format: 'margen-rich-text',
+    version: 1,
+    doc: {
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [
+            {
+              type: 'text',
+              text: 'Fuente oficial',
+              marks: [
+                {
+                  type: 'link',
+                  attrs: {
+                    href: 'https://example.com/source',
+                    onclick: 'bad()',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  })
+  const { container } = render(<ArticleContent content={saved} />)
+  expect(container.querySelector('a').textContent).toBe('Fuente oficial')
+  expect(container.querySelector('a').getAttribute('href')).toBe(
+    'https://example.com/source',
+  )
+  expect(container.querySelector('a').getAttribute('onclick')).toBeNull()
+  cleanup()
+  render(<WritingField value={saved} onChange={() => {}} />)
+  expect(screen.getByRole('textbox').querySelector('a').textContent).toBe(
+    'Fuente oficial',
+  )
+})

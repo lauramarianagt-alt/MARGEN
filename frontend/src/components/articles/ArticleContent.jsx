@@ -27,11 +27,25 @@ export default function ArticleContent({ content }) {
           {paragraph.content.length ? (
             paragraph.content.map((node, inlineIndex) => {
               if (node.type === 'hardBreak') return <br key={inlineIndex} />
-              let text = <SourceLinks text={node.text} />
+              let text = node.marks?.some((mark) => mark.type === 'link') ? (
+                node.text
+              ) : (
+                <SourceLinks text={node.text} />
+              )
               for (const mark of node.marks ?? []) {
                 if (mark.type === 'bold') text = <strong>{text}</strong>
                 if (mark.type === 'italic') text = <em>{text}</em>
                 if (mark.type === 'underline') text = <u>{text}</u>
+                if (mark.type === 'link')
+                  text = (
+                    <a
+                      href={mark.attrs.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {text}
+                    </a>
+                  )
               }
               return <span key={inlineIndex}>{text}</span>
             })

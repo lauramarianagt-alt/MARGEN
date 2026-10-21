@@ -45,7 +45,7 @@ export default function WritingField({ value, onChange, disabled }) {
         gapcursor: false,
         heading: false,
         horizontalRule: false,
-        link: false,
+        link: { openOnClick: false, autolink: true },
         listItem: false,
         listKeymap: false,
         orderedList: false,

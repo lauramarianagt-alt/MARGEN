@@ -2,6 +2,23 @@
 export const MAX_ARTICLE_CONTENT = 100_000
 const FORMAT = 'margen-rich-text'
 const MARKS = new Set(['bold', 'italic', 'underline'])
+function safeMarks(marks) {
+  const result = []
+  for (const mark of Array.isArray(marks) ? marks : []) {
+    if (result.some((item) => item.type === mark?.type)) continue
+    if (MARKS.has(mark?.type)) result.push({ type: mark.type })
+    if (mark?.type === 'link') {
+      try {
+        const url = new URL(mark.attrs?.href)
+        if (url.protocol === 'https:' || url.protocol === 'http:')
+          result.push({ type: 'link', attrs: { href: url.href } })
+      } catch {
+        /* Keep unsupported or unsafe URLs as literal text. */
+      }
+    }
+  }
+  return result
+}
 
 export function readRichContent(value) {
   if (typeof value !== 'string' || !value.startsWith('{')) return null
@@ -35,13 +52,7 @@ export function readRichContent(value) {
                 {
                   type: 'text',
                   text: inline.text,
-                  marks: [
-                    ...new Set(
-                      (Array.isArray(inline.marks) ? inline.marks : [])
-                        .filter((mark) => MARKS.has(mark?.type))
-                        .map((mark) => mark.type),
-                    ),
-                  ].map((type) => ({ type })),
+                  marks: safeMarks(inline.marks),
                 },
               ]
             },
