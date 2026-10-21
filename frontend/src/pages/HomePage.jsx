@@ -282,7 +282,6 @@ function HomePage() {
               height="1024"
               fetchPriority="high"
             />
-            <figcaption>{t('magazine.imageCredit')}</figcaption>
           </figure>
         </div>
 
