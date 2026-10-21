@@ -189,3 +189,12 @@ Las etiquetas y metadatos básicos en el navegador no equivalen a SEO completo:
 el contenido público sigue siendo una SPA renderizada en el cliente.
 
 La página 404 de React tampoco cambia el estado HTTP 200 del fallback de Nginx.
+
+
+### Carrusel de portada
+
+`GET /api/articles/featured` devuelve hasta cuatro historias publicadas con portada, ordenadas por los «me gusta» recibidos durante el día de Europe/Madrid. Los empates se resuelven por fecha de publicación e ID. Sin votos diarios se muestran las publicaciones recientes; no se simulan visitas ni votos. Se cuentan los me gusta vigentes: retirar uno lo elimina también de la clasificación.
+
+Requiere aplicar `backend/supabase/migrations/0011_featured_articles.sql` una vez en Supabase. La función usa permisos del lector y devuelve conteos agregados, sin identidades de votantes. El carrusel permite flechas, indicadores, teclado y deslizamiento; no avanza automáticamente.
+
+«Mi espacio» reúne las secciones, la creación de artículos y la edición del perfil en una barra. En móvil las acciones pasan a una segunda fila. La cabecera alinea los controles y sitúa el indicador de navegación sobre su línea inferior.

@@ -3,6 +3,7 @@
 @import './styles/dashboard.css';
 @import './styles/editorial.css';
 @import './styles/galleries.css';
+@import './styles/featured.css';
 
 :root {
   --font-heading: 'Helvetica Neue', Helvetica, Arial, sans-serif;

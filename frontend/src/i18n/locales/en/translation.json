@@ -342,5 +342,20 @@
     "error": "Unable to update following. Please try again.",
     "forYou": "Stories for you",
     "feedNote": "The authors you follow come first. Then, new perspectives to discover."
+  },
+  "featured": {
+    "label": "Featured stories",
+    "carousel": "carousel",
+    "slide": "slide",
+    "daily": "Today’s most liked",
+    "latest": "Latest stories",
+    "read": "Read the story",
+    "likes_one": "{{count}} like today",
+    "likes_other": "{{count}} likes today",
+    "position": "Story {{current}} of {{total}}",
+    "previous": "Previous story",
+    "next": "Next story",
+    "goTo": "Show: {{title}}",
+    "retry": "Reload featured stories"
   }
 }

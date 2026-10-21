@@ -342,5 +342,20 @@
     "error": "No hemos podido actualizar el seguimiento. Inténtalo de nuevo.",
     "forYou": "Historias para ti",
     "feedNote": "Primero, las autoras que sigues. Después, otras miradas por descubrir."
+  },
+  "featured": {
+    "label": "Historias destacadas",
+    "carousel": "carrusel",
+    "slide": "diapositiva",
+    "daily": "Lo más valorado hoy",
+    "latest": "Últimas historias",
+    "read": "Leer historia",
+    "likes_one": "{{count}} me gusta hoy",
+    "likes_other": "{{count}} me gusta hoy",
+    "position": "Historia {{current}} de {{total}}",
+    "previous": "Historia anterior",
+    "next": "Historia siguiente",
+    "goTo": "Ver: {{title}}",
+    "retry": "Volver a cargar las historias destacadas"
   }
 }

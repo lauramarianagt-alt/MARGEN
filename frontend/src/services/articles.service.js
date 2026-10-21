@@ -78,3 +78,7 @@ export function deleteArticle(articleId) {
     method: 'DELETE',
   })
 }
+
+export function getFeaturedArticles() {
+  return apiFetch('/articles/featured')
+}

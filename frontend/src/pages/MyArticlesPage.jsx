@@ -325,11 +325,6 @@ function MyArticlesPage() {
                 count: articlesPagination.total,
               })}
             </p>
-
-            <Link to="/dashboard/profile">{t('profile.editLink')}</Link>
-            <Link className="articles-create-link" to="/dashboard/articles/new">
-              {t('articles.my.create')}
-            </Link>
           </div>
         </header>
 
@@ -691,28 +686,39 @@ function MyArticlesPage() {
           </p>
         </section>
 
-        <nav
-          className="dashboard-sections"
-          aria-label={t('dashboard.sections')}
-        >
-          <button
-            type="button"
-            className="dashboard-section-button"
-            aria-pressed={activeSection === 'articles'}
-            onClick={() => handleSectionChange('articles')}
+        <div className="dashboard-toolbar">
+          <nav
+            className="dashboard-sections"
+            aria-label={t('dashboard.sections')}
           >
-            {t('articles.my.title')}
-          </button>
+            <button
+              type="button"
+              className="dashboard-section-button"
+              aria-pressed={activeSection === 'articles'}
+              onClick={() => handleSectionChange('articles')}
+            >
+              {t('articles.my.title')}
+            </button>
 
-          <button
-            type="button"
-            className="dashboard-section-button"
-            aria-pressed={activeSection === 'favorites'}
-            onClick={() => handleSectionChange('favorites')}
-          >
-            {t('favorites.title')}
-          </button>
-        </nav>
+            <button
+              type="button"
+              className="dashboard-section-button"
+              aria-pressed={activeSection === 'favorites'}
+              onClick={() => handleSectionChange('favorites')}
+            >
+              {t('favorites.title')}
+            </button>
+          </nav>
+          <div className="dashboard-toolbar__actions">
+            <Link to="/dashboard/profile">{t('profile.editLink')}</Link>
+            <Link
+              className="dashboard-toolbar__create"
+              to="/dashboard/articles/new"
+            >
+              {t('articles.my.create')}
+            </Link>
+          </div>
+        </div>
 
         {activeSection === 'articles' ? renderArticles() : renderFavorites()}
       </main>

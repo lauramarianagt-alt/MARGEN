@@ -1,3 +1,4 @@
+import FeaturedArticlesCarousel from '../components/FeaturedArticlesCarousel.jsx'
 import { useAuth } from '../hooks/useAuth.js'
 import { getPersonalizedFeed } from '../services/following.service.js'
 import { useEffect, useState } from 'react'
@@ -257,33 +258,7 @@ function HomePage() {
   return (
     <main className="page public-home">
       <section className="public-home__hero">
-        <div className="public-home__opening">
-          <div>
-            <p className="page-eyebrow">{t('articles.public.eyebrow')}</p>
-            <h1
-              className="public-home__headline"
-              aria-label={t('articles.public.heroTitle')}
-            >
-              {t('articles.public.heroTitle')
-                .split(' ')
-                .map((word) => (
-                  <span key={word}>{word}</span>
-                ))}
-            </h1>
-            <p className="public-home__intro">
-              {t('articles.public.heroIntro')}
-            </p>
-          </div>
-          <figure className="public-home__opening-image">
-            <img
-              src="/images/margen-editorial.webp"
-              alt={t('magazine.heroAlt')}
-              width="1536"
-              height="1024"
-              fetchPriority="high"
-            />
-          </figure>
-        </div>
+        <FeaturedArticlesCarousel />
 
         <section
           className="public-category-filter"

@@ -48,6 +48,9 @@ vi.mock('../src/services/articles.service.js', async (original) => ({
   ...(await original()),
   getPublicArticle: mocks.getPublicArticle,
   getPublicArticles: mocks.getPublicArticles,
+  getFeaturedArticles: vi
+    .fn()
+    .mockResolvedValue({ articles: [], mode: 'latest' }),
 }))
 vi.mock('../src/services/authors.service.js', () => ({
   getPublicAuthor: mocks.getPublicAuthor,

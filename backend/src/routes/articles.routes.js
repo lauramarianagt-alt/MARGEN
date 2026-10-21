@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { listFeaturedArticles } from '../controllers/featured.controller.js'
 
 import {
   createArticle,
@@ -27,6 +28,7 @@ export const articlesRouter = Router()
 export const meArticlesRouter = Router()
 
 articlesRouter.get('/', listPublicArticles)
+articlesRouter.get('/featured', listFeaturedArticles)
 
 articlesRouter.get('/:id/likes', getArticleLikes)
 

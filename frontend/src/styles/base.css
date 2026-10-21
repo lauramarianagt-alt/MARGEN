@@ -470,3 +470,93 @@ h1 {
     max-width: none;
   }
 }
+
+/* Keep the active navigation mark on the header rule, with quieter languages. */
+.language-switcher button {
+  position: relative;
+  color: var(--muted);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  min-height: 44px;
+  min-width: 30px;
+}
+.language-switcher button[aria-pressed='true'] {
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+.language-switcher button::after {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: -1px;
+  height: 1px;
+  background: transparent;
+  content: '';
+}
+.language-switcher button[aria-pressed='true']::after {
+  background: var(--ink);
+}
+@media (min-width: 701px) {
+  .site-header {
+    flex-wrap: nowrap;
+    align-items: stretch;
+    min-height: 96px;
+    padding-block: 0;
+    gap: 1.5rem;
+  }
+  .site-header .brand {
+    align-self: center;
+    width: auto;
+  }
+  .main-navigation {
+    align-items: stretch;
+  }
+  .main-navigation a,
+  .main-navigation .navigation-button {
+    display: flex;
+    align-items: center;
+    padding: 0;
+    font-size: 0.75rem;
+  }
+  .main-navigation a::after {
+    bottom: -1px;
+  }
+  .site-header__tools {
+    width: auto;
+    gap: 1rem;
+  }
+  .site-header .language-switcher {
+    align-self: stretch;
+    align-items: stretch;
+    gap: 0.25rem;
+  }
+  .language-switcher button {
+    padding: 0 0.25rem;
+  }
+}
+@media (min-width: 701px) and (max-width: 1000px) {
+  .site-header {
+    gap: 1rem;
+    min-height: 80px;
+  }
+  .main-navigation {
+    gap: 1rem;
+  }
+  .main-navigation a,
+  .main-navigation .navigation-button {
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+  }
+}
+@media (max-width: 700px) {
+  .language-switcher button {
+    font-size: 0.65rem;
+  }
+  .language-switcher button::after {
+    bottom: 0;
+    left: 8px;
+    right: 8px;
+  }
+}

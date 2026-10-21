@@ -57,8 +57,10 @@ beforeAll(async () => {
     '0008_editorial_galleries.sql',
     '0009_beauty_categories.sql',
     '0010_author_follows.sql',
+    '0011_featured_articles.sql',
   ])
     await db.exec(await migration(file))
+  await db.exec(await migration('0011_featured_articles.sql'))
   await db.exec(await migration('0010_author_follows.sql'))
   await db.exec(await migration('0008_editorial_galleries.sql'))
   // Verify that additive migrations also accept an existing schema.
@@ -504,5 +506,105 @@ describe('Private follows and personalized article ordering', () => {
     await asRole('authenticated', B)
     const result = await feed()
     expect(result.articles[0]).toMatchObject({ id: PA, is_followed: true })
+  })
+})
+
+describe('Daily featured stories', () => {
+  async function covers() {
+    await db.exec(
+      "update public.articles set cover_image_url='https://example.test/cover.webp'",
+    )
+  }
+  async function featured(limit = 4) {
+    return (
+      await db.query('select public.featured_articles($1) as result', [limit])
+    ).rows[0].result
+  }
+  it('ranks the whole published catalogue by likes today and never exposes voters or article bodies', async () => {
+    await covers()
+    await db.query(
+      "insert into auth.users values ('33333333-3333-4333-8333-333333333333')",
+    )
+    await db.query(
+      "insert into public.profiles(id,username,name,surname) values ('33333333-3333-4333-8333-333333333333','third','Third','Reader')",
+    )
+    await db.query(
+      "insert into public.article_likes(user_id,article_id) values ('33333333-3333-4333-8333-333333333333',$1)",
+      [PA],
+    )
+    await asRole('anon')
+    const result = await featured(1)
+    expect(result.mode).toBe('daily-likes')
+    expect(result.timezone).toBe('Europe/Madrid')
+    expect(result.date).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+    expect(result.articles).toHaveLength(1)
+    expect(result.articles[0]).toMatchObject({
+      id: PA,
+      likes_today: 2,
+      author: { username: 'writer_a' },
+    })
+    expect(result.articles[0]).not.toHaveProperty('user_id')
+    expect(result.articles[0]).not.toHaveProperty('content')
+  })
+  it('uses Madrid midnight boundaries, excludes future votes and falls back to recency without daily likes', async () => {
+    await covers()
+    await db.query(
+      "update public.article_likes set created_at = (date_trunc('day',now() at time zone 'Europe/Madrid') at time zone 'Europe/Madrid') - interval '1 microsecond' where article_id=$1",
+      [PA],
+    )
+    await db.query(
+      "update public.article_likes set created_at=now()+interval '1 hour' where article_id=$1",
+      [PB],
+    )
+    await db.query(
+      "update public.articles set published_at=now()-interval '1 hour' where id=$1",
+      [PB],
+    )
+    await asRole('anon')
+    const result = await featured()
+    expect(result.mode).toBe('latest')
+    expect(result.articles.map((a) => [a.id, a.likes_today])).toEqual([
+      [PB, 0],
+      [PA, 0],
+    ])
+  })
+  it('includes likes at Madrid midnight and ignores all-time popularity', async () => {
+    await covers()
+    await db.query(
+      "update public.article_likes set created_at=(date_trunc('day',now() at time zone 'Europe/Madrid') at time zone 'Europe/Madrid') where article_id=$1",
+      [PA],
+    )
+    await db.query(
+      "update public.article_likes set created_at=now()-interval '2 days' where article_id=$1",
+      [PB],
+    )
+    await asRole('anon')
+    expect(
+      (await featured()).articles.map((a) => [a.id, a.likes_today]),
+    ).toEqual([
+      [PA, 1],
+      [PB, 0],
+    ])
+  })
+  it('hides drafts and scheduled articles even from their author, and excludes missing covers', async () => {
+    await covers()
+    await db.query(
+      "update public.articles set cover_image_url=' ' where id=$1",
+      [PB],
+    )
+    await asRole('authenticated', A)
+    expect((await featured()).articles.map((a) => a.id)).toEqual([PA])
+  })
+  it('breaks equal votes and publication times by ID consistently for public readers', async () => {
+    await covers()
+    await asRole('anon')
+    const anon = await featured()
+    expect(anon.articles.map((a) => a.id)).toEqual([PB, PA])
+    await asRole('authenticated', A)
+    expect(await featured()).toEqual(anon)
+  })
+  it('returns an empty recent selection when no published article has a cover', async () => {
+    await asRole('anon')
+    expect(await featured()).toMatchObject({ articles: [], mode: 'latest' })
   })
 })
