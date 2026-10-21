@@ -2,7 +2,7 @@
   "brand": {
     "name": "MARGEN",
     "description": "Moda independiente y cultura visual",
-    "tagline": "La moda merece algo más que un feed."
+    "tagline": "La moda merece más que un feed."
   },
   "navigation": {
     "home": "Inicio",
@@ -396,5 +396,28 @@
     },
     "pagination": "Paginación de notificaciones",
     "recent": "Tu actividad reciente."
+  },
+  "account": {
+    "title": "Tu cuenta",
+    "summary": "Gestiona la baja definitiva de tu cuenta de MARGEN.",
+    "open": "Cerrar mi cuenta",
+    "password": "Contraseña actual",
+    "confirmation": "Escribe tu nombre de usuario: {{username}}",
+    "acknowledge": "Entiendo que se eliminarán mi perfil, artículos, imágenes, comentarios y favoritos.",
+    "continue": "Continuar con la baja",
+    "confirmTitle": "¿Cerrar tu cuenta definitivamente?",
+    "warning": "Esta acción eliminará tu cuenta y su contenido. No se puede deshacer.",
+    "confirm": "Eliminar mi cuenta",
+    "processing": "Cerrando cuenta…",
+    "passwordError": "La contraseña no es correcta. Vuelve a intentarlo.",
+    "error": "No se pudo completar la baja. Vuelve a intentarlo.",
+    "closed": "Tu cuenta se ha cerrado."
+  },
+  "manifesto": {
+    "about": "Quiénes somos",
+    "label": "El manifiesto de MARGEN",
+    "title": "La moda merece más que un feed",
+    "intro": "Una imagen puede abrir una conversación. MARGEN nace para darle espacio: a la ropa, a los procesos y a las personas que construyen una mirada.",
+    "read": "Quiénes somos"
   }
 }

@@ -21,6 +21,8 @@ beforeEach(() => {
     'update',
   ])
     query[method] = vi.fn(() => query)
+  // This mock models the documented Supabase thenable query builder.
+  // oxlint-disable-next-line unicorn/no-thenable
   query.then = (resolve) =>
     Promise.resolve({ data: [], count: 2, error: null }).then(resolve)
   mocks.createSupabaseUserClient.mockReturnValue(query)

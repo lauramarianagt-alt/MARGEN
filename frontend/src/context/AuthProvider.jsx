@@ -11,6 +11,7 @@ import {
 
 import { saveProfile } from '../services/galleries.service.js'
 
+import { closeMyAccount } from '../services/account.service.js'
 import { AuthContext } from './auth-context.js'
 
 function AuthProvider({ children }) {
@@ -83,6 +84,13 @@ function AuthProvider({ children }) {
     setStatus('anonymous')
   }
 
+  async function closeAccount(input) {
+    await closeMyAccount(input)
+    setUser(null)
+    setProfile(null)
+    setStatus('anonymous')
+  }
+
   const value = useMemo(
     () => ({
       user,
@@ -97,6 +105,7 @@ function AuthProvider({ children }) {
       register,
       logout,
       updateProfile,
+      closeAccount,
     }),
     [user, profile, status],
   )

@@ -1,5 +1,5 @@
 import { env } from '../config/env.js'
-import { supabaseAdmin, supabasePublic } from '../config/supabase.js'
+import { supabasePublic } from '../config/supabase.js'
 
 import {
   createProfile,
@@ -43,25 +43,16 @@ export async function registerUser({
     throw error
   }
 
-  try {
-    const profile = await createProfile({
-      id: data.user.id,
-      username,
-      name,
-      surname,
-      preferredLocale,
-    })
-
-    return {
-      user: data.user,
-      profile,
-      session: data.session,
-    }
-  } catch (profileError) {
-    await supabaseAdmin.auth.admin.deleteUser(data.user.id)
-
-    throw profileError
-  }
+  // A repeated sign-up can refer to an existing account. Never delete an
+  // authentication user to recover from a profile insert failure.
+  const profile = await createProfile({
+    id: data.user.id,
+    username,
+    name,
+    surname,
+    preferredLocale,
+  })
+  return { user: data.user, profile, session: data.session }
 }
 
 export async function loginUser({ email, password }) {

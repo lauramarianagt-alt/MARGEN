@@ -14,6 +14,9 @@ const multerUpload = multer({
   limits: {
     fileSize: MAX_COVER_SIZE_BYTES,
     files: 1,
+    fields: 10,
+    fieldSize: 400_000,
+    parts: 11,
   },
 }).single('cover')
 

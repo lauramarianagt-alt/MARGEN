@@ -18,9 +18,12 @@ const localeSchema = z
   )
 
 export const registerSchema = z.object({
-  email: z.email('Email must be valid'),
+  email: z.email('Email must be valid').max(254),
 
-  password: z.string().min(8, 'Password must contain at least 8 characters'),
+  password: z
+    .string()
+    .min(8, 'Password must contain at least 8 characters')
+    .max(256),
 
   username: z
     .string()
@@ -32,15 +35,15 @@ export const registerSchema = z.object({
       message: 'This username is reserved',
     }),
 
-  name: z.string().trim().min(1, 'Name is required'),
+  name: z.string().trim().min(1, 'Name is required').max(80),
 
-  surname: z.string().trim().min(1, 'Surname is required'),
+  surname: z.string().trim().min(1, 'Surname is required').max(80),
 
   preferredLocale: localeSchema.default('es'),
 })
 
 export const loginSchema = z.object({
-  email: z.email('Email must be valid'),
+  email: z.email('Email must be valid').max(254),
 
-  password: z.string().min(1, 'Password is required'),
+  password: z.string().min(1, 'Password is required').max(256),
 })

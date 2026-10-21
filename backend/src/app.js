@@ -1,3 +1,11 @@
+import { removeAccount } from './controllers/account.controller.js'
+import { createRequestLimit } from './middleware/security.js'
+import helmet from 'helmet'
+import {
+  apiErrorHandler,
+  apiRequestLimit,
+  requireSameOrigin,
+} from './middleware/security.js'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import express from 'express'
@@ -18,6 +26,21 @@ import followingRouter from './routes/following.routes.js'
 import notificationsRouter from './routes/notifications.routes.js'
 
 const app = express()
+app.disable('x-powered-by')
+// Only the local nginx hop is trusted; the API listens on loopback.
+app.set('trust proxy', 'loopback')
+app.use(
+  helmet({
+    xFrameOptions: { action: 'deny' },
+    contentSecurityPolicy: { directives: { frameAncestors: ["'none'"] } },
+  }),
+)
+app.use('/api', (req, res, next) => {
+  res.set('Cache-Control', 'no-store')
+  next()
+})
+app.use('/api', requireSameOrigin)
+app.use('/api', apiRequestLimit)
 
 app.use(
   cors({
@@ -48,5 +71,13 @@ app.use('/api/me/articles', meArticlesRouter)
 app.use('/api/me/notifications', notificationsRouter)
 
 app.get('/api/me', requireAuth, me)
+app.delete(
+  '/api/me/account',
+  requireAuth,
+  createRequestLimit({ limit: 5, keyGenerator: (req) => req.user.id }),
+  removeAccount,
+)
+
+app.use(apiErrorHandler)
 
 export default app

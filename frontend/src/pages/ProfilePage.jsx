@@ -1,3 +1,4 @@
+import DeleteAccountSection from '../components/DeleteAccountSection.jsx'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -90,6 +91,7 @@ export default function ProfilePage() {
           </Link>
         </footer>
       </form>
+      <DeleteAccountSection />
     </main>
   )
 }

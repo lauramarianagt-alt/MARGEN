@@ -7,6 +7,7 @@
 @import './styles/reading.css';
 @import './styles/category-menu.css';
 @import './styles/notifications.css';
+@import './styles/identity.css';
 
 :root {
   --font-heading: 'Helvetica Neue', Helvetica, Arial, sans-serif;

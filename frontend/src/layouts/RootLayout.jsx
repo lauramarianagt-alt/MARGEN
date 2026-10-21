@@ -123,7 +123,8 @@ function RootLayout() {
         }}
       >
         <NavLink to="/" className="brand" onClick={() => setIsMenuOpen(false)}>
-          {t('brand.name')}
+          <span className="brand__wordmark">{t('brand.name')}</span>
+          <span className="brand__tagline">{t('brand.tagline')}</span>
         </NavLink>
 
         <nav
@@ -133,6 +134,9 @@ function RootLayout() {
           onClick={() => setIsMenuOpen(false)}
         >
           <NavLink to="/">{t('navigation.home')}</NavLink>
+          <NavLink to="/Lau/fashion-deserves-more-than-a-feed">
+            {t('manifesto.about')}
+          </NavLink>
 
           {!isLoading && !isAuthenticated && (
             <>
@@ -147,17 +151,6 @@ function RootLayout() {
               <NavLink to="/dashboard" end>
                 {t('navigation.dashboard')}
               </NavLink>
-
-              <button
-                type="button"
-                className="navigation-button"
-                onClick={handleLogout}
-                disabled={isLoggingOut}
-              >
-                {isLoggingOut
-                  ? t('navigation.loggingOut')
-                  : t('navigation.logout')}
-              </button>
             </>
           )}
         </nav>
@@ -292,6 +285,38 @@ function RootLayout() {
               {t('language.en')}
             </button>
           </div>
+          {!isLoading && isAuthenticated && (
+            <button
+              className="navigation-button header-logout"
+              type="button"
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              aria-label={t(
+                isLoggingOut ? 'navigation.loggingOut' : 'navigation.logout',
+              )}
+              title={t('navigation.logout')}
+            >
+              <span className="header-logout__label">
+                {t(
+                  isLoggingOut ? 'navigation.loggingOut' : 'navigation.logout',
+                )}
+              </span>
+              <svg
+                className="header-logout__icon"
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M9 4H4v16h5M14 8l4 4-4 4M8 12h10" />
+              </svg>
+            </button>
+          )}
           <button
             ref={menuToggle}
             className="menu-toggle"

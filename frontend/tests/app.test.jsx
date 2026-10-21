@@ -42,6 +42,7 @@ const auth = vi.hoisted(() => ({
   login: vi.fn(),
   register: vi.fn(),
   logout: vi.fn(),
+  closeAccount: vi.fn(),
 }))
 vi.mock('../src/services/notifications.service.js', () => ({
   getNotifications: mocks.getNotifications,
@@ -139,6 +140,7 @@ beforeEach(async () => {
   auth.profile = { id: 'member', name: 'Reader' }
   auth.isAuthenticated = true
   auth.isLoading = false
+  auth.closeAccount.mockResolvedValue(undefined)
   auth.register.mockResolvedValue({ requiresEmailConfirmation: true })
   auth.logout.mockImplementation(async () => {
     auth.isAuthenticated = false
@@ -423,6 +425,48 @@ describe('Reader and member flows', () => {
 })
 
 describe('Compact navigation controls', () => {
+  it('opens the editorial home after ordinary sign-in', async () => {
+    auth.isAuthenticated = false
+    auth.login.mockImplementation(async () => {
+      auth.isAuthenticated = true
+    })
+    const { container } = renderApp('/login')
+    fireEvent.change(screen.getByLabelText('Correo electrónico'), {
+      target: { value: 'reader@example.com' },
+    })
+    fireEvent.change(screen.getByLabelText('Contraseña', { exact: true }), {
+      target: { value: 'MockPassword123!' },
+    })
+    fireEvent.submit(container.querySelector('form'))
+    expect(
+      await screen.findByRole('heading', {
+        name: 'La moda merece más que un feed',
+      }),
+    ).toBeTruthy()
+    expect(
+      screen
+        .getByRole('navigation')
+        .querySelector('a[href="/Lau/fashion-deserves-more-than-a-feed"]'),
+    ).toBeTruthy()
+  })
+  it('preserves a protected destination after signing in', async () => {
+    auth.isAuthenticated = false
+    auth.login.mockImplementation(async () => {
+      auth.isAuthenticated = true
+    })
+    const { container } = renderApp('/dashboard/notifications')
+    await screen.findByRole('heading', { name: 'Iniciar sesión' })
+    fireEvent.change(screen.getByLabelText('Correo electrónico'), {
+      target: { value: 'reader@example.com' },
+    })
+    fireEvent.change(screen.getByLabelText('Contraseña', { exact: true }), {
+      target: { value: 'MockPassword123!' },
+    })
+    fireEvent.submit(container.querySelector('form'))
+    expect(
+      await screen.findByRole('heading', { name: 'Notificaciones' }),
+    ).toBeTruthy()
+  })
   it('opens navigation, closes it with Escape, and returns focus', async () => {
     renderApp('/')
     await screen.findByRole('heading', { name: article.title })
@@ -818,5 +862,76 @@ describe('Author notification inbox', () => {
     expect(container.querySelector('.notification-link')).toBeNull()
     expect(mocks.getNotifications).not.toHaveBeenCalled()
     expect(mocks.getUnreadCount).not.toHaveBeenCalled()
+  })
+})
+
+describe('Explicit account closure', () => {
+  beforeEach(() => {
+    auth.profile = {
+      id: 'member',
+      username: 'reader',
+      name: 'Reader',
+      surname: 'Test',
+    }
+    auth.closeAccount.mockImplementation(async () => {
+      auth.isAuthenticated = false
+    })
+    HTMLDialogElement.prototype.showModal = function () {
+      this.open = true
+    }
+    HTMLDialogElement.prototype.close = function () {
+      this.open = false
+    }
+  })
+  async function prepareClosure() {
+    renderApp('/dashboard/profile')
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Cerrar mi cuenta' }),
+    )
+    fireEvent.change(screen.getByLabelText('Contraseña actual'), {
+      target: { value: 'CorrectPassword123!' },
+    })
+    fireEvent.change(
+      screen.getByLabelText('Escribe tu nombre de usuario: reader'),
+      { target: { value: 'reader' } },
+    )
+    fireEvent.click(
+      screen.getByRole('checkbox', { name: /Entiendo que se eliminarán/ }),
+    )
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Continuar con la baja' }),
+    )
+  }
+  it('requires password, matching username, acknowledgement and a final confirmation', async () => {
+    await prepareClosure()
+    expect(auth.closeAccount).not.toHaveBeenCalled()
+    const dialog = screen.getByRole('dialog')
+    expect(dialog.textContent).toContain('No se puede deshacer')
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar mi cuenta' }))
+    await waitFor(() =>
+      expect(auth.closeAccount).toHaveBeenCalledWith({
+        password: 'CorrectPassword123!',
+        confirmation: 'reader',
+        acknowledged: true,
+      }),
+    )
+    await screen.findByText('Tu cuenta se ha cerrado.')
+  })
+  it('can cancel the final confirmation without a deletion request', async () => {
+    await prepareClosure()
+    fireEvent.click(screen.getAllByRole('button', { name: 'Cancelar' }).at(-1))
+    expect(auth.closeAccount).not.toHaveBeenCalled()
+    expect(screen.getByLabelText('Contraseña actual').value).toBe('')
+  })
+  it('shows a password error without falsely closing the account', async () => {
+    auth.closeAccount.mockRejectedValueOnce(
+      new ApiError('Password verification failed', 401),
+    )
+    await prepareClosure()
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar mi cuenta' }))
+    expect((await screen.findByRole('alert')).textContent).toContain(
+      'La contraseña no es correcta',
+    )
+    expect(screen.queryByText('Tu cuenta se ha cerrado.')).toBeNull()
   })
 })

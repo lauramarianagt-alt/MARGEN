@@ -191,7 +191,6 @@ el contenido público sigue siendo una SPA renderizada en el cliente.
 
 La página 404 de React tampoco cambia el estado HTTP 200 del fallback de Nginx.
 
-
 ### Carrusel de portada
 
 `GET /api/articles/featured` devuelve hasta cuatro historias publicadas con portada, ordenadas por los «me gusta» recibidos durante el día de Europe/Madrid. Los empates se resuelven por fecha de publicación e ID. Sin votos diarios se muestran las publicaciones recientes; no se simulan visitas ni votos. Se cuentan los me gusta vigentes: retirar uno lo elimina también de la clasificación.
@@ -200,9 +199,7 @@ Requiere aplicar `backend/supabase/migrations/0011_featured_articles.sql` una ve
 
 «Mi espacio» reúne las secciones, la creación de artículos y la edición del perfil en una barra. En móvil las acciones pasan a una segunda fila. La cabecera alinea los controles y sitúa el indicador de navegación sobre su línea inferior.
 
-
 El filtro de categorías usa un menú propio en marfil, con opciones negras y estado de foco/puntero negro con texto marfil. Incluye navegación por flechas, Inicio/Fin y Escape. El editor de contenido ofrece una superficie de escritura sin borde que adapta su altura al texto y muestra el número de palabras. El contenido conserva sus párrafos en texto plano.
-
 
 ### Notificaciones de autoras
 
@@ -211,3 +208,17 @@ La migración `0012_author_notifications.sql` debe aplicarse antes de desplegar 
 Solo la cuenta destinataria puede consultar su bandeja y actualizar `read_at`; el cliente no puede crear avisos ni alterar su autoría. La bandeja vive en `/dashboard/notifications`, conserva el historial leído y permite abrir el artículo o marcar el conjunto como leído. Los comentarios enlazan a `#comments`. El contador y la bandeja se actualizan cada 30 segundos mientras la página está visible y al volver a la ventana. Esta versión usa avisos dentro de la web.
 
 Endpoints autenticados: `GET /api/me/notifications`, `GET /api/me/notifications/unread-count`, `PATCH /api/me/notifications/:id/read` y `PATCH /api/me/notifications/read`. El marcado conjunto requiere el campo `before` con la instantánea `asOf` devuelta al cargar la bandeja, para conservar sin leer los avisos posteriores.
+
+### Identidad y acceso
+
+«Quiénes somos» enlaza al manifiesto editorial existente, **La moda merece más que un feed**, desde la navegación superior. El manifiesto tiene una presentación fija al comienzo del inicio, independiente del orden de publicaciones. El logo incorpora el lema debajo. El inicio de sesión habitual abre la portada; si una ruta privada inició el acceso, se conserva ese destino. Cerrar sesión está en las herramientas de la derecha, separado de la navegación.
+
+### Seguridad y cierre voluntario de cuenta
+
+El API verifica el origen de las operaciones de escritura, limita los intentos de acceso/registro y las peticiones repetidas, devuelve errores JSON genéricos y usa cabeceras de Helmet. Solo confía en el proxy local y escucha en `127.0.0.1` por defecto. Nginx debe continuar apuntando a esa dirección. Las cookies de sesión son HttpOnly, SameSite=Lax y Secure en producción. El frontend no recibe la clave administrativa de Supabase.
+
+`ops/nginx-security-headers.conf` se incluye **dentro del bloque HTTPS `location /`** de Nginx, para proteger la SPA y evitar duplicar las cabeceras del API. Ejecutar `nginx -t` antes de recargar. El CSP admite imágenes propias y del proyecto Supabase configurado; si se cambia de alojamiento de imágenes, revisar la directiva explícitamente.
+
+El perfil ofrece «Cerrar mi cuenta»: exige contraseña actual, nombre de usuario exacto, aceptación y una confirmación final. `DELETE /api/me/account` deriva la identidad de la sesión verificada; no acepta un ID de cuenta aportado por el cliente. Reautentica antes de borrar imágenes del prefijo propio y eliminar el usuario de Auth. Las claves foráneas eliminan perfil, artículos e interacciones asociadas. La operación está limitada a cinco intentos por quince minutos y usuario. Las pruebas usan simulaciones y no eliminan cuentas reales.
+
+Storage y Auth son servicios separados: no existe una transacción conjunta entre ambos; si falla el borrado final, las imágenes ya retiradas no se recuperan automáticamente y la cuenta puede reintentar. Los limitadores actuales guardan sus contadores en memoria de un único proceso; un despliegue con varios procesos necesita un almacén compartido.

@@ -54,7 +54,10 @@ export async function register(req, res) {
     console.error('Registration error:', error)
 
     return res.status(error.statusCode ?? 500).json({
-      error: error.message ?? 'Unable to register user',
+      error:
+        error.statusCode && error.statusCode < 500
+          ? error.message
+          : 'Unable to register user',
     })
   }
 }
@@ -82,7 +85,10 @@ export async function login(req, res) {
     console.error('Login error:', error)
 
     return res.status(error.statusCode ?? 500).json({
-      error: error.message ?? 'Unable to log in',
+      error:
+        error.statusCode && error.statusCode < 500
+          ? error.message
+          : 'Unable to log in',
     })
   }
 }

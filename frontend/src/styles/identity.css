@@ -1,0 +1,213 @@
+/* The manifesto is part of the magazine identity, independent of feed order. */
+.site-header .brand {
+  display: inline-flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 0.5rem;
+  background: none;
+  -webkit-text-fill-color: currentColor;
+}
+.brand__wordmark {
+  font-family: var(--font-heading);
+  font-size: clamp(2.75rem, 4.3vw, 3.75rem);
+  font-weight: 800;
+  letter-spacing: -0.065em;
+  line-height: 0.9;
+}
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .brand__wordmark {
+    background-image:
+      linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
+      url('/images/margen-masthead.webp');
+    background-size: cover;
+    background-position: center;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+.brand__tagline {
+  color: var(--muted);
+  font-family: var(--font-intro);
+  font-size: 0.9375rem;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.15;
+}
+.site-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 0;
+  gap: 0.75rem 1.5rem;
+  padding-top: 1.25rem;
+  padding-bottom: 0;
+}
+.site-header .brand {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+}
+.site-header__tools {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+}
+.main-navigation {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  justify-content: center;
+  gap: 2rem;
+}
+.main-navigation a {
+  min-height: 44px;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+}
+.home-manifesto {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: var(--space-editorial-4);
+  padding-bottom: var(--space-editorial-3);
+  border-bottom: 1px solid var(--rule);
+}
+.home-manifesto__label {
+  margin: 0 0 0.625rem;
+  color: var(--muted);
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.home-manifesto h2 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.625rem, 2.8vw, 2.375rem);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
+}
+.home-manifesto__intro {
+  max-width: 60ch;
+  margin: 0;
+  color: var(--reading-ink);
+  font-family: var(--font-intro);
+  font-size: 1.1875rem;
+  font-style: italic;
+  line-height: 1.3;
+}
+.home-manifesto > a {
+  flex-shrink: 0;
+  color: var(--ink);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+@media (min-width: 901px) and (max-width: 1200px) {
+  .notification-link__label {
+    display: none;
+  }
+  .notification-link {
+    width: 32px;
+  }
+  .brand__wordmark {
+    font-size: 3.5rem;
+  }
+  .site-header__tools {
+    gap: 0.625rem;
+  }
+  .main-navigation {
+    gap: 1rem;
+  }
+}
+@media (max-width: 900px) {
+  .site-header {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.875rem 0;
+    min-height: 0;
+    padding: 1rem 1.25rem 0.5rem;
+  }
+  .site-header .brand {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    justify-self: start;
+    gap: 0.5rem;
+  }
+  .brand__wordmark {
+    font-size: 2.75rem;
+  }
+  .brand__tagline {
+    font-size: 0.9375rem;
+  }
+  .site-header__tools {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: end;
+    gap: 0;
+    min-height: 44px;
+  }
+  .notification-link {
+    width: 32px;
+  }
+  .site-header .header-search__toggle,
+  .site-header .menu-toggle {
+    display: flex;
+    width: 32px;
+    height: 44px;
+  }
+  .site-header .language-switcher {
+    align-self: stretch;
+  }
+  .site-header .language-switcher button {
+    width: 28px;
+    padding: 0;
+  }
+  .header-logout {
+    width: 32px;
+    padding: 0;
+    border-left: 0;
+    color: var(--ink);
+  }
+  .header-logout__label {
+    display: none;
+  }
+  .header-logout__icon {
+    display: block;
+  }
+  .site-header .main-navigation {
+    display: none;
+    grid-column: 1 / -1;
+    grid-row: 3;
+    width: 100%;
+    padding-top: 0.25rem;
+  }
+  .site-header .main-navigation--open {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+  .site-header .main-navigation a {
+    display: block;
+    min-height: 44px;
+    padding: 0.875rem 0;
+    border-top: 1px solid var(--rule);
+    font-size: 0.75rem;
+    text-align: left;
+  }
+  .main-navigation a::after {
+    display: none;
+  }
+}
+@media (max-width: 700px) {
+  .home-manifesto {
+    align-items: start;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: var(--space-editorial-3);
+  }
+}

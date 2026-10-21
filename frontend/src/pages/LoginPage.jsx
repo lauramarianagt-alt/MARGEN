@@ -29,7 +29,7 @@ function LoginPage() {
 
   const emailConfirmed = searchParams.get('emailConfirmed') === 'true'
 
-  const destination = location.state?.from?.pathname ?? '/dashboard'
+  const destination = location.state?.from?.pathname ?? '/'
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -66,7 +66,7 @@ function LoginPage() {
   }
 
   if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to="/" replace />
   }
 
   return (
@@ -74,6 +74,11 @@ function LoginPage() {
       <div className="auth-container">
         <h1>{t('auth.login.title')}</h1>
 
+        {searchParams.get('accountClosed') === 'true' && (
+          <p className="auth-message auth-message--success" role="status">
+            {t('account.closed')}
+          </p>
+        )}
         {emailConfirmed && (
           <p className="auth-message auth-message--success" role="status">
             {t('auth.emailConfirmed')}

@@ -1,4 +1,9 @@
 import { Router } from 'express'
+import {
+  loginRequestLimits,
+  registerRequestLimit,
+  refreshRequestLimit,
+} from '../middleware/security.js'
 
 import {
   confirm,
@@ -10,9 +15,9 @@ import {
 
 const router = Router()
 
-router.post('/register', register)
-router.post('/login', login)
+router.post('/register', registerRequestLimit, register)
+router.post('/login', ...loginRequestLimits, login)
 router.post('/logout', logout)
-router.post('/refresh', refresh)
-router.get('/confirm', confirm)
+router.post('/refresh', refreshRequestLimit, refresh)
+router.get('/confirm', refreshRequestLimit, confirm)
 export default router

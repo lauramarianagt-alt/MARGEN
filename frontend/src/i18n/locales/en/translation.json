@@ -396,5 +396,28 @@
     },
     "pagination": "Notifications pagination",
     "recent": "Your recent activity."
+  },
+  "account": {
+    "title": "Your account",
+    "summary": "Manage the permanent closure of your MARGEN account.",
+    "open": "Close my account",
+    "password": "Current password",
+    "confirmation": "Type your username: {{username}}",
+    "acknowledge": "I understand that my profile, articles, images, comments and saved articles will be deleted.",
+    "continue": "Continue with closure",
+    "confirmTitle": "Permanently close your account?",
+    "warning": "This deletes your account and its content. This cannot be undone.",
+    "confirm": "Delete my account",
+    "processing": "Closing account…",
+    "passwordError": "The password is incorrect. Please try again.",
+    "error": "We couldn't complete the closure. Please try again.",
+    "closed": "Your account has been closed."
+  },
+  "manifesto": {
+    "about": "About us",
+    "label": "The MARGEN manifesto",
+    "title": "Fashion deserves more than a feed",
+    "intro": "An image can start a conversation. MARGEN makes room for it: for clothes, processes and the people who shape a point of view.",
+    "read": "About us"
   }
 }
