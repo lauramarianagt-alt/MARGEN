@@ -127,7 +127,7 @@ h1 {
 
 .main-navigation .navigation-button:disabled {
   cursor: wait;
-  opacity: 0.5;
+  opacity: var(--subdued-control-opacity);
 }
 
 .language-switcher {

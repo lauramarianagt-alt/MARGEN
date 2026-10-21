@@ -283,6 +283,7 @@
 }
 
 .article-action[aria-pressed='true'] {
+  opacity: var(--subdued-control-opacity);
   color: var(--muted);
   background-color: transparent;
   border-color: var(--rule);
@@ -317,6 +318,7 @@
 }
 
 .public-article__social {
+  max-width: 38.2rem;
   margin: 0 auto 4rem;
   padding-top: 1.25rem;
   border-top: 1px solid var(--ink);
@@ -368,7 +370,7 @@
 
 .public-article__comment-list,
 .public-article__comment-form {
-  max-width: 44rem;
+  max-width: 100%;
   margin-inline: 0;
 }
 

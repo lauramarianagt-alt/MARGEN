@@ -19,6 +19,7 @@
   --muted: #6f6a63;
   --date-ink: #716b63;
   --rule: #d8d2c8;
+  --subdued-control-opacity: 0.5;
   --reading-width: 60ch;
   /* The display size is phi² times the 23px article introduction. */
   --editorial-ratio: 1.618;
