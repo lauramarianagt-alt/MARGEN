@@ -211,3 +211,16 @@
     margin-bottom: var(--space-editorial-3);
   }
 }
+@media (min-width: 1600px) {
+  .page {
+    width: 100%;
+    max-width: 1240px;
+    margin-inline: auto;
+  }
+  .site-header {
+    padding-inline: calc((100vw - 1176px) / 2);
+  }
+  .site-footer {
+    max-width: 1176px;
+  }
+}
