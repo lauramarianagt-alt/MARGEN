@@ -102,6 +102,20 @@ describe('Homepage featured carousel', () => {
     await screen.findByRole('heading', { name: 'Historia 1' })
     expect(mocks.getFeaturedArticles).toHaveBeenCalledTimes(2)
   })
+  it('exposes only the current story while retaining inactive panels for stable layout', async () => {
+    show()
+    await screen.findByRole('heading', { name: 'Historia 1' })
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
+    expect(
+      document.querySelectorAll(
+        '.featured-carousel__story[inert][aria-hidden="true"]',
+      ),
+    ).toHaveLength(3)
+    fireEvent.click(screen.getByRole('button', { name: 'Historia siguiente' }))
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
+    expect(screen.getByRole('heading', { name: 'Historia 2' })).toBeTruthy()
+    expect(screen.queryByRole('link', { name: 'Historia 1' })).toBeNull()
+  })
   it('translates the controls into English', async () => {
     await i18n.changeLanguage('en')
     show()
