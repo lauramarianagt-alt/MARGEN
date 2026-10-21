@@ -168,6 +168,27 @@ function RootLayout() {
         </nav>
 
         <div className="site-header__tools">
+          <div
+            className="language-switcher"
+            role="group"
+            aria-label={t('language.choose')}
+          >
+            <button
+              type="button"
+              onClick={() => changeLanguage('es')}
+              aria-pressed={i18n.language === 'es'}
+            >
+              {t('language.es')}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => changeLanguage('en')}
+              aria-pressed={i18n.language === 'en'}
+            >
+              {t('language.en')}
+            </button>
+          </div>
           {!isLoading && isAuthenticated && (
             <NotificationLink onClick={() => setIsMenuOpen(false)} />
           )}
@@ -278,27 +299,6 @@ function RootLayout() {
             )}
           </div>
 
-          <div
-            className="language-switcher"
-            role="group"
-            aria-label={t('language.choose')}
-          >
-            <button
-              type="button"
-              onClick={() => changeLanguage('es')}
-              aria-pressed={i18n.language === 'es'}
-            >
-              {t('language.es')}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => changeLanguage('en')}
-              aria-pressed={i18n.language === 'en'}
-            >
-              {t('language.en')}
-            </button>
-          </div>
           {!isLoading && isAuthenticated && (
             <button
               className="navigation-button header-logout"
