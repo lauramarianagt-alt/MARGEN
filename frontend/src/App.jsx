@@ -17,6 +17,7 @@ import PublicAuthorPage from './pages/PublicAuthorPage.jsx'
 import PublicCategoryPage from './pages/PublicCategoryPage.jsx'
 import ProfilePage from './pages/ProfilePage.jsx'
 import RegisterPage from './pages/RegisterPage.jsx'
+import AboutPage from './pages/AboutPage.jsx'
 
 function App() {
   const navigate = useNavigate()
@@ -45,6 +46,7 @@ function App() {
         }
       >
         <Route path="/" element={<HomePage />} />
+        <Route path="/quienes-somos" element={<AboutPage />} />
 
         <Route path="/login" element={<LoginPage />} />
 

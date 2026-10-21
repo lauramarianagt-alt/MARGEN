@@ -425,6 +425,20 @@ describe('Reader and member flows', () => {
 })
 
 describe('Compact navigation controls', () => {
+  it('opens the manifesto from About us without adding a home feed block', async () => {
+    renderApp('/')
+    await screen.findByRole('heading', { name: article.title })
+    expect(document.querySelector('.home-manifesto')).toBeNull()
+    fireEvent.click(
+      screen.getByRole('link', { name: 'Quiénes somos', exact: true }),
+    )
+    expect(await screen.findByText('Article body.')).toBeTruthy()
+    expect(document.querySelector('.about-page')).toBeTruthy()
+    expect(mocks.getPublicArticle).toHaveBeenCalledWith(
+      'Lau',
+      'fashion-deserves-more-than-a-feed',
+    )
+  })
   it('opens the editorial home after ordinary sign-in', async () => {
     auth.isAuthenticated = false
     auth.login.mockImplementation(async () => {
@@ -440,13 +454,11 @@ describe('Compact navigation controls', () => {
     fireEvent.submit(container.querySelector('form'))
     expect(
       await screen.findByRole('heading', {
-        name: 'La moda merece más que un feed',
+        name: article.title,
       }),
     ).toBeTruthy()
     expect(
-      screen
-        .getByRole('navigation')
-        .querySelector('a[href="/Lau/fashion-deserves-more-than-a-feed"]'),
+      screen.getByRole('navigation').querySelector('a[href="/quienes-somos"]'),
     ).toBeTruthy()
   })
   it('preserves a protected destination after signing in', async () => {

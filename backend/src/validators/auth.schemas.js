@@ -8,6 +8,7 @@ const reservedUsernames = new Set([
   'dashboard',
   'login',
   'register',
+  'quienes-somos',
 ])
 
 const localeSchema = z

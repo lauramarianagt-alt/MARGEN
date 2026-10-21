@@ -211,7 +211,7 @@ Endpoints autenticados: `GET /api/me/notifications`, `GET /api/me/notifications/
 
 ### Identidad y acceso
 
-«Quiénes somos» enlaza al manifiesto editorial existente, **La moda merece más que un feed**, desde la navegación superior. El manifiesto tiene una presentación fija al comienzo del inicio, independiente del orden de publicaciones. El logo incorpora el lema debajo. El inicio de sesión habitual abre la portada; si una ruta privada inició el acceso, se conserva ese destino. Cerrar sesión está en las herramientas de la derecha, separado de la navegación.
+«Quiénes somos» presenta el manifiesto editorial existente, **La moda merece más que un feed**, en `/quienes-somos`, accesible desde la navegación superior. El contenido se obtiene del artículo original para mantener una sola fuente. El logo incorpora el lema debajo. El inicio de sesión habitual abre la portada; si una ruta privada inició el acceso, se conserva ese destino. Cerrar sesión está en las herramientas de la derecha, separado de la navegación.
 
 ### Seguridad y cierre voluntario de cuenta
 

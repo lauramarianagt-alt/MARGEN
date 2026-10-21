@@ -9,6 +9,7 @@ import {
 import { useTranslation } from 'react-i18next'
 
 import NotificationLink from '../components/NotificationLink.jsx'
+import BrandLogo from '../components/BrandLogo.jsx'
 import { useAuth } from '../hooks/useAuth.js'
 
 function RootLayout() {
@@ -122,9 +123,13 @@ function RootLayout() {
           }
         }}
       >
-        <NavLink to="/" className="brand" onClick={() => setIsMenuOpen(false)}>
-          <span className="brand__wordmark">{t('brand.name')}</span>
-          <span className="brand__tagline">{t('brand.tagline')}</span>
+        <NavLink
+          to="/"
+          className="brand"
+          aria-label={`${t('brand.name')} · ${t('brand.tagline')}`}
+          onClick={() => setIsMenuOpen(false)}
+        >
+          <BrandLogo name={t('brand.name')} tagline={t('brand.tagline')} />
         </NavLink>
 
         <nav
@@ -134,9 +139,7 @@ function RootLayout() {
           onClick={() => setIsMenuOpen(false)}
         >
           <NavLink to="/">{t('navigation.home')}</NavLink>
-          <NavLink to="/Lau/fashion-deserves-more-than-a-feed">
-            {t('manifesto.about')}
-          </NavLink>
+          <NavLink to="/quienes-somos">{t('manifesto.about')}</NavLink>
 
           {!isLoading && !isAuthenticated && (
             <>

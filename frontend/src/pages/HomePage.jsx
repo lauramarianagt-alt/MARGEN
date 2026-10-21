@@ -273,16 +273,6 @@ function HomePage() {
   return (
     <main className="page public-home">
       <section className="public-home__hero">
-        <aside className="home-manifesto" aria-labelledby="manifesto-title">
-          <div>
-            <p className="home-manifesto__label">{t('manifesto.label')}</p>
-            <h2 id="manifesto-title">{t('manifesto.title')}</h2>
-            <p className="home-manifesto__intro">{t('manifesto.intro')}</p>
-          </div>
-          <Link to="/Lau/fashion-deserves-more-than-a-feed">
-            {t('manifesto.read')} <span aria-hidden="true">→</span>
-          </Link>
-        </aside>
         <FeaturedArticlesCarousel />
 
         <section

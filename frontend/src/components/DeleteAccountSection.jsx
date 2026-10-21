@@ -65,6 +65,7 @@ export default function DeleteAccountSection() {
       ) : (
         <form
           className="account-close__form"
+          autoComplete="off"
           onSubmit={(event) => {
             event.preventDefault()
             if (ready) setConfirming(true)
@@ -104,6 +105,7 @@ export default function DeleteAccountSection() {
             </label>
             <input
               id="close-account-confirmation"
+              name="account-closure-confirmation"
               autoComplete="off"
               required
               maxLength={30}
