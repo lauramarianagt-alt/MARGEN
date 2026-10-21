@@ -236,8 +236,8 @@
     "loginPrompt": "Log in to save, like and comment.",
     "ownArticle": "You can save your own article, but likes and comments are reserved for other authors.",
     "favorite": {
-      "add": "☆ Save",
-      "remove": "★ Saved",
+      "add": "Save",
+      "remove": "Saved",
       "error": "We couldn't update the favorite."
     },
     "like": {

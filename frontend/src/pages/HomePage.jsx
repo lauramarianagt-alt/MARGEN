@@ -373,11 +373,6 @@ function HomePage() {
                   : t('articles.public.latest')}
             </h2>
 
-            {isAuthenticated && !isSearchActive && (
-              <p className="personalized-feed-note">
-                {t('following.feedNote')}
-              </p>
-            )}
             {isSearchActive && (
               <>
                 <p>
@@ -398,12 +393,12 @@ function HomePage() {
             )}
 
             {isCategoryActive && selectedCategory && (
-              <p>
-                {t('articles.filters.active', {
-                  category: t(`categories.names.${selectedCategory.slug}`, {
+              <p className="public-home__active-category">
+                <Link to={`/categories/${selectedCategory.slug}`}>
+                  {t(`categories.names.${selectedCategory.slug}`, {
                     defaultValue: selectedCategory.name,
-                  }),
-                })}
+                  })}
+                </Link>
               </p>
             )}
           </div>

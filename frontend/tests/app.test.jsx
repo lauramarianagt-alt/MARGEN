@@ -23,6 +23,10 @@ const mocks = vi.hoisted(() => ({
   getArticleLikes: vi.fn(),
   getArticleLikeState: vi.fn(),
   getFavoriteState: vi.fn(),
+  addFavorite: vi.fn(),
+  removeFavorite: vi.fn(),
+  addArticleLike: vi.fn(),
+  removeArticleLike: vi.fn(),
   addComment: vi.fn(),
   deleteComment: vi.fn(),
 }))
@@ -65,6 +69,10 @@ vi.mock('../src/services/social.service.js', async (original) => ({
   getArticleLikes: mocks.getArticleLikes,
   getArticleLikeState: mocks.getArticleLikeState,
   getFavoriteState: mocks.getFavoriteState,
+  addFavorite: mocks.addFavorite,
+  removeFavorite: mocks.removeFavorite,
+  addArticleLike: mocks.addArticleLike,
+  removeArticleLike: mocks.removeArticleLike,
   addComment: mocks.addComment,
   deleteComment: mocks.deleteComment,
 }))
@@ -101,19 +109,24 @@ function Controls() {
     </>
   )
 }
-function renderApp(path = '/Lau/story-one') {
-  return render(
+function appTree(path = '/Lau/story-one') {
+  return (
     <MemoryRouter initialEntries={[path]}>
       <Controls />
       <App />
-    </MemoryRouter>,
+    </MemoryRouter>
   )
+}
+function renderApp(path) {
+  return render(appTree(path))
 }
 
 beforeEach(async () => {
   vi.clearAllMocks()
   window.history.replaceState({}, '', '/')
   await i18n.changeLanguage('es')
+  auth.user = { id: 'member' }
+  auth.profile = { id: 'member', name: 'Reader' }
   auth.isAuthenticated = true
   auth.isLoading = false
   auth.register.mockResolvedValue({ requiresEmailConfirmation: true })
@@ -148,6 +161,10 @@ beforeEach(async () => {
   mocks.getArticleLikes.mockResolvedValue({ count: 3 })
   mocks.getArticleLikeState.mockResolvedValue({ isLiked: false })
   mocks.getFavoriteState.mockResolvedValue({ isFavorite: false })
+  mocks.addFavorite.mockResolvedValue({})
+  mocks.removeFavorite.mockResolvedValue({})
+  mocks.addArticleLike.mockResolvedValue({ count: 4 })
+  mocks.removeArticleLike.mockResolvedValue({ count: 3 })
   mocks.getArticleComments.mockImplementation(
     async (id, { page = 1, limit = 10 } = {}) => ({
       comments: comments.slice((page - 1) * limit, page * limit),
@@ -437,4 +454,179 @@ it('shows and hides the login password without submitting or changing it', async
   expect(password.type).toBe('password')
   expect(auth.login).not.toHaveBeenCalled()
   expect(container.querySelector('.password-field svg')).toBeTruthy()
+})
+
+describe('Shared article actions', () => {
+  const likeButtons = () => screen.getAllByRole('button', { name: /^Me gusta/ })
+  const saveButtons = () =>
+    screen.getAllByRole('button', { name: /^(Guardar|Guardado)$/ })
+  async function ready() {
+    await screen.findByRole('heading', { name: article.title })
+    await waitFor(() => expect(likeButtons()[0].disabled).toBe(false))
+  }
+
+  it('updates both positions when liking, unliking, saving or removing a save', async () => {
+    renderApp()
+    await ready()
+    expect(likeButtons()).toHaveLength(2)
+    expect(saveButtons()).toHaveLength(2)
+    fireEvent.click(likeButtons()[1])
+    await waitFor(() =>
+      expect(
+        likeButtons().every(
+          (button) => button.getAttribute('aria-pressed') === 'true',
+        ),
+      ).toBe(true),
+    )
+    expect(mocks.addArticleLike).toHaveBeenCalledWith(article.id)
+    expect(
+      likeButtons().every((button) => button.textContent === 'Me gusta4'),
+    ).toBe(true)
+    expect(likeButtons()[0].querySelector('svg').getAttribute('fill')).toBe(
+      'currentColor',
+    )
+    fireEvent.click(likeButtons()[0])
+    await waitFor(() =>
+      expect(
+        likeButtons().every(
+          (button) => button.getAttribute('aria-pressed') === 'false',
+        ),
+      ).toBe(true),
+    )
+    expect(mocks.removeArticleLike).toHaveBeenCalledWith(article.id)
+    expect(likeButtons()[1].querySelector('svg').getAttribute('fill')).toBe(
+      'none',
+    )
+    fireEvent.click(saveButtons()[1])
+    await waitFor(() =>
+      expect(
+        saveButtons().every((button) => button.textContent === 'Guardado'),
+      ).toBe(true),
+    )
+    fireEvent.click(saveButtons()[0])
+    await waitFor(() =>
+      expect(
+        saveButtons().every((button) => button.textContent === 'Guardar'),
+      ).toBe(true),
+    )
+    expect(mocks.addFavorite).toHaveBeenCalledWith(article.id)
+    expect(mocks.removeFavorite).toHaveBeenCalledWith(article.id)
+  })
+
+  it('loads the signed-in reader state and resets it when the account changes', async () => {
+    mocks.getArticleLikeState.mockResolvedValueOnce({ isLiked: true })
+    mocks.getFavoriteState.mockResolvedValueOnce({ isFavorite: true })
+    const view = renderApp()
+    await ready()
+    expect(
+      likeButtons().every(
+        (button) => button.getAttribute('aria-pressed') === 'true',
+      ),
+    ).toBe(true)
+    expect(
+      saveButtons().every((button) => button.textContent === 'Guardado'),
+    ).toBe(true)
+    auth.user = { id: 'another-reader' }
+    auth.profile = { id: 'another-reader', name: 'Another reader' }
+    view.rerender(appTree())
+    await waitFor(() =>
+      expect(mocks.getArticleLikeState).toHaveBeenCalledTimes(2),
+    )
+    await waitFor(() =>
+      expect(
+        likeButtons().every(
+          (button) =>
+            button.getAttribute('aria-pressed') === 'false' && !button.disabled,
+        ),
+      ).toBe(true),
+    )
+    expect(
+      saveButtons().every((button) => button.textContent === 'Guardar'),
+    ).toBe(true)
+  })
+
+  it('locks both copies during a request and preserves the outline on failure', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    let rejectLike
+    mocks.addArticleLike.mockImplementationOnce(
+      () =>
+        new Promise((resolve, reject) => {
+          rejectLike = reject
+        }),
+    )
+    renderApp()
+    await ready()
+    fireEvent.click(likeButtons()[0])
+    expect(likeButtons().every((button) => button.disabled)).toBe(true)
+    fireEvent.click(likeButtons()[1])
+    expect(mocks.addArticleLike).toHaveBeenCalledTimes(1)
+    await act(async () => rejectLike(new Error('Network unavailable')))
+    await screen.findByRole('alert')
+    expect(
+      likeButtons().every(
+        (button) =>
+          !button.disabled && button.getAttribute('aria-pressed') === 'false',
+      ),
+    ).toBe(true)
+    expect(likeButtons()[1].textContent).toBe('Me gusta3')
+  })
+
+  it('waits for the personal state and allows retrying it after a failure', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    mocks.getFavoriteState.mockRejectedValueOnce(new Error('Unavailable'))
+    renderApp()
+    await screen.findByRole('alert')
+    expect(saveButtons().every((button) => button.disabled)).toBe(true)
+    fireEvent.click(
+      screen.getByRole('button', { name: i18n.t('common.retry') }),
+    )
+    await ready()
+    expect(saveButtons().every((button) => !button.disabled)).toBe(true)
+  })
+
+  it('lets the author save, and keeps self-likes unavailable in both positions', async () => {
+    auth.user = { id: 'writer' }
+    auth.profile = { id: 'writer', name: 'Author' }
+    renderApp()
+    await screen.findByRole('heading', { name: article.title })
+    await waitFor(() => expect(saveButtons()[0].disabled).toBe(false))
+    expect(likeButtons().every((button) => button.disabled)).toBe(true)
+    expect(mocks.getArticleLikeState).not.toHaveBeenCalled()
+    expect(screen.getByText(i18n.t('social.ownArticle')).id).toBe(
+      'article-own-note',
+    )
+    fireEvent.click(likeButtons()[0])
+    expect(mocks.addArticleLike).not.toHaveBeenCalled()
+  })
+
+  it('offers the same two actions as login links to anonymous readers', async () => {
+    auth.isAuthenticated = false
+    renderApp()
+    await screen.findByRole('heading', { name: article.title })
+    expect(
+      screen.getAllByRole('link', { name: 'Guardar', exact: true }),
+    ).toHaveLength(2)
+    expect(
+      screen
+        .getAllByRole('link', { name: /^Me gusta/ })
+        .every((link) => link.getAttribute('href') === '/login'),
+    ).toBe(true)
+    expect(mocks.getFavoriteState).not.toHaveBeenCalled()
+    expect(mocks.getArticleLikeState).not.toHaveBeenCalled()
+  })
+})
+
+it('shows only the category name in editorial type without the feed explanation', async () => {
+  renderApp('/?category=design')
+  const heading = await screen.findByRole('heading', {
+    name: 'Historias para ti',
+  })
+  const header = heading.closest('header')
+  await waitFor(() =>
+    expect(
+      header.querySelector('.public-home__active-category a')?.textContent,
+    ).toBe('Diseño'),
+  )
+  expect(header.textContent).not.toContain('Categoría:')
+  expect(header.textContent).not.toContain('Primero, las autoras')
 })

@@ -236,8 +236,8 @@
     "loginPrompt": "Inicia sesión para guardar, dar me gusta y comentar.",
     "ownArticle": "Puedes guardar tu artículo, pero los likes y comentarios están reservados para otras autoras.",
     "favorite": {
-      "add": "☆ Guardar",
-      "remove": "★ Guardado",
+      "add": "Guardar",
+      "remove": "Guardado",
       "error": "No se pudo actualizar el favorito."
     },
     "like": {

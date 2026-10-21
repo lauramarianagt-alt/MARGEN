@@ -1,3 +1,4 @@
+import ArticleActions from '../components/articles/ArticleActions.jsx'
 import ArticleContent from '../components/articles/ArticleContent.jsx'
 import PublicGallery from '../components/gallery/PublicGallery.jsx'
 import ResponsiveImage from '../components/ResponsiveImage.jsx'
@@ -35,8 +36,19 @@ function PublicArticlePage() {
   const [retryKey, setRetryKey] = useState(0)
 
   const [likeCount, setLikeCount] = useState(0)
-  const [isLiked, setIsLiked] = useState(false)
-  const [isFavorite, setIsFavorite] = useState(false)
+  const [privateSocialState, setPrivateSocialState] = useState(null)
+  const [privateRetryKey, setPrivateRetryKey] = useState(0)
+  const [privateSocialError, setPrivateSocialError] = useState(null)
+  const currentUserId = user?.id ?? profile?.id ?? null
+  const socialStateKey =
+    isAuthenticated && article?.id && currentUserId
+      ? `${article.id}:${currentUserId}`
+      : null
+  const isPrivateSocialReady = Boolean(
+    socialStateKey && privateSocialState?.key === socialStateKey,
+  )
+  const isLiked = isPrivateSocialReady && privateSocialState.isLiked
+  const isFavorite = isPrivateSocialReady && privateSocialState.isFavorite
 
   const [comments, setComments] = useState([])
   const [commentTotal, setCommentTotal] = useState(0)
@@ -158,68 +170,43 @@ function PublicArticlePage() {
   ])
 
   useEffect(() => {
-    if (!article?.id || isAuthLoading) {
-      return undefined
-    }
-
+    if (!socialStateKey || isAuthLoading) return undefined
     let cancelled = false
 
     async function loadPrivateSocialState() {
-      if (!isAuthenticated) {
-        setIsFavorite(false)
-        setIsLiked(false)
-
-        return
-      }
-
-      const currentUserId = user?.id ?? profile?.id ?? null
-      const isOwnArticle = currentUserId === article.author_id
-
+      setPrivateSocialError(null)
       try {
-        const favoriteResponse = await getFavoriteState(article.id)
-
-        if (cancelled) {
-          return
+        const [favoriteResponse, likeResponse] = await Promise.all([
+          getFavoriteState(article.id),
+          currentUserId === article.author_id
+            ? Promise.resolve({ isLiked: false })
+            : getArticleLikeState(article.id),
+        ])
+        if (!cancelled) {
+          setPrivateSocialState({
+            key: socialStateKey,
+            isFavorite: favoriteResponse.isFavorite,
+            isLiked: likeResponse.isLiked,
+          })
         }
-
-        setIsFavorite(favoriteResponse.isFavorite)
-
-        if (isOwnArticle) {
-          setIsLiked(false)
-
-          return
-        }
-
-        const likeResponse = await getArticleLikeState(article.id)
-
-        if (cancelled) {
-          return
-        }
-
-        setIsLiked(likeResponse.isLiked)
       } catch (loadError) {
-        if (cancelled) {
-          return
+        if (!cancelled) {
+          console.error('Unable to load private social state:', loadError)
+          setPrivateSocialError(t('social.stateError'))
         }
-
-        console.error('Unable to load private social state:', loadError)
-
-        setSocialError(t('social.stateError'))
       }
     }
-
     loadPrivateSocialState()
-
     return () => {
       cancelled = true
     }
   }, [
     article?.id,
     article?.author_id,
-    isAuthenticated,
+    socialStateKey,
+    currentUserId,
     isAuthLoading,
-    user?.id,
-    profile?.id,
+    privateRetryKey,
     t,
   ])
 
@@ -246,7 +233,7 @@ function PublicArticlePage() {
   }
 
   async function handleFavorite() {
-    if (!article || !isAuthenticated || isFavoriteLoading) {
+    if (!article || !isPrivateSocialReady || isFavoriteLoading) {
       return
     }
 
@@ -256,10 +243,18 @@ function PublicArticlePage() {
     try {
       if (isFavorite) {
         await removeFavorite(article.id)
-        setIsFavorite(false)
+        setPrivateSocialState((current) =>
+          current?.key === socialStateKey
+            ? { ...current, isFavorite: false }
+            : current,
+        )
       } else {
         await addFavorite(article.id)
-        setIsFavorite(true)
+        setPrivateSocialState((current) =>
+          current?.key === socialStateKey
+            ? { ...current, isFavorite: true }
+            : current,
+        )
       }
     } catch (actionError) {
       console.error('Unable to update favorite:', actionError)
@@ -271,7 +266,13 @@ function PublicArticlePage() {
   }
 
   async function handleLike() {
-    if (!article || !isAuthenticated || isLikeLoading) {
+    if (
+      !article ||
+      !isPrivateSocialReady ||
+      isSocialLoading ||
+      isLikeLoading ||
+      currentUserId === article.author_id
+    ) {
       return
     }
 
@@ -283,7 +284,11 @@ function PublicArticlePage() {
         ? await removeArticleLike(article.id)
         : await addArticleLike(article.id)
 
-      setIsLiked(!isLiked)
+      setPrivateSocialState((current) =>
+        current?.key === socialStateKey
+          ? { ...current, isLiked: !isLiked }
+          : current,
+      )
       setLikeCount(response.count)
     } catch (actionError) {
       console.error('Unable to update article like:', actionError)
@@ -414,10 +419,22 @@ function PublicArticlePage() {
       ?.map((relation) => relation.category)
       .filter(Boolean) ?? []
 
-  const currentUserId = user?.id ?? profile?.id ?? null
-
   const isOwnArticle =
     Boolean(currentUserId) && currentUserId === article.author_id
+
+  const actionProps = {
+    isAuthenticated,
+    isAuthLoading,
+    isReady: isPrivateSocialReady,
+    isOwnArticle,
+    isFavorite,
+    isLiked,
+    likeCount,
+    isFavoriteLoading,
+    isLikeLoading: isLikeLoading || isSocialLoading,
+    onFavorite: handleFavorite,
+    onLike: handleLike,
+  }
 
   return (
     <main className="page public-article-page">
@@ -445,30 +462,47 @@ function PublicArticlePage() {
             <p className="public-article__excerpt">{article.excerpt}</p>
           )}
 
-          <div className="public-article__meta">
-            {authorUsername ? (
-              <Link
-                className="public-article__author"
-                to={`/${authorUsername}`}
-              >
-                {t('articles.public.by', {
-                  author: authorName,
-                })}
-              </Link>
-            ) : (
-              <span>
-                {t('articles.public.by', {
-                  author: authorName,
-                })}
-              </span>
-            )}
+          <div className="public-article__header-footer">
+            <div className="public-article__meta">
+              {authorUsername ? (
+                <Link
+                  className="public-article__author"
+                  to={`/${authorUsername}`}
+                >
+                  {t('articles.public.by', {
+                    author: authorName,
+                  })}
+                </Link>
+              ) : (
+                <span>
+                  {t('articles.public.by', {
+                    author: authorName,
+                  })}
+                </span>
+              )}
 
-            {article.published_at && (
-              <time dateTime={article.published_at}>
-                {formatDate(article.published_at)}
-              </time>
-            )}
+              {article.published_at && (
+                <time dateTime={article.published_at}>
+                  {formatDate(article.published_at)}
+                </time>
+              )}
+            </div>
+            <ArticleActions {...actionProps} />
           </div>
+          {(socialError || privateSocialError) && (
+            <p className="public-article__action-error" role="alert">
+              {socialError || privateSocialError}
+              {privateSocialError && (
+                <button
+                  className="navigation-button"
+                  type="button"
+                  onClick={() => setPrivateRetryKey((key) => key + 1)}
+                >
+                  {t('common.retry')}
+                </button>
+              )}
+            </p>
+          )}
         </header>
 
         {article.cover_image_url && (
@@ -484,60 +518,29 @@ function PublicArticlePage() {
           className="public-article__social"
           aria-label={t('social.title')}
         >
-          <div className="public-article__social-actions">
-            {isAuthenticated && (
-              <button
-                type="button"
-                className="navigation-button"
-                aria-pressed={isFavorite}
-                disabled={isFavoriteLoading}
-                onClick={handleFavorite}
-              >
-                {isFavorite
-                  ? t('social.favorite.remove')
-                  : t('social.favorite.add')}
-              </button>
-            )}
-
-            <div className="public-article__like">
-              {isAuthenticated && !isOwnArticle ? (
-                <button
-                  type="button"
-                  className="navigation-button"
-                  aria-pressed={isLiked}
-                  disabled={isLikeLoading}
-                  onClick={handleLike}
-                >
-                  {isLiked ? '♥' : '♡'} {t('social.like.label')}
-                </button>
-              ) : (
-                <span>{t('social.like.label')}</span>
-              )}
-
-              <span>{likeCount}</span>
-            </div>
-          </div>
-
-          {!isAuthenticated && !isAuthLoading && (
-            <p>
-              <Link to="/login">{t('social.loginPrompt')}</Link>
-            </p>
-          )}
-
-          {isOwnArticle && <p>{t('social.ownArticle')}</p>}
-
-          {socialError && (
-            <p className="auth-message auth-message--error" role="alert">
-              {socialError}
-            </p>
-          )}
-
           <section className="public-article__comments">
             <header>
               <h2>
                 {t('social.comments.title')} ({commentTotal})
               </h2>
+              <ArticleActions {...actionProps} />
             </header>
+
+            {!isAuthenticated && !isAuthLoading && (
+              <p className="public-article__social-note">
+                <Link to="/login">{t('social.loginPrompt')}</Link>
+              </p>
+            )}
+            {isOwnArticle && (
+              <p className="public-article__social-note" id="article-own-note">
+                {t('social.ownArticle')}
+              </p>
+            )}
+            {(socialError || privateSocialError) && (
+              <p className="public-article__action-error">
+                {socialError || privateSocialError}
+              </p>
+            )}
 
             {isSocialLoading ? (
               <p>{t('social.comments.loading')}</p>
