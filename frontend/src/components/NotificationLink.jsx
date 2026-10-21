@@ -1,13 +1,14 @@
 import { NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useNotifications } from '../hooks/useNotifications.js'
-export default function NotificationLink() {
+export default function NotificationLink({ onClick }) {
   const { t } = useTranslation()
   const { unreadCount } = useNotifications()
   return (
     <NavLink
       to="/dashboard/notifications"
       className="notification-link"
+      onClick={onClick}
       aria-label={
         unreadCount > 0
           ? t('notifications.unreadLabel', { count: unreadCount })

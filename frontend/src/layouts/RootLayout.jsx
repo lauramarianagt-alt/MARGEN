@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next'
 import NotificationLink from '../components/NotificationLink.jsx'
 import BrandLogo from '../components/BrandLogo.jsx'
 import { useAuth } from '../hooks/useAuth.js'
+import { useNotifications } from '../hooks/useNotifications.js'
 
 function RootLayout() {
   const { i18n, t } = useTranslation()
@@ -18,6 +19,7 @@ function RootLayout() {
   const navigate = useNavigate()
 
   const { isAuthenticated, isLoading, logout } = useAuth()
+  const { unreadCount } = useNotifications()
 
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -39,6 +41,7 @@ function RootLayout() {
 
     try {
       await logout()
+      setIsMenuOpen(false)
 
       navigate('/', {
         replace: true,
@@ -109,7 +112,7 @@ function RootLayout() {
   return (
     <>
       <header
-        className="site-header"
+        className={`site-header${isMenuOpen ? ' site-header--menu-open' : ''}`}
         onKeyDown={(event) => {
           if (event.key !== 'Escape') return
           if (isMenuOpen) {
@@ -119,7 +122,13 @@ function RootLayout() {
           if (isSearchOpen) {
             setIsSearchOpen(false)
             setSearchError(null)
-            searchToggle.current?.focus()
+            const searchButton = searchToggle.current
+            if (
+              searchButton &&
+              getComputedStyle(searchButton).display !== 'none'
+            )
+              searchButton.focus()
+            else menuToggle.current?.focus()
           }
         }}
       >
@@ -159,7 +168,9 @@ function RootLayout() {
         </nav>
 
         <div className="site-header__tools">
-          {!isLoading && isAuthenticated && <NotificationLink />}
+          {!isLoading && isAuthenticated && (
+            <NotificationLink onClick={() => setIsMenuOpen(false)} />
+          )}
           <div className="header-search">
             {isSearchOpen && (
               <form
@@ -357,6 +368,11 @@ function RootLayout() {
                 </>
               )}
             </svg>
+            {unreadCount > 0 && (
+              <span className="menu-toggle__count" aria-hidden="true">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            )}
           </button>
         </div>
       </header>
