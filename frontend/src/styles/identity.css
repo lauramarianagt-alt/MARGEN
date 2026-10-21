@@ -175,10 +175,14 @@
     grid-column: 1;
     grid-row: 1;
     justify-self: start;
-    width: min(100%, 200px);
+    width: min(100%, 148px);
   }
   .brand__lockup {
     width: 100%;
+    margin-bottom: -8%;
+  }
+  .brand__tagline {
+    display: none;
   }
   .site-header__tools,
   .header-search {
