@@ -271,9 +271,11 @@ function HomePage() {
   }
 
   return (
-    <main className="page public-home">
+    <main
+      className={`page public-home${isSearchActive ? ' public-home--search' : ''}`}
+    >
       <section className="public-home__hero">
-        <FeaturedArticlesCarousel />
+        {!isSearchActive && <FeaturedArticlesCarousel />}
 
         <section
           className="public-category-filter"

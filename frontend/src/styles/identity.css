@@ -1,4 +1,8 @@
 /* Keep the original single-row masthead; the manifesto lives in About us. */
+.public-home--search .public-home__hero .public-category-filter {
+  margin-top: 0;
+}
+
 .site-header .brand {
   display: inline-flex;
   flex-direction: column;
