@@ -2,6 +2,7 @@ import { ZodError } from 'zod'
 import { env } from '../config/env.js'
 
 import {
+  confirmEmail,
   getCurrentUser,
   loginUser,
   refreshUserSession,

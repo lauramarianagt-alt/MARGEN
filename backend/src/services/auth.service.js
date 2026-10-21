@@ -1,3 +1,4 @@
+import { env } from '../config/env.js'
 import { supabaseAdmin, supabasePublic } from '../config/supabase.js'
 
 import {
@@ -25,6 +26,9 @@ export async function registerUser({
   const { data, error: signUpError } = await supabasePublic.auth.signUp({
     email,
     password,
+    options: {
+      emailRedirectTo: env.frontendUrl,
+    },
   })
 
   if (signUpError) {
