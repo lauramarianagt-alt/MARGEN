@@ -31,7 +31,7 @@ PostgreSQL y Storage. Frontend y backend tienen sus propios lockfiles.
 ### 1. Base de datos
 
 En un proyecto de desarrollo nuevo, aplica en orden los archivos de
-`backend/supabase/migrations/0001_initial_schema.sql` a `0006_profile_usernames.sql`.
+`backend/supabase/migrations/0001_initial_schema.sql` a `0007_public_like_visibility.sql`.
 La migración 0005 añade comentarios, favoritos, me gusta y el bucket público
 `article-covers`. Las subidas y eliminaciones de portadas se realizan en el servidor.
 
@@ -45,6 +45,10 @@ guion y guion bajo (3–30 caracteres), y excluye rutas reservadas. Usa `NOT VAL
 para conservar perfiles antiguos. Antes de validar la restricción sobre todos los
 perfiles, revísalos y acuerda cualquier cambio de sus URLs. La API aplica la misma
 validación al registrar usuarios.
+
+La migración 0007 restringe la lectura de me gusta a artículos ya publicados.
+Permite actualizar esa política en una base existente sin recrear tablas ni tocar
+las demás políticas sociales.
 
 ### 2. Backend
 

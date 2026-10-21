@@ -53,11 +53,17 @@ beforeAll(async () => {
     '0004_articles_grants.sql',
     '0005_social_and_storage.sql',
     '0006_profile_usernames.sql',
+    '0007_public_like_visibility.sql',
   ])
     await db.exec(await migration(file))
   // Verify that additive migrations also accept an existing schema.
   await db.exec(await migration('0005_social_and_storage.sql'))
   await db.exec(await migration('0006_profile_usernames.sql'))
+  // Reproduce the permissive policy found on the existing Supabase project.
+  await db.exec(
+    'alter policy "Anyone can read article likes" on public.article_likes using (true)',
+  )
+  await db.exec(await migration('0007_public_like_visibility.sql'))
   await db.query('insert into auth.users (id) values ($1),($2)', [A, B])
   await db.query(
     `insert into public.profiles (id,username,name,surname)
@@ -239,6 +245,22 @@ describe('Fresh migrations and two-user RLS permissions', () => {
       { id: CA },
     ])
   })
+  it.each([
+    ['draft', null],
+    ['published', '2099-01-01T00:00:00Z'],
+  ])(
+    'hides existing likes when an article becomes %s or is scheduled in the future',
+    async (status, publishedAt) => {
+      await db.query(
+        'update public.articles set status=$1,published_at=$2 where id=$3',
+        [status, publishedAt, PA],
+      )
+      await asRole('anon')
+      expect(
+        (await db.query('select user_id from public.article_likes')).rows,
+      ).toEqual([{ user_id: A }])
+    },
+  )
   it('rejects liking the member own article', async () => {
     await asRole('authenticated', A)
     await expect(

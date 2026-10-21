@@ -46,16 +46,16 @@ grant insert, delete on public.comments, public.article_likes to authenticated;
 grant select, insert, delete on public.favorites to authenticated;
 grant all on public.comments, public.favorites, public.article_likes to service_role;
 
-drop policy if exists "Public comments on published articles" on public.comments;
-create policy "Public comments on published articles" on public.comments
+drop policy if exists "Anyone can read comments on published articles" on public.comments;
+create policy "Anyone can read comments on published articles" on public.comments
 for select to anon, authenticated
 using (exists (
   select 1 from public.articles a
   where a.id = article_id and a.status = 'published' and a.published_at <= now()
 ));
 
-drop policy if exists "Members comment on other public articles" on public.comments;
-create policy "Members comment on other public articles" on public.comments
+drop policy if exists "Users can comment on other authors articles" on public.comments;
+create policy "Users can comment on other authors articles" on public.comments
 for insert to authenticated
 with check (auth.uid() = author_id and exists (
   select 1 from public.articles a
@@ -63,16 +63,16 @@ with check (auth.uid() = author_id and exists (
     and a.status = 'published' and a.published_at <= now()
 ));
 
-drop policy if exists "Members delete their comments" on public.comments;
-create policy "Members delete their comments" on public.comments
+drop policy if exists "Users can delete own comments" on public.comments;
+create policy "Users can delete own comments" on public.comments
 for delete to authenticated using (auth.uid() = author_id);
 
-drop policy if exists "Members read their favorites" on public.favorites;
-create policy "Members read their favorites" on public.favorites
+drop policy if exists "Users can read own favorites" on public.favorites;
+create policy "Users can read own favorites" on public.favorites
 for select to authenticated using (auth.uid() = user_id);
 
-drop policy if exists "Members save accessible articles" on public.favorites;
-create policy "Members save accessible articles" on public.favorites
+drop policy if exists "Users can create own favorites" on public.favorites;
+create policy "Users can create own favorites" on public.favorites
 for insert to authenticated
 with check (auth.uid() = user_id and exists (
   select 1 from public.articles a
@@ -82,20 +82,20 @@ with check (auth.uid() = user_id and exists (
   )
 ));
 
-drop policy if exists "Members remove their favorites" on public.favorites;
-create policy "Members remove their favorites" on public.favorites
+drop policy if exists "Users can delete own favorites" on public.favorites;
+create policy "Users can delete own favorites" on public.favorites
 for delete to authenticated using (auth.uid() = user_id);
 
-drop policy if exists "Public likes on published articles" on public.article_likes;
-create policy "Public likes on published articles" on public.article_likes
+drop policy if exists "Anyone can read article likes" on public.article_likes;
+create policy "Anyone can read article likes" on public.article_likes
 for select to anon, authenticated
 using (exists (
   select 1 from public.articles a
   where a.id = article_id and a.status = 'published' and a.published_at <= now()
 ));
 
-drop policy if exists "Members like other public articles" on public.article_likes;
-create policy "Members like other public articles" on public.article_likes
+drop policy if exists "Users can like other authors articles" on public.article_likes;
+create policy "Users can like other authors articles" on public.article_likes
 for insert to authenticated
 with check (auth.uid() = user_id and exists (
   select 1 from public.articles a
@@ -103,8 +103,8 @@ with check (auth.uid() = user_id and exists (
     and a.status = 'published' and a.published_at <= now()
 ));
 
-drop policy if exists "Members remove their likes" on public.article_likes;
-create policy "Members remove their likes" on public.article_likes
+drop policy if exists "Users can remove own likes" on public.article_likes;
+create policy "Users can remove own likes" on public.article_likes
 for delete to authenticated using (auth.uid() = user_id);
 
 -- The server uploads and removes images with service_role. Public clients get
