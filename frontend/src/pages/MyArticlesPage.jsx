@@ -712,6 +712,12 @@ function MyArticlesPage() {
             >
               {t('favorites.title')}
             </button>
+            <Link
+              className="dashboard-section-button"
+              to="/dashboard/notifications"
+            >
+              {t('notifications.title')}
+            </Link>
           </nav>
           <div className="dashboard-toolbar__actions">
             <Link to="/dashboard/profile">{t('profile.editLink')}</Link>

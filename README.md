@@ -20,6 +20,7 @@ Web publicada: [margen-editorial.duckdns.org](https://margen-editorial.duckdns.o
 - Registro, confirmación por correo, login, logout y renovación de sesión.
 - Área privada: crear, editar y borrar artículos propios; borradores y publicación futura.
 - Comentarios paginados, favoritos privados y me gusta; permisos comprobados en servicios.
+- Notificaciones privadas de nuevos me gusta, guardados y comentarios, con contador de avisos sin leer en el navbar y bandeja en Mi espacio.
 - Interfaz ES/EN, estados de carga, error, contenido vacío y reintentos.
 - Validación de datos y de archivos JPEG, PNG y WebP (hasta 6 MB).
 - Sesión gestionada por el backend con cookies HttpOnly; los tokens no van a localStorage.
@@ -37,7 +38,7 @@ PostgreSQL y Storage. Frontend y backend tienen sus propios lockfiles.
 ### 1. Base de datos
 
 En un proyecto de desarrollo nuevo, aplica en orden los archivos de
-`backend/supabase/migrations/0001_initial_schema.sql` a `0010_author_follows.sql`.
+`backend/supabase/migrations/0001_initial_schema.sql` a `0012_author_notifications.sql`.
 La migración 0005 añade comentarios, favoritos, me gusta y el bucket público
 `article-covers`. Las subidas y eliminaciones de portadas se realizan en el servidor.
 
@@ -176,7 +177,7 @@ separado; un `git pull` no cambia la base de datos.
 - Recuperación de contraseña y edición/baja de cuenta desde la interfaz.
 - Editor de texto enriquecido y controles de maquetación elegidos por cada autora.
 - SEO con metadatos renderizados en el servidor o prerenderizados, Open Graph y sitemap.
-- Notificaciones, menciones y subrayados.
+- Menciones y subrayados personales.
 - Pruebas automatizadas de navegador, integración con Supabase de pruebas y CI/CD.
 - Más contenido editorial y fotografías aportadas por sus autoras.
 
@@ -201,3 +202,12 @@ Requiere aplicar `backend/supabase/migrations/0011_featured_articles.sql` una ve
 
 
 El filtro de categorías usa un menú propio en marfil, con opciones negras y estado de foco/puntero negro con texto marfil. Incluye navegación por flechas, Inicio/Fin y Escape. El editor de contenido ofrece una superficie de escritura sin borde que adapta su altura al texto y muestra el número de palabras. El contenido conserva sus párrafos en texto plano.
+
+
+### Notificaciones de autoras
+
+La migración `0012_author_notifications.sql` debe aplicarse antes de desplegar esta ampliación. Los triggers crean el aviso en la misma transacción que el me gusta, guardado o comentario. No generan avisos retroactivos ni de acciones sobre artículos propios. Deshacer la interacción retira el aviso correspondiente.
+
+Solo la cuenta destinataria puede consultar su bandeja y actualizar `read_at`; el cliente no puede crear avisos ni alterar su autoría. La bandeja vive en `/dashboard/notifications`, conserva el historial leído y permite abrir el artículo o marcar el conjunto como leído. Los comentarios enlazan a `#comments`. El contador y la bandeja se actualizan cada 30 segundos mientras la página está visible y al volver a la ventana. Esta versión usa avisos dentro de la web.
+
+Endpoints autenticados: `GET /api/me/notifications`, `GET /api/me/notifications/unread-count`, `PATCH /api/me/notifications/:id/read` y `PATCH /api/me/notifications/read`. El marcado conjunto requiere el campo `before` con la instantánea `asOf` devuelta al cargar la bandeja, para conservar sin leer los avisos posteriores.

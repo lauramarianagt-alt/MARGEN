@@ -8,6 +8,7 @@ import {
 } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
+import NotificationLink from '../components/NotificationLink.jsx'
 import { useAuth } from '../hooks/useAuth.js'
 
 function RootLayout() {
@@ -143,7 +144,9 @@ function RootLayout() {
 
           {!isLoading && isAuthenticated && (
             <>
-              <NavLink to="/dashboard">{t('navigation.dashboard')}</NavLink>
+              <NavLink to="/dashboard" end>
+                {t('navigation.dashboard')}
+              </NavLink>
 
               <button
                 type="button"
@@ -160,6 +163,7 @@ function RootLayout() {
         </nav>
 
         <div className="site-header__tools">
+          {!isLoading && isAuthenticated && <NotificationLink />}
           <div className="header-search">
             {isSearchOpen && (
               <form

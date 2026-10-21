@@ -372,5 +372,29 @@
     "limit": "Has alcanzado el límite del artículo. Acorta el texto o simplifica el formato para continuar.",
     "optional": "Opcional",
     "excerptPlaceholder": "Si la dejas vacía, mostraremos el comienzo de tu artículo."
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "unreadLabel_one": "Notificaciones, {{count}} sin leer",
+    "unreadLabel_other": "Notificaciones, {{count}} sin leer",
+    "unreadSummary_one": "{{count}} aviso sin leer",
+    "unreadSummary_other": "{{count}} avisos sin leer",
+    "upToDate": "Estás al día.",
+    "readAll": "Marcar todas como leídas",
+    "loading": "Cargando notificaciones…",
+    "emptyTitle": "Todo en calma por aquí.",
+    "empty": "Aquí aparecerán los nuevos me gusta, guardados y comentarios de tus artículos.",
+    "loadError": "No se pudieron cargar las notificaciones.",
+    "readError": "No se pudo marcar el aviso como leído. Inténtalo de nuevo.",
+    "someone": "Una persona",
+    "unread": "Sin leer",
+    "unavailable": "Artículo no disponible",
+    "events": {
+      "like": "le ha dado me gusta a tu artículo",
+      "save": "ha guardado tu artículo",
+      "comment": "ha comentado tu artículo"
+    },
+    "pagination": "Paginación de notificaciones",
+    "recent": "Tu actividad reciente."
   }
 }

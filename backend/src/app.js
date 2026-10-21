@@ -15,6 +15,8 @@ import favoritesRouter from './routes/favorites.routes.js'
 import galleriesRouter from './routes/galleries.routes.js'
 import followingRouter from './routes/following.routes.js'
 
+import notificationsRouter from './routes/notifications.routes.js'
+
 const app = express()
 
 app.use(
@@ -43,6 +45,7 @@ app.use('/api/authors', authorsRouter)
 app.use('/api/favorites', favoritesRouter)
 app.use('/api/comments', commentsRouter)
 app.use('/api/me/articles', meArticlesRouter)
+app.use('/api/me/notifications', notificationsRouter)
 
 app.get('/api/me', requireAuth, me)
 

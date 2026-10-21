@@ -3,6 +3,8 @@ import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
 
 import LegacyArticleRedirect from './components/LegacyArticleRedirect.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
+import NotificationsProvider from './context/NotificationsProvider.jsx'
+import NotificationsPage from './pages/NotificationsPage.jsx'
 import RootLayout from './layouts/RootLayout.jsx'
 import CreateArticlePage from './pages/CreateArticlePage.jsx'
 import EditArticlePage from './pages/EditArticlePage.jsx'
@@ -35,7 +37,13 @@ function App() {
 
   return (
     <Routes>
-      <Route element={<RootLayout />}>
+      <Route
+        element={
+          <NotificationsProvider>
+            <RootLayout />
+          </NotificationsProvider>
+        }
+      >
         <Route path="/" element={<HomePage />} />
 
         <Route path="/login" element={<LoginPage />} />
@@ -55,6 +63,10 @@ function App() {
 
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<MyArticlesPage />} />
+          <Route
+            path="/dashboard/notifications"
+            element={<NotificationsPage />}
+          />
           <Route path="/dashboard/profile" element={<ProfilePage />} />
 
           <Route

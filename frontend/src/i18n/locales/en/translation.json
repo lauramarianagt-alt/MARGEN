@@ -372,5 +372,29 @@
     "limit": "You have reached the article limit. Shorten the text or simplify the formatting to continue.",
     "optional": "Optional",
     "excerptPlaceholder": "Leave this blank to show the beginning of your article."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "unreadLabel_one": "Notifications, {{count}} unread",
+    "unreadLabel_other": "Notifications, {{count}} unread",
+    "unreadSummary_one": "{{count}} unread notification",
+    "unreadSummary_other": "{{count}} unread notifications",
+    "upToDate": "You're all caught up.",
+    "readAll": "Mark all as read",
+    "loading": "Loading notifications…",
+    "emptyTitle": "All quiet here.",
+    "empty": "New likes, saves and comments on your articles will appear here.",
+    "loadError": "We couldn't load your notifications.",
+    "readError": "We couldn't mark this notification as read. Please try again.",
+    "someone": "Someone",
+    "unread": "Unread",
+    "unavailable": "Article unavailable",
+    "events": {
+      "like": "liked your article",
+      "save": "saved your article",
+      "comment": "commented on your article"
+    },
+    "pagination": "Notifications pagination",
+    "recent": "Your recent activity."
   }
 }

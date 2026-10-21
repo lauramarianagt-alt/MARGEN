@@ -58,8 +58,10 @@ beforeAll(async () => {
     '0009_beauty_categories.sql',
     '0010_author_follows.sql',
     '0011_featured_articles.sql',
+    '0012_author_notifications.sql',
   ])
     await db.exec(await migration(file))
+  await db.exec(await migration('0012_author_notifications.sql'))
   await db.exec(await migration('0011_featured_articles.sql'))
   await db.exec(await migration('0010_author_follows.sql'))
   await db.exec(await migration('0008_editorial_galleries.sql'))
@@ -606,5 +608,163 @@ describe('Daily featured stories', () => {
   it('returns an empty recent selection when no published article has a cover', async () => {
     await asRole('anon')
     expect(await featured()).toMatchObject({ articles: [], mode: 'latest' })
+  })
+})
+
+describe('Private author notifications', () => {
+  it('creates exactly one notice per new like, save and comment for the article author', async () => {
+    await asRole('authenticated', A)
+    const notices = (
+      await db.query(
+        'select kind,recipient_id,actor_id,article_id from public.notifications order by kind',
+      )
+    ).rows
+    expect(notices.map((n) => n.kind)).toEqual(['comment', 'like', 'save'])
+    expect(
+      notices.every(
+        (n) => n.recipient_id === A && n.actor_id === B && n.article_id === PA,
+      ),
+    ).toBe(true)
+  })
+  it('keeps incoming notifications private from their actor and all other users', async () => {
+    await asRole('authenticated', B)
+    expect(
+      (
+        await db.query('select recipient_id,actor_id from public.notifications')
+      ).rows.every((n) => n.recipient_id === B && n.actor_id === A),
+    ).toBe(true)
+  })
+  it('denies anonymous access to notification contents', async () => {
+    await asRole('anon')
+    await expect(
+      db.query('select * from public.notifications'),
+    ).rejects.toMatchObject({ code: '42501' })
+  })
+  it('permits a recipient to mark only their incoming notices read', async () => {
+    await asRole('authenticated', A)
+    expect(
+      (
+        await db.query(
+          'update public.notifications set read_at=now() where recipient_id=$1 returning id',
+          [B],
+        )
+      ).rows,
+    ).toEqual([])
+    expect(
+      (
+        await db.query(
+          'update public.notifications set read_at=now() where recipient_id=$1 returning id',
+          [A],
+        )
+      ).rows,
+    ).toHaveLength(3)
+  })
+  it.each(['recipient_id', 'actor_id', 'kind', 'article_id', 'created_at'])(
+    'prevents recipients from forging notification metadata: %s',
+    async (column) => {
+      await asRole('authenticated', A)
+      await expect(
+        db.query(
+          `update public.notifications set ${column}=${column} where recipient_id=$1`,
+          [A],
+        ),
+      ).rejects.toMatchObject({ code: '42501' })
+    },
+  )
+  it('does not let a member insert or delete notices', async () => {
+    await asRole('authenticated', A)
+    await expect(
+      db.query(
+        "insert into public.notifications(recipient_id,actor_id,article_id,kind) values ($1,$2,$3,'like')",
+        [A, B, PA],
+      ),
+    ).rejects.toMatchObject({ code: '42501' })
+  })
+  it('never notifies authors for saving their own published article or draft', async () => {
+    await asRole('authenticated', A)
+    await db.query(
+      'insert into public.favorites(user_id,article_id) values ($1,$2),($1,$3)',
+      [A, PA, DA],
+    )
+    expect(
+      (
+        await db.query(
+          'select id from public.notifications where actor_id=$1',
+          [A],
+        )
+      ).rows,
+    ).toEqual([])
+  })
+  it('withdraws a removed like and creates a single fresh notice if liked again', async () => {
+    await asRole('authenticated', B)
+    await db.query(
+      'delete from public.article_likes where user_id=$1 and article_id=$2',
+      [B, PA],
+    )
+    await db.exec('reset role')
+    expect(
+      (
+        await db.query(
+          "select id from public.notifications where article_id=$1 and kind='like'",
+          [PA],
+        )
+      ).rows,
+    ).toEqual([])
+    await asRole('authenticated', B)
+    await db.query(
+      'insert into public.article_likes(user_id,article_id) values ($1,$2)',
+      [B, PA],
+    )
+    await db.exec('reset role')
+    expect(
+      (
+        await db.query(
+          "select id from public.notifications where article_id=$1 and kind='like'",
+          [PA],
+        )
+      ).rows,
+    ).toHaveLength(1)
+  })
+  it('withdraws the notification when the save or comment is deleted', async () => {
+    await asRole('authenticated', B)
+    await db.query(
+      'delete from public.favorites where user_id=$1 and article_id=$2',
+      [B, PA],
+    )
+    await db.query('delete from public.comments where id=$1', [CB])
+    await db.exec('reset role')
+    expect(
+      (
+        await db.query(
+          'select kind from public.notifications where article_id=$1',
+          [PA],
+        )
+      ).rows,
+    ).toEqual([{ kind: 'like' }])
+  })
+  it('preserves arrivals newer than the inbox snapshot when marking all read', async () => {
+    const cutoff = '2020-01-01T00:00:00Z'
+    await db.query(
+      "update public.notifications set created_at='2019-01-01' where recipient_id=$1 and kind='like'",
+      [A],
+    )
+    await asRole('authenticated', A)
+    await db.query(
+      'update public.notifications set read_at=now() where recipient_id=$1 and created_at <= $2',
+      [A, cutoff],
+    )
+    expect(
+      (
+        await db.query(
+          'select kind from public.notifications where read_at is null order by kind',
+        )
+      ).rows,
+    ).toEqual([{ kind: 'comment' }, { kind: 'save' }])
+  })
+  it('cannot invoke the event trigger as an ordinary authenticated RPC', async () => {
+    await asRole('authenticated', A)
+    await expect(
+      db.query('select public.notify_article_author()'),
+    ).rejects.toMatchObject({ code: '42501' })
   })
 })

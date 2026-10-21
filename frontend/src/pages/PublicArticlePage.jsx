@@ -4,7 +4,7 @@ import PublicGallery from '../components/gallery/PublicGallery.jsx'
 import ResponsiveImage from '../components/ResponsiveImage.jsx'
 import { useEffect, useState } from 'react'
 import { usePageMetadata } from '../hooks/usePageMetadata.js'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { useAuth } from '../hooks/useAuth.js'
@@ -25,6 +25,7 @@ import {
 
 function PublicArticlePage() {
   const { username, slug } = useParams()
+  const { hash } = useLocation()
   const { i18n, t } = useTranslation()
 
   const { user, profile, isAuthenticated, isLoading: isAuthLoading } = useAuth()
@@ -209,6 +210,12 @@ function PublicArticlePage() {
     privateRetryKey,
     t,
   ])
+
+  useEffect(() => {
+    if (article && !isSocialLoading && hash === '#comments') {
+      document.getElementById('comments')?.scrollIntoView?.({ block: 'start' })
+    }
+  }, [article, isSocialLoading, hash])
 
   function formatDate(dateValue) {
     if (!dateValue) {
@@ -518,7 +525,7 @@ function PublicArticlePage() {
           className="public-article__social"
           aria-label={t('social.title')}
         >
-          <section className="public-article__comments">
+          <section className="public-article__comments" id="comments">
             <header>
               <h2>
                 {t('social.comments.title')} ({commentTotal})

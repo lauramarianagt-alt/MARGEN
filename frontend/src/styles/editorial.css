@@ -283,14 +283,14 @@
 }
 
 .article-action[aria-pressed='true'] {
-  color: var(--reading-ink);
-  background-color: rgb(17 17 17 / 10%);
-  border-color: rgb(17 17 17 / 20%);
+  color: var(--muted);
+  background-color: transparent;
+  border-color: var(--rule);
 }
 
 .article-action[aria-pressed='true']:hover:not(:disabled),
 .article-action[aria-pressed='true']:focus-visible {
-  background-color: rgb(17 17 17 / 16%);
+  background-color: rgb(17 17 17 / 4%);
 }
 
 .article-action:disabled {
@@ -369,7 +369,7 @@
 .public-article__comment-list,
 .public-article__comment-form {
   max-width: 44rem;
-  margin-inline: auto;
+  margin-inline: 0;
 }
 
 .public-home__active-category {

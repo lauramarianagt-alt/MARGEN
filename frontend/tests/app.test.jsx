@@ -14,6 +14,10 @@ import i18n from '../src/i18n/index.js'
 import { ApiError } from '../src/services/api.js'
 
 const mocks = vi.hoisted(() => ({
+  getNotifications: vi.fn(),
+  getUnreadCount: vi.fn(),
+  markNotificationRead: vi.fn(),
+  markAllNotificationsRead: vi.fn(),
   getPublicArticle: vi.fn(),
   getPublicArticles: vi.fn(),
   getPublicAuthor: vi.fn(),
@@ -38,6 +42,12 @@ const auth = vi.hoisted(() => ({
   login: vi.fn(),
   register: vi.fn(),
   logout: vi.fn(),
+}))
+vi.mock('../src/services/notifications.service.js', () => ({
+  getNotifications: mocks.getNotifications,
+  getUnreadCount: mocks.getUnreadCount,
+  markNotificationRead: mocks.markNotificationRead,
+  markAllNotificationsRead: mocks.markAllNotificationsRead,
 }))
 vi.mock('../src/services/following.service.js', () => ({
   getPersonalizedFeed: (...args) => mocks.getPublicArticles(...args),
@@ -158,6 +168,15 @@ beforeEach(async () => {
   mocks.getPublicAuthor.mockResolvedValue({ author })
   mocks.getCategories.mockResolvedValue([category])
   mocks.getPublicCategory.mockResolvedValue(category)
+  mocks.getNotifications.mockResolvedValue({
+    notifications: [],
+    unreadCount: 0,
+    asOf: '2026-10-22T00:00:00Z',
+    pagination: { page: 1, limit: 20, total: 0, totalPages: 0 },
+  })
+  mocks.getUnreadCount.mockResolvedValue({ count: 0 })
+  mocks.markNotificationRead.mockResolvedValue({ count: 0 })
+  mocks.markAllNotificationsRead.mockResolvedValue({ count: 0 })
   mocks.getArticleLikes.mockResolvedValue({ count: 3 })
   mocks.getArticleLikeState.mockResolvedValue({ isLiked: false })
   mocks.getFavoriteState.mockResolvedValue({ isFavorite: false })
@@ -629,4 +648,175 @@ it('shows only the category name in editorial type without the feed explanation'
   )
   expect(header.textContent).not.toContain('Categoría:')
   expect(header.textContent).not.toContain('Primero, las autoras')
+})
+
+const notificationFixture = (kind, index) => ({
+  id: `notice-${index}`,
+  kind,
+  created_at: '2026-10-21T20:00:00Z',
+  read_at: null,
+  actor: { name: 'Reader', surname: String(index), username: `reader${index}` },
+  article: {
+    id: article.id,
+    title: article.title,
+    slug: article.slug,
+    status: 'published',
+    published_at: article.published_at,
+    author: { username: 'Lau' },
+  },
+  comment:
+    kind === 'comment'
+      ? { content: 'Una mirada que invita a descubrir más.' }
+      : null,
+})
+function inbox(notifications, page = 1, total = notifications.length) {
+  return {
+    notifications,
+    unreadCount: 3,
+    asOf: '2026-10-21T22:00:00Z',
+    pagination: { page, limit: 20, total, totalPages: Math.ceil(total / 20) },
+  }
+}
+describe('Author notification inbox', () => {
+  beforeEach(() => {
+    mocks.getUnreadCount.mockResolvedValue({ count: 3 })
+    mocks.getNotifications.mockResolvedValue(
+      inbox(['like', 'save', 'comment'].map(notificationFixture)),
+    )
+  })
+  it('shows the three kinds of incoming activity and the unread navbar badge', async () => {
+    const { container } = renderApp('/dashboard/notifications')
+    await screen.findByText('ha comentado tu artículo', { exact: false })
+    expect(
+      screen.getByText('ha guardado tu artículo', { exact: false }),
+    ).toBeTruthy()
+    expect(
+      screen.getByText('le ha dado me gusta a tu artículo', { exact: false }),
+    ).toBeTruthy()
+    expect(
+      screen.getByRole('link', { name: 'Notificaciones, 3 sin leer' }),
+    ).toBeTruthy()
+    expect(container.querySelector('.notification-count').textContent).toBe('3')
+    expect(
+      container.querySelectorAll('.notification-row--unread'),
+    ).toHaveLength(3)
+    expect(
+      container.querySelectorAll('.notification-row')[2].getAttribute('href'),
+    ).toBe('/Lau/story-one#comments')
+  })
+  it('marks an opened notification read and updates the shared count before navigation', async () => {
+    const { container } = renderApp('/dashboard/notifications')
+    await screen.findByText('ha comentado tu artículo', { exact: false })
+    mocks.markNotificationRead.mockResolvedValueOnce({ count: 2 })
+    fireEvent.click(container.querySelectorAll('.notification-row')[0])
+    await screen.findByRole('heading', { name: article.title })
+    expect(mocks.markNotificationRead).toHaveBeenCalledWith('notice-0')
+    expect(
+      screen.getByRole('link', { name: 'Notificaciones, 2 sin leer' }),
+    ).toBeTruthy()
+  })
+  it('marks the inbox snapshot read without removing its history', async () => {
+    const { container } = renderApp('/dashboard/notifications')
+    await screen.findByText('ha comentado tu artículo', { exact: false })
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Marcar todas como leídas' }),
+    )
+    await waitFor(() =>
+      expect(
+        container.querySelectorAll('.notification-row--unread'),
+      ).toHaveLength(0),
+    )
+    expect(container.querySelectorAll('.notification-row')).toHaveLength(3)
+    expect(mocks.markAllNotificationsRead).toHaveBeenCalledWith(
+      '2026-10-21T22:00:00Z',
+    )
+    expect(container.querySelector('.notification-count')).toBeNull()
+    expect(screen.getByText('Estás al día.')).toBeTruthy()
+  })
+  it('retains unread notices and the count if marking read fails', async () => {
+    const { container } = renderApp('/dashboard/notifications')
+    await screen.findByText('ha comentado tu artículo', { exact: false })
+    mocks.markAllNotificationsRead.mockRejectedValueOnce(new Error('Offline'))
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Marcar todas como leídas' }),
+    )
+    await screen.findByRole('alert')
+    expect(
+      container.querySelectorAll('.notification-row--unread'),
+    ).toHaveLength(3)
+    expect(container.querySelector('.notification-count').textContent).toBe('3')
+  })
+  it('paginates the inbox and clears the previous results while the next page loads', async () => {
+    mocks.getNotifications.mockResolvedValueOnce(
+      inbox([notificationFixture('like', 0)], 1, 21),
+    )
+    const { container } = renderApp('/dashboard/notifications')
+    await screen.findByText('le ha dado me gusta a tu artículo', {
+      exact: false,
+    })
+    let resolvePage
+    mocks.getNotifications.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolvePage = resolve
+        }),
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Siguiente' }))
+    expect(container.querySelectorAll('.notification-row')).toHaveLength(0)
+    await act(async () =>
+      resolvePage(inbox([notificationFixture('comment', 2)], 2, 21)),
+    )
+    await screen.findByText('ha comentado tu artículo', { exact: false })
+    expect(mocks.getNotifications).toHaveBeenLastCalledWith({
+      page: 2,
+      limit: 20,
+    })
+    expect(screen.getByText('Página 2 de 2')).toBeTruthy()
+  })
+  it('never shows the prior account inbox after switching users', async () => {
+    const view = renderApp('/dashboard/notifications')
+    await screen.findByText('ha comentado tu artículo', { exact: false })
+    let resolveInbox
+    mocks.getNotifications.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveInbox = resolve
+        }),
+    )
+    auth.user = { id: 'another-user' }
+    auth.profile = { id: 'another-user', name: 'Another' }
+    view.rerender(appTree('/dashboard/notifications'))
+    expect(view.container.querySelectorAll('.notification-row')).toHaveLength(0)
+    await act(async () => resolveInbox({ ...inbox([]), unreadCount: 0 }))
+    await screen.findByText('Todo en calma por aquí.')
+  })
+  it('refreshes the count when returning to the browser', async () => {
+    renderApp('/')
+    await screen.findByRole('link', { name: 'Notificaciones, 3 sin leer' })
+    mocks.getUnreadCount.mockResolvedValueOnce({ count: 5 })
+    fireEvent(window, new Event('focus'))
+    await screen.findByRole('link', { name: 'Notificaciones, 5 sin leer' })
+  })
+  it('provides retry and an honest empty state', async () => {
+    mocks.getNotifications.mockRejectedValueOnce(new Error('Offline'))
+    renderApp('/dashboard/notifications')
+    await screen.findByRole('alert')
+    mocks.getNotifications.mockResolvedValueOnce({
+      ...inbox([]),
+      unreadCount: 0,
+    })
+    fireEvent.click(
+      screen.getByRole('button', { name: i18n.t('common.retry') }),
+    )
+    await screen.findByText('Todo en calma por aquí.')
+    expect(screen.queryByRole('alert')).toBeNull()
+  })
+  it('redirects anonymous visitors and hides the private navbar entry', async () => {
+    auth.isAuthenticated = false
+    const { container } = renderApp('/dashboard/notifications')
+    await screen.findByRole('heading', { name: 'Iniciar sesión' })
+    expect(container.querySelector('.notification-link')).toBeNull()
+    expect(mocks.getNotifications).not.toHaveBeenCalled()
+    expect(mocks.getUnreadCount).not.toHaveBeenCalled()
+  })
 })
