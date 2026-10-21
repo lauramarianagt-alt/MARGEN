@@ -28,7 +28,6 @@ export default function ProfilePage() {
           <p className="page-eyebrow">{t('profile.eyebrow')}</p>
           <h1>{t('profile.title')}</h1>
         </div>
-        <Link to="/dashboard">{t('profile.back')}</Link>
       </header>
       <div className="profile-editor-intro">
         <p>{t('profile.intro')}</p>
@@ -78,13 +77,18 @@ export default function ProfilePage() {
         </label>
         {status === 'saved' && <p role="status">{t('profile.saved')}</p>}
         {status === 'error' && <p role="alert">{t('profile.error')}</p>}
-        <button
-          type="submit"
-          className="article-editor-button article-editor-button--primary"
-          disabled={status === 'saving'}
-        >
-          {t(status === 'saving' ? 'profile.saving' : 'profile.save')}
-        </button>
+        <footer className="profile-editor-actions">
+          <button
+            type="submit"
+            className="profile-editor-save"
+            disabled={status === 'saving'}
+          >
+            {t(status === 'saving' ? 'profile.saving' : 'profile.save')}
+          </button>
+          <Link className="profile-editor-back" to="/dashboard">
+            {t('profile.back')} <span aria-hidden="true">→</span>
+          </Link>
+        </footer>
       </form>
     </main>
   )

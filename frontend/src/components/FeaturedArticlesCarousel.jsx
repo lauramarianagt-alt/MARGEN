@@ -1,3 +1,4 @@
+import { getArticlePreview } from '../lib/article-content.js'
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -144,9 +145,9 @@ export default function FeaturedArticlesCarousel() {
                   <h1>
                     <Link to={storyHref}>{story.title}</Link>
                   </h1>
-                  {story.excerpt && (
+                  {getArticlePreview(story) && (
                     <p className="featured-carousel__excerpt">
-                      {story.excerpt}
+                      {getArticlePreview(story)}
                     </p>
                   )}
                   <p className="featured-carousel__byline">

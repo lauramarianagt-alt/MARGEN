@@ -331,9 +331,12 @@ function RootLayout() {
 
       <Outlet key={`${location.pathname}${location.search}`} />
       <footer className="site-footer">
-        <Link to="/" className="site-footer__brand">
-          MARGEN
-        </Link>
+        <div className="site-footer__identity">
+          <Link to="/" className="site-footer__brand">
+            MARGEN
+          </Link>
+          <span className="site-footer__year">© 2026</span>
+        </div>
         <p>{t('brand.description')}</p>
         <Link to="/dashboard">{t('magazine.contribute')} ↗</Link>
       </footer>

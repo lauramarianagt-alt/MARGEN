@@ -422,3 +422,19 @@ describe('Compact navigation controls', () => {
     )
   })
 })
+
+it('shows and hides the login password without submitting or changing it', async () => {
+  auth.isAuthenticated = false
+  const { container } = renderApp('/login')
+  const password = screen.getByLabelText('Contraseña', { exact: true })
+  fireEvent.change(password, {
+    target: { value: 'sample-password-for-ui-test' },
+  })
+  fireEvent.click(screen.getByRole('button', { name: 'Mostrar contraseña' }))
+  expect(password.type).toBe('text')
+  expect(password.value).toBe('sample-password-for-ui-test')
+  fireEvent.click(screen.getByRole('button', { name: 'Ocultar contraseña' }))
+  expect(password.type).toBe('password')
+  expect(auth.login).not.toHaveBeenCalled()
+  expect(container.querySelector('.password-field svg')).toBeTruthy()
+})

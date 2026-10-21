@@ -360,23 +360,84 @@
   line-height: 1.6;
   color: var(--muted);
 }
-.article-editor-field .article-writing__input,
-.article-editor-field .article-writing__input:focus {
-  display: block;
-  width: 100%;
+
+.article-editor-optional {
+  margin-left: 0.5rem;
+  font-size: 0.65rem;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.article-writing__tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.25rem;
+  margin-top: 1rem;
+  border-bottom: 1px solid var(--rule);
+}
+.article-writing__tools button {
+  position: relative;
+  min-height: 44px;
+  padding: 0.5rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+.article-writing__tools button::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: transparent;
+}
+.article-writing__tools button:hover,
+.article-writing__tools button[aria-pressed='true'] {
+  color: var(--ink);
+}
+.article-writing__tools button[aria-pressed='true']::after {
+  background: var(--ink);
+}
+.article-writing__tools button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.article-writing__tool-label--bold {
+  font-weight: 800;
+}
+.article-writing__tool-label--italic {
+  font-family: var(--font-reading);
+  font-style: italic;
+}
+.article-writing__tool-label--underline {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.article-writing__surface {
+  position: relative;
+}
+.article-writing__surface[data-empty='true']::before {
+  content: attr(data-placeholder);
+  position: absolute;
+  inset: 1.5rem 0 auto;
+  color: var(--muted);
+  font-family: var(--font-reading);
+  font-size: 1.125rem;
+  line-height: 1.55;
+  pointer-events: none;
+}
+.article-writing__input {
   min-height: 18rem;
   padding: 1.5rem 0;
-  border: 0;
-  outline: none;
-  overflow: hidden;
-  resize: none;
   color: var(--reading-ink);
-  background: transparent;
   font-family: var(--font-reading);
-  font-size: 1.25rem;
-  line-height: 1.75;
+  font-size: 1.125rem;
+  line-height: 1.55;
+  outline: none;
 }
-.article-writing__input::placeholder {
-  color: var(--muted);
-  opacity: 1;
+.article-writing__input[contenteditable='false'] {
+  opacity: 0.6;
 }

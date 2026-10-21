@@ -1,3 +1,4 @@
+import ArticleContent from '../components/articles/ArticleContent.jsx'
 import PublicGallery from '../components/gallery/PublicGallery.jsx'
 import ResponsiveImage from '../components/ResponsiveImage.jsx'
 import { useEffect, useState } from 'react'
@@ -467,8 +468,6 @@ function PublicArticlePage() {
                 {formatDate(article.published_at)}
               </time>
             )}
-
-            <span>{article.language.toUpperCase()}</span>
           </div>
         </header>
 
@@ -478,7 +477,7 @@ function PublicArticlePage() {
           </div>
         )}
 
-        <div className="public-article__content">{article.content}</div>
+        <ArticleContent content={article.content} />
         <PublicGallery id={article.id} />
 
         <section

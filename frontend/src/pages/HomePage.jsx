@@ -1,3 +1,4 @@
+import { getArticlePreview } from '../lib/article-content.js'
 import CategoryMenu from '../components/CategoryMenu.jsx'
 import FeaturedArticlesCarousel from '../components/FeaturedArticlesCarousel.jsx'
 import { useAuth } from '../hooks/useAuth.js'
@@ -546,14 +547,14 @@ function HomePage() {
                       )}
                     </h3>
 
-                    {article.excerpt &&
+                    {getArticlePreview(article) &&
                       (layout === 'quote' ? (
                         <blockquote className="public-article-card__pullquote">
-                          <p>{article.excerpt}</p>
+                          <p>{getArticlePreview(article)}</p>
                         </blockquote>
                       ) : (
                         <p className="public-article-card__excerpt">
-                          {article.excerpt}
+                          {getArticlePreview(article)}
                         </p>
                       ))}
 

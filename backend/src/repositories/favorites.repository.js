@@ -1,3 +1,4 @@
+import { addArticlePreviews } from './article-previews.js'
 import { createSupabaseUserClient } from '../config/supabase.js'
 
 const FAVORITE_LIST_SELECT = `
@@ -158,8 +159,22 @@ export async function findUserFavorites(
     throwDatabaseError(error, 'Unable to load user favorites')
   }
 
+  const available = (data ?? []).flatMap((favorite) =>
+    favorite.article ? [favorite.article] : [],
+  )
+  const previews = new Map(
+    (await addArticlePreviews(available, supabase)).map((article) => [
+      article.id,
+      article,
+    ]),
+  )
   return {
-    favorites: data ?? [],
+    favorites: (data ?? []).map((favorite) => ({
+      ...favorite,
+      article: favorite.article
+        ? previews.get(favorite.article.id)
+        : favorite.article,
+    })),
     count: count ?? 0,
   }
 }

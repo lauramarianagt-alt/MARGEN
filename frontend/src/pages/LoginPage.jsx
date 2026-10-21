@@ -1,3 +1,4 @@
+import EyeIcon from '../components/EyeIcon.jsx'
 import { useState } from 'react'
 import {
   Link,
@@ -22,6 +23,7 @@ function LoginPage() {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState(null)
 
@@ -103,16 +105,30 @@ function LoginPage() {
           <div className="form-field">
             <label htmlFor="password">{t('auth.password')}</label>
 
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
-              disabled={isSubmitting}
-            />
+            <div className="password-field">
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+                disabled={isSubmitting}
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword((current) => !current)}
+                aria-label={
+                  showPassword ? t('auth.hidePassword') : t('auth.showPassword')
+                }
+                aria-pressed={showPassword}
+                disabled={isSubmitting}
+              >
+                <EyeIcon hidden={showPassword} />
+              </button>
+            </div>
           </div>
 
           <button className="auth-submit" type="submit" disabled={isSubmitting}>

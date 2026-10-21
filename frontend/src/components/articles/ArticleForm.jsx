@@ -1,8 +1,9 @@
-import WritingField from './WritingField.jsx'
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { getCategories } from '../../services/categories.service.js'
+
+const WritingField = lazy(() => import('./WritingField.jsx'))
 
 const MAX_COVER_SIZE_BYTES = 6 * 1024 * 1024
 
@@ -249,11 +250,17 @@ function ArticleForm({
         </div>
 
         <div className="article-editor-field">
-          <label htmlFor="excerpt">{t('articles.form.fields.excerpt')}</label>
+          <label htmlFor="excerpt">
+            {t('articles.form.fields.excerpt')}{' '}
+            <span className="article-editor-optional">
+              {t('writing.optional')}
+            </span>
+          </label>
 
           <textarea
             id="excerpt"
             name="excerpt"
+            placeholder={t('writing.excerptPlaceholder')}
             rows="3"
             maxLength="600"
             value={formData.excerpt}
@@ -320,11 +327,17 @@ function ArticleForm({
           )}
         </div>
 
-        <WritingField
-          value={formData.content}
-          onChange={handleChange}
-          disabled={isSubmitting}
-        />
+        <Suspense
+          fallback={
+            <p className="article-editor-help">{t('writing.loading')}</p>
+          }
+        >
+          <WritingField
+            value={formData.content}
+            onChange={handleChange}
+            disabled={isSubmitting}
+          />
+        </Suspense>
 
         <div className="article-editor-grid">
           <div className="article-editor-field">

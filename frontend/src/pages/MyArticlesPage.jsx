@@ -1,3 +1,4 @@
+import { getArticlePreview } from '../lib/article-content.js'
 import ResponsiveImage from '../components/ResponsiveImage.jsx'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -380,9 +381,9 @@ function MyArticlesPage() {
 
                       <h2>{article.title}</h2>
 
-                      {article.excerpt && (
+                      {getArticlePreview(article) && (
                         <p className="article-row__excerpt">
-                          {article.excerpt}
+                          {getArticlePreview(article)}
                         </p>
                       )}
                     </div>
@@ -593,9 +594,9 @@ function MyArticlesPage() {
                         </Link>
                       </h2>
 
-                      {article.excerpt && (
+                      {getArticlePreview(article) && (
                         <p className="article-row__excerpt">
-                          {article.excerpt}
+                          {getArticlePreview(article)}
                         </p>
                       )}
 

@@ -1,3 +1,4 @@
+import { addArticlePreviews } from './article-previews.js'
 import { createSupabaseUserClient } from '../config/supabase.js'
 function checked(result) {
   if (result.error) throw result.error
@@ -36,12 +37,17 @@ export async function findPersonalizedArticles(
   accessToken,
   { page, limit, search, category },
 ) {
-  return checked(
-    await createSupabaseUserClient(accessToken).rpc('personalized_articles', {
+  const supabase = createSupabaseUserClient(accessToken)
+  const result = checked(
+    await supabase.rpc('personalized_articles', {
       p_limit: limit,
       p_offset: (page - 1) * limit,
       p_search: search ?? null,
       p_category: category ?? null,
     }),
   )
+  return {
+    ...result,
+    articles: await addArticlePreviews(result.articles ?? [], supabase),
+  }
 }

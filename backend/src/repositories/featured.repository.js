@@ -1,3 +1,4 @@
+import { addArticlePreviews } from './article-previews.js'
 import { supabasePublic } from '../config/supabase.js'
 
 export async function findFeaturedArticles(limit) {
@@ -5,5 +6,8 @@ export async function findFeaturedArticles(limit) {
     p_limit: limit,
   })
   if (error) throw error
-  return data
+  return {
+    ...data,
+    articles: await addArticlePreviews(data.articles ?? [], supabasePublic),
+  }
 }

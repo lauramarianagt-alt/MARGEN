@@ -362,7 +362,15 @@
   "writing": {
     "words_one": "{{count}} palabra",
     "words_other": "{{count}} palabras",
-    "help": "Escribe tu historia. Deja una línea en blanco para separar los párrafos.",
-    "placeholder": "Empieza con una idea, una escena o una pregunta…"
+    "help": "Selecciona un fragmento para darle formato. Pulsa Intro para comenzar otro párrafo.",
+    "placeholder": "Empieza con una idea, una escena o una pregunta…",
+    "loading": "Cargando editor…",
+    "formatting": "Formato del texto",
+    "bold": "Negrita",
+    "italic": "Cursiva",
+    "underline": "Subrayado",
+    "limit": "Has alcanzado el límite del artículo. Acorta el texto o simplifica el formato para continuar.",
+    "optional": "Opcional",
+    "excerptPlaceholder": "Si la dejas vacía, mostraremos el comienzo de tu artículo."
   }
 }

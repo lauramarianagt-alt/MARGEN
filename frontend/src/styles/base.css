@@ -560,3 +560,21 @@ h1 {
     right: 8px;
   }
 }
+
+/* A keyboard focus underline follows the navigation rule without a box. */
+.main-navigation a:focus-visible,
+.main-navigation .navigation-button:focus-visible {
+  outline: none;
+}
+.main-navigation a:focus-visible::after {
+  height: 2px;
+  background: var(--ink);
+}
+.main-navigation .navigation-button:focus-visible {
+  box-shadow: inset 0 -2px var(--ink);
+}
+@media (max-width: 700px) {
+  .main-navigation a:focus-visible::after {
+    display: block;
+  }
+}

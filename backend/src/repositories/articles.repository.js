@@ -1,3 +1,4 @@
+import { addArticlePreviews } from './article-previews.js'
 import { createSupabaseUserClient, supabasePublic } from '../config/supabase.js'
 
 const ARTICLE_LIST_SELECT = `
@@ -297,7 +298,7 @@ export async function findOwnArticles(
   }
 
   return {
-    articles: data ?? [],
+    articles: await addArticlePreviews(data ?? [], supabase),
     count: count ?? 0,
   }
 }
@@ -349,7 +350,7 @@ export async function findPublicArticles({
   }
 
   return {
-    articles: data ?? [],
+    articles: await addArticlePreviews(data ?? [], supabasePublic),
     count: count ?? 0,
   }
 }

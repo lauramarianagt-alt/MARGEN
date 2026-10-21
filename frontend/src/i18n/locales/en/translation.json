@@ -362,7 +362,15 @@
   "writing": {
     "words_one": "{{count}} word",
     "words_other": "{{count}} words",
-    "help": "Write your story. Leave a blank line between paragraphs.",
-    "placeholder": "Start with an idea, a scene or a question…"
+    "help": "Select a passage to format it. Press Enter to start a new paragraph.",
+    "placeholder": "Start with an idea, a scene or a question…",
+    "loading": "Loading editor…",
+    "formatting": "Text formatting",
+    "bold": "Bold",
+    "italic": "Italic",
+    "underline": "Underline",
+    "limit": "You have reached the article limit. Shorten the text or simplify the formatting to continue.",
+    "optional": "Optional",
+    "excerptPlaceholder": "Leave this blank to show the beginning of your article."
   }
 }

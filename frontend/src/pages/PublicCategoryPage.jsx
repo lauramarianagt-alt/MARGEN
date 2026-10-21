@@ -1,3 +1,4 @@
+import { getArticlePreview } from '../lib/article-content.js'
 import ResponsiveImage from '../components/ResponsiveImage.jsx'
 import { useEffect, useState } from 'react'
 import { usePageMetadata } from '../hooks/usePageMetadata.js'
@@ -304,9 +305,9 @@ function PublicCategoryPage() {
                       )}
                     </h3>
 
-                    {article.excerpt && (
+                    {getArticlePreview(article) && (
                       <p className="public-article-card__excerpt">
-                        {article.excerpt}
+                        {getArticlePreview(article)}
                       </p>
                     )}
 
