@@ -419,9 +419,12 @@
     flex-wrap: wrap;
     gap: 0;
     margin-bottom: 1.5rem;
+    border-bottom: 0;
   }
   .dashboard-toolbar .dashboard-sections {
     width: 100%;
+    overflow: visible;
+    border-bottom: 1px solid var(--rule);
   }
   .dashboard-toolbar__actions {
     width: 100%;
