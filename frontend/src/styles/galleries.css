@@ -49,8 +49,11 @@
 .gallery-carousel figcaption {
   max-width: 65ch;
   margin-top: 1rem;
-  font-family: var(--font-reading);
-  font-size: 1.2rem;
+  color: var(--date-ink);
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
   line-height: 1.5;
 }
 .gallery-carousel__controls {
@@ -223,7 +226,6 @@
     margin: 0;
     padding-bottom: 1rem;
     border-bottom: 1px solid var(--rule);
-    font-size: 1.35rem;
   }
 }
 

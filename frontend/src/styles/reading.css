@@ -116,3 +116,33 @@ img[src$='#margen-bw'] {
   font-weight: 400;
   letter-spacing: 0.04em;
 }
+
+/* Credits and documentation share the restrained type of article dates. */
+.public-article__content .public-article__reference,
+.public-article__content .public-article__reference-heading {
+  color: var(--date-ink);
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.625rem;
+}
+.public-article__content .public-article__reference-heading {
+  margin-top: 2rem;
+  margin-bottom: 0.875rem;
+  text-transform: uppercase;
+}
+.public-article__reference-heading strong {
+  font-weight: 500;
+}
+.public-article__reference a {
+  text-decoration: none;
+}
+.public-article__reference a:hover,
+.public-article__reference a:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+}

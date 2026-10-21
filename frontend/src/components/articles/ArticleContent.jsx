@@ -12,6 +12,23 @@ function SourceLinks({ text }) {
   )
 }
 
+function referenceClass(paragraph) {
+  const text = paragraph.content.filter(
+    (node) => node.type === 'text' && node.text.trim(),
+  )
+  if (!text.length) return undefined
+  if (text.every((node) => node.marks?.some((mark) => mark.type === 'link')))
+    return 'public-article__reference'
+  const label = text
+    .map((node) => node.text)
+    .join('')
+    .trim()
+    .toLocaleLowerCase()
+  if (['fuentes y documentación', 'sources and documentation'].includes(label))
+    return 'public-article__reference-heading'
+  return undefined
+}
+
 export default function ArticleContent({ content }) {
   const doc = readRichContent(content)
   if (!doc)
@@ -23,7 +40,7 @@ export default function ArticleContent({ content }) {
   return (
     <div className="public-article__content public-article__content--formatted">
       {doc.content.map((paragraph, index) => (
-        <p key={index}>
+        <p className={referenceClass(paragraph)} key={index}>
           {paragraph.content.length ? (
             paragraph.content.map((node, inlineIndex) => {
               if (node.type === 'hardBreak') return <br key={inlineIndex} />
