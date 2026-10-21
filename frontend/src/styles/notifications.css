@@ -62,6 +62,7 @@
   line-height: 1.05;
 }
 .notifications-back {
+  color: var(--date-ink);
   font-size: 0.75rem;
   text-decoration: none;
 }

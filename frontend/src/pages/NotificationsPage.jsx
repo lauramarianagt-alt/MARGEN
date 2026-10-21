@@ -160,7 +160,7 @@ function NotificationInbox() {
           <h1>{t('notifications.title')}</h1>
         </div>
         <Link className="notifications-back" to="/dashboard">
-          {t('profile.back')} <span aria-hidden="true">→</span>
+          {t('notifications.back')} <span aria-hidden="true">→</span>
         </Link>
       </header>
       <div className="notifications-toolbar">

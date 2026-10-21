@@ -395,7 +395,8 @@
       "comment": "commented on your article"
     },
     "pagination": "Notifications pagination",
-    "recent": "Your recent activity."
+    "recent": "Your recent activity.",
+    "back": "Back"
   },
   "account": {
     "title": "Your account",
