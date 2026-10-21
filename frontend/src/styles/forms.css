@@ -135,10 +135,14 @@
   color: var(--paper);
   background: var(--ink);
 }
-.article-editor-page > .article-editor-help {
-  max-width: 68ch;
-  margin: 0 0 2rem;
-  color: var(--reading-ink);
+.article-editor-gallery-note {
+  max-width: 70ch;
+  margin: 0.25rem 0 0;
+  color: #716b62;
+  font-family: var(--font-reading);
+  font-size: 0.75rem;
+  font-style: italic;
+  line-height: 1.6;
 }
 .article-editor-page input[type='file'] {
   min-width: 0;

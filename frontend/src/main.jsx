@@ -6,6 +6,7 @@ import AuthProvider from './context/AuthProvider.jsx'
 
 import '@fontsource-variable/manrope'
 import '@fontsource-variable/source-serif-4/standard.css'
+import '@fontsource-variable/source-serif-4/standard-italic.css'
 import './i18n/index.js'
 import './index.css'
 

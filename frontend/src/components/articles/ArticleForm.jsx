@@ -295,6 +295,11 @@ function ArticleForm({
           <p id="article-cover-help" className="article-editor-help">
             {t('articles.form.cover.help')}
           </p>
+          {mode === 'create' && (
+            <p className="article-editor-gallery-note">
+              {t('gallery.createHelp')}
+            </p>
+          )}
 
           {coverFile && (
             <p className="article-editor-help">
