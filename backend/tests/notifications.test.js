@@ -26,6 +26,19 @@ beforeEach(() => {
   mocks.markNotificationsRead.mockResolvedValue(undefined)
 })
 describe('Notifications API', () => {
+  it('rejects expired sessions before reading any private data', async () => {
+    mocks.getUser.mockResolvedValueOnce({
+      data: { user: null },
+      error: new Error('Expired session'),
+    })
+    const response = await request(app)
+      .get('/api/me/notifications')
+      .set('Cookie', cookie)
+    expect(response.status).toBe(401)
+    expect(mocks.findNotifications).not.toHaveBeenCalled()
+    expect(mocks.countUnreadNotifications).not.toHaveBeenCalled()
+  })
+
   it.each([
     ['get', ''],
     ['get', '/unread-count'],
