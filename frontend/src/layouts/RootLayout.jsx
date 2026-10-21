@@ -255,7 +255,7 @@ function RootLayout() {
         </div>
       </header>
 
-      <Outlet />
+      <Outlet key={`${location.pathname}${location.search}`} />
     </>
   )
 }

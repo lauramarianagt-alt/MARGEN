@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { usePageMetadata } from '../hooks/usePageMetadata.js'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
@@ -41,6 +42,8 @@ function HomePage() {
 
   const selectedCategory =
     categories.find((category) => category.slug === activeCategory) ?? null
+
+  usePageMetadata()
 
   useEffect(() => {
     let cancelled = false
@@ -293,7 +296,9 @@ function HomePage() {
                       aria-pressed={isActive}
                       onClick={() => handleCategoryChange(category.slug)}
                     >
-                      {category.name}
+                      {t(`categories.names.${category.slug}`, {
+                        defaultValue: category.name,
+                      })}
                     </button>
                   )
                 })}
@@ -336,7 +341,9 @@ function HomePage() {
             {isCategoryActive && selectedCategory && (
               <p>
                 {t('articles.filters.active', {
-                  category: selectedCategory.name,
+                  category: t(`categories.names.${selectedCategory.slug}`, {
+                    defaultValue: selectedCategory.name,
+                  }),
                 })}
               </p>
             )}
@@ -378,7 +385,9 @@ function HomePage() {
                   })
                 : isCategoryActive && selectedCategory
                   ? t('articles.filters.emptyMessage', {
-                      category: selectedCategory.name,
+                      category: t(`categories.names.${selectedCategory.slug}`, {
+                        defaultValue: selectedCategory.name,
+                      }),
                     })
                   : t('articles.public.emptyMessage')}
             </p>
@@ -438,7 +447,9 @@ function HomePage() {
                                 className="public-article-card__category"
                                 to={`/categories/${category.slug}`}
                               >
-                                {category.name}
+                                {t(`categories.names.${category.slug}`, {
+                                  defaultValue: category.name,
+                                })}
                               </Link>
                             </span>
                           ))}

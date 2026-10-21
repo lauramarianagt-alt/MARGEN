@@ -410,7 +410,11 @@ function ArticleForm({
                     disabled={isSubmitting}
                   />
 
-                  <span>{category.name}</span>
+                  <span>
+                    {t(`categories.names.${category.slug}`, {
+                      defaultValue: category.name,
+                    })}
+                  </span>
                 </label>
               ))}
             </div>

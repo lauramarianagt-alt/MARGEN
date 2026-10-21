@@ -1,5 +1,23 @@
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api'
 
+let refreshPromise = null
+
+function refreshSession() {
+  if (!refreshPromise) {
+    refreshPromise = fetch(`${API_URL}/auth/refresh`, {
+      method: 'POST',
+      credentials: 'include',
+    })
+      .then((response) => response.ok)
+      .catch(() => false)
+      .finally(() => {
+        refreshPromise = null
+      })
+  }
+
+  return refreshPromise
+}
+
 export class ApiError extends Error {
   constructor(message, status, data = null) {
     super(message)
@@ -57,12 +75,7 @@ export async function apiFetch(path, options = {}) {
       throw error
     }
 
-    const refreshResponse = await fetch(`${API_URL}/auth/refresh`, {
-      method: 'POST',
-      credentials: 'include',
-    })
-
-    if (!refreshResponse.ok) {
+    if (!(await refreshSession())) {
       throw error
     }
 

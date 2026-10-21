@@ -575,7 +575,11 @@ function MyArticlesPage() {
                       {categories.length > 0 && (
                         <p className="page-eyebrow">
                           {categories
-                            .map((category) => category.name)
+                            .map((category) =>
+                              t(`categories.names.${category.slug}`, {
+                                defaultValue: category.name,
+                              }),
+                            )
                             .join(' · ')}
                         </p>
                       )}

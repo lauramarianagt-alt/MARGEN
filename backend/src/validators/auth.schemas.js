@@ -1,5 +1,15 @@
 import { z } from 'zod'
 
+const reservedUsernames = new Set([
+  'api',
+  'articles',
+  'assets',
+  'categories',
+  'dashboard',
+  'login',
+  'register',
+])
+
 const localeSchema = z
   .string()
   .regex(
@@ -16,7 +26,11 @@ export const registerSchema = z.object({
     .string()
     .trim()
     .min(3, 'Username must contain at least 3 characters')
-    .max(30, 'Username must contain at most 30 characters'),
+    .max(30, 'Username must contain at most 30 characters')
+    .regex(/^[a-zA-Z0-9_-]+$/, 'Username contains unsupported characters')
+    .refine((value) => !reservedUsernames.has(value.toLowerCase()), {
+      message: 'This username is reserved',
+    }),
 
   name: z.string().trim().min(1, 'Name is required'),
 

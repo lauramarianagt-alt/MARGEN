@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { usePageMetadata } from '../hooks/usePageMetadata.js'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
@@ -37,6 +38,13 @@ function PublicCategoryPage() {
   const page = pageState.slug === slug ? pageState.page : 1
 
   const isRouteLoading = isLoading || loadedSlug !== slug
+
+  usePageMetadata(
+    category
+      ? t(`categories.names.${category.slug}`, { defaultValue: category.name })
+      : undefined,
+    category?.description,
+  )
 
   useEffect(() => {
     let cancelled = false
@@ -194,7 +202,11 @@ function PublicCategoryPage() {
       <header className="public-category">
         <p className="page-eyebrow">{t('categories.public.eyebrow')}</p>
 
-        <h1>{category.name}</h1>
+        <h1>
+          {t(`categories.names.${category.slug}`, {
+            defaultValue: category.name,
+          })}
+        </h1>
 
         {category.description && (
           <p className="public-category__description">{category.description}</p>

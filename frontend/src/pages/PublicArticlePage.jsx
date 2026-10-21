@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { usePageMetadata } from '../hooks/usePageMetadata.js'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
@@ -51,6 +52,8 @@ function PublicArticlePage() {
   const [isLikeLoading, setIsLikeLoading] = useState(false)
   const [isCommentSubmitting, setIsCommentSubmitting] = useState(false)
   const [deletingCommentId, setDeletingCommentId] = useState(null)
+
+  usePageMetadata(article?.title, article?.excerpt)
 
   useEffect(() => {
     let cancelled = false
@@ -424,7 +427,9 @@ function PublicArticlePage() {
                   {index > 0 && ' · '}
 
                   <Link to={`/categories/${category.slug}`}>
-                    {category.name}
+                    {t(`categories.names.${category.slug}`, {
+                      defaultValue: category.name,
+                    })}
                   </Link>
                 </span>
               ))}
@@ -590,7 +595,7 @@ function PublicArticlePage() {
                 {commentsPagination.totalPages > 1 && (
                   <nav
                     className="articles-pagination"
-                    aria-label={t('social.comments.title')}
+                    aria-label={t('social.comments.paginationLabel')}
                   >
                     <button
                       type="button"

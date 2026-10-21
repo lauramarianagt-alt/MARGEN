@@ -41,3 +41,10 @@ i18n.use(initReactI18next).init({
 })
 
 export default i18n
+
+function updateDocumentLanguage(language) {
+  document.documentElement.lang = language
+}
+
+updateDocumentLanguage(i18n.resolvedLanguage ?? i18n.language)
+i18n.on('languageChanged', updateDocumentLanguage)

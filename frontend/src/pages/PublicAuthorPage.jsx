@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { usePageMetadata } from '../hooks/usePageMetadata.js'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
@@ -28,6 +29,14 @@ function PublicAuthorPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [notFound, setNotFound] = useState(false)
+
+  usePageMetadata(
+    author
+      ? [author.name, author.surname].filter(Boolean).join(' ') ||
+          author.username
+      : undefined,
+    author?.bio,
+  )
 
   useEffect(() => {
     let cancelled = false
@@ -243,7 +252,9 @@ function PublicAuthorPage() {
                                 className="public-article-card__category"
                                 to={`/categories/${category.slug}`}
                               >
-                                {category.name}
+                                {t(`categories.names.${category.slug}`, {
+                                  defaultValue: category.name,
+                                })}
                               </Link>
                             </span>
                           ))}

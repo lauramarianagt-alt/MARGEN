@@ -42,7 +42,9 @@
       "passwordMismatch": "Passwords do not match.",
       "genericError": "We couldn't create your account. Check your details and try again.",
       "hasAccount": "Already have an account?",
-      "loginLink": "Log in"
+      "loginLink": "Log in",
+      "usernameHelp": "Use 3–30 letters without accents, numbers, hyphens or underscores.",
+      "invalidUsername": "That username is invalid or reserved. Please choose another."
     },
     "emailConfirmed": "Your email has been confirmed. You can now log in."
   },
@@ -84,6 +86,16 @@
       "emptyTitle": "No published articles yet",
       "emptyMessage": "Articles in this category will appear here when they are published.",
       "paginationLabel": "Category articles pagination"
+    },
+    "names": {
+      "emerging-designers": "Emerging Designers",
+      "streetwear": "Streetwear",
+      "runway": "Runway",
+      "visual-culture": "Visual Culture",
+      "photography": "Photography",
+      "sustainability": "Sustainability",
+      "interviews": "Interviews",
+      "design": "Design"
     }
   },
   "articles": {
@@ -236,7 +248,8 @@
       "publishing": "Publishing...",
       "delete": "Delete",
       "createError": "We couldn't publish the comment.",
-      "deleteError": "We couldn't delete the comment."
+      "deleteError": "We couldn't delete the comment.",
+      "paginationLabel": "Comment pagination"
     }
   },
   "favorites": {
@@ -257,5 +270,9 @@
   "language": {
     "es": "ES",
     "en": "EN"
+  },
+  "notFound": {
+    "title": "This page does not exist",
+    "back": "Back to home"
   }
 }

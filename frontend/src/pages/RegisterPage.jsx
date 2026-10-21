@@ -107,6 +107,11 @@ function RegisterPage() {
     } catch (registerError) {
       if (registerError instanceof ApiError && registerError.status === 409) {
         setError(t('auth.register.usernameTaken'))
+      } else if (
+        registerError instanceof ApiError &&
+        registerError.data?.details?.some((issue) => issue.field === 'username')
+      ) {
+        setError(t('auth.register.invalidUsername'))
       } else {
         setError(t('auth.register.genericError'))
       }
@@ -193,6 +198,8 @@ function RegisterPage() {
               name="username"
               type="text"
               autoComplete="username"
+              pattern="[a-zA-Z0-9_\-]+"
+              aria-describedby="username-help"
               minLength="3"
               maxLength="30"
               value={formData.username}
@@ -200,6 +207,9 @@ function RegisterPage() {
               required
               disabled={isSubmitting}
             />
+            <p id="username-help" className="article-editor-help">
+              {t('auth.register.usernameHelp')}
+            </p>
           </div>
 
           <div className="form-field">

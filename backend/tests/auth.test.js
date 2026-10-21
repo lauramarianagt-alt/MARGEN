@@ -59,6 +59,35 @@ beforeEach(() => {
 })
 
 describe('POST /api/auth/register', () => {
+  it.each([
+    'login',
+    'LOGIN',
+    'dashboard',
+    'categories',
+    'articles',
+    'assets',
+    'api',
+    'register',
+    'two words',
+    'name/path',
+    'name?query',
+    'name#fragment',
+  ])('rejects an inaccessible profile username: %s', async (username) => {
+    const response = await request(app).post('/api/auth/register').send({
+      email: 'reader@example.com',
+      password: 'Password123!',
+      username,
+      name: 'Reader',
+      surname: 'Test',
+      preferredLocale: 'es',
+    })
+    expect(response.status).toBe(400)
+    expect(response.body.details).toEqual(
+      expect.arrayContaining([expect.objectContaining({ field: 'username' })]),
+    )
+    expect(registerUser).not.toHaveBeenCalled()
+  })
+
   it('registers a new user', async () => {
     registerUser.mockResolvedValue({
       user,

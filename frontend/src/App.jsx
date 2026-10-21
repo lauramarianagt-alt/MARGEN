@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
 
 import LegacyArticleRedirect from './components/LegacyArticleRedirect.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
@@ -9,12 +9,15 @@ import EditArticlePage from './pages/EditArticlePage.jsx'
 import HomePage from './pages/HomePage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import MyArticlesPage from './pages/MyArticlesPage.jsx'
+import NotFoundPage from './pages/NotFoundPage.jsx'
 import PublicArticlePage from './pages/PublicArticlePage.jsx'
 import PublicAuthorPage from './pages/PublicAuthorPage.jsx'
 import PublicCategoryPage from './pages/PublicCategoryPage.jsx'
 import RegisterPage from './pages/RegisterPage.jsx'
 
 function App() {
+  const navigate = useNavigate()
+
   useEffect(() => {
     const hashParams = new URLSearchParams(window.location.hash.slice(1))
 
@@ -25,8 +28,9 @@ function App() {
       url.searchParams.set('emailConfirmed', 'true')
 
       window.history.replaceState({}, '', `${url.pathname}${url.search}`)
+      navigate('/login?emailConfirmed=true', { replace: true })
     }
-  }, [])
+  }, [navigate])
 
   return (
     <Routes>
@@ -66,6 +70,7 @@ function App() {
             element={<EditArticlePage />}
           />
         </Route>
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   )

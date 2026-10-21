@@ -42,7 +42,9 @@
       "passwordMismatch": "Las contraseñas no coinciden.",
       "genericError": "No hemos podido crear la cuenta. Revisa los datos e inténtalo de nuevo.",
       "hasAccount": "¿Ya tienes una cuenta?",
-      "loginLink": "Iniciar sesión"
+      "loginLink": "Iniciar sesión",
+      "usernameHelp": "Usa de 3 a 30 letras sin acentos, números, guiones o guiones bajos.",
+      "invalidUsername": "Ese nombre no es válido o está reservado. Elige otro."
     },
     "emailConfirmed": "Tu correo ha sido confirmado. Ya puedes iniciar sesión."
   },
@@ -84,6 +86,16 @@
       "emptyTitle": "Todavía no hay artículos publicados",
       "emptyMessage": "Los artículos de esta categoría aparecerán aquí cuando sean publicados.",
       "paginationLabel": "Paginación de artículos de la categoría"
+    },
+    "names": {
+      "emerging-designers": "Diseñadores emergentes",
+      "streetwear": "Streetwear",
+      "runway": "Pasarela",
+      "visual-culture": "Cultura visual",
+      "photography": "Fotografía",
+      "sustainability": "Sostenibilidad",
+      "interviews": "Entrevistas",
+      "design": "Diseño"
     }
   },
   "articles": {
@@ -236,7 +248,8 @@
       "publishing": "Publicando...",
       "delete": "Eliminar",
       "createError": "No se pudo publicar el comentario.",
-      "deleteError": "No se pudo eliminar el comentario."
+      "deleteError": "No se pudo eliminar el comentario.",
+      "paginationLabel": "Paginación de comentarios"
     }
   },
   "favorites": {
@@ -257,5 +270,9 @@
   "language": {
     "es": "ES",
     "en": "EN"
+  },
+  "notFound": {
+    "title": "Esta página no existe",
+    "back": "Volver a inicio"
   }
 }
