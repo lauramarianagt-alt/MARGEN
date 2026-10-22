@@ -153,15 +153,9 @@ function NotificationInbox() {
       },
     ).format(new Date(date))
   return (
-    <main className="page notifications-page">
-      <header className="notifications-header">
-        <div>
-          <p className="page-eyebrow">{t('dashboard.title')}</p>
-          <h1>{t('notifications.title')}</h1>
-        </div>
-        <Link className="notifications-back" to="/dashboard">
-          {t('notifications.back')} <span aria-hidden="true">→</span>
-        </Link>
+    <section className="notifications-inbox">
+      <header className="articles-page__header">
+        <h2>{t('notifications.title')}</h2>
       </header>
       <div className="notifications-toolbar">
         <p>
@@ -305,6 +299,6 @@ function NotificationInbox() {
           </>
         )
       )}
-    </main>
+    </section>
   )
 }

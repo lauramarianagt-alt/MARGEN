@@ -6,6 +6,7 @@ import ProtectedRoute from './components/ProtectedRoute.jsx'
 import NotificationsProvider from './context/NotificationsProvider.jsx'
 import NotificationsPage from './pages/NotificationsPage.jsx'
 import RootLayout from './layouts/RootLayout.jsx'
+import DashboardLayout from './layouts/DashboardLayout.jsx'
 import CreateArticlePage from './pages/CreateArticlePage.jsx'
 import EditArticlePage from './pages/EditArticlePage.jsx'
 import HomePage from './pages/HomePage.jsx'
@@ -64,11 +65,17 @@ function App() {
         />
 
         <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<MyArticlesPage />} />
-          <Route
-            path="/dashboard/notifications"
-            element={<NotificationsPage />}
-          />
+          <Route element={<DashboardLayout />}>
+            <Route path="/dashboard" element={<MyArticlesPage />} />
+            <Route
+              path="/dashboard/favorites"
+              element={<MyArticlesPage section="favorites" />}
+            />
+            <Route
+              path="/dashboard/notifications"
+              element={<NotificationsPage />}
+            />
+          </Route>
           <Route path="/dashboard/profile" element={<ProfilePage />} />
 
           <Route

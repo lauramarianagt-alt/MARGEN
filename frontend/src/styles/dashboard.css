@@ -268,6 +268,7 @@
   font: inherit;
   font-size: 0.8rem;
   letter-spacing: 0.1em;
+  text-decoration: none;
   text-transform: uppercase;
   cursor: pointer;
 }
@@ -286,12 +287,12 @@
   color: var(--ink);
 }
 
-.dashboard-section-button[aria-pressed='true'] {
+.dashboard-section-button[aria-current='page'] {
   color: var(--ink);
   font-weight: 600;
 }
 
-.dashboard-section-button[aria-pressed='true']::after {
+.dashboard-section-button[aria-current='page']::after {
   background: var(--ink);
 }
 
@@ -451,16 +452,16 @@
   line-height: 1.4;
   letter-spacing: 0.04em;
 }
-.article-row--owned .article-row__meta {
+.article-row--managed .article-row__meta {
   align-self: stretch;
   margin-bottom: -2rem;
 }
-.article-row--owned .article-row__actions {
+.article-row--managed .article-row__actions {
   margin-top: auto;
   padding-top: 1rem;
 }
-.article-row--owned .article-row__edit,
-.article-row--owned .article-row__delete {
+.article-row--managed .article-row__edit,
+.article-row--managed .article-row__delete {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -470,8 +471,8 @@
   font-size: 0.7rem;
   letter-spacing: 0.08em;
 }
-.article-row--owned .article-row__edit::after,
-.article-row--owned .article-row__delete::after {
+.article-row--managed .article-row__edit::after,
+.article-row--managed .article-row__delete::after {
   position: absolute;
   right: 0;
   bottom: -1px;
@@ -480,29 +481,29 @@
   background: transparent;
   content: '';
 }
-.article-row--owned .article-row__edit:hover::after,
-.article-row--owned .article-row__edit:focus-visible::after,
-.article-row--owned .article-row__delete:hover::after,
-.article-row--owned .article-row__delete:focus-visible::after {
+.article-row--managed .article-row__edit:hover::after,
+.article-row--managed .article-row__edit:focus-visible::after,
+.article-row--managed .article-row__delete:hover::after,
+.article-row--managed .article-row__delete:focus-visible::after {
   background: currentColor;
 }
 @media (max-width: 700px) {
-  .article-row--owned .article-row__meta {
+  .article-row--managed .article-row__meta {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 0.25rem 1rem;
     align-items: start;
   }
-  .article-row--owned .article-row__meta time {
+  .article-row--managed .article-row__meta time {
     grid-column: 1;
     grid-row: 1;
   }
-  .article-row--owned .article-row__meta > span {
+  .article-row--managed .article-row__meta > span {
     grid-column: 1;
     grid-row: 2;
     font-size: 0.65rem;
   }
-  .article-row--owned .article-row__actions {
+  .article-row--managed .article-row__actions {
     grid-column: 2;
     grid-row: 1/3;
     align-self: end;

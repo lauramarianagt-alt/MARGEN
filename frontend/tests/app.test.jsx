@@ -19,6 +19,8 @@ const mocks = vi.hoisted(() => ({
   markNotificationRead: vi.fn(),
   markAllNotificationsRead: vi.fn(),
   getPublicArticle: vi.fn(),
+  getMyArticles: vi.fn(),
+  getFavorites: vi.fn(),
   getPublicArticles: vi.fn(),
   getPublicAuthor: vi.fn(),
   getCategories: vi.fn(),
@@ -62,6 +64,7 @@ vi.mock('../src/hooks/useAuth.js', () => ({ useAuth: () => auth }))
 vi.mock('../src/services/articles.service.js', async (original) => ({
   ...(await original()),
   getPublicArticle: mocks.getPublicArticle,
+  getMyArticles: mocks.getMyArticles,
   getPublicArticles: mocks.getPublicArticles,
   getFeaturedArticles: vi
     .fn()
@@ -77,6 +80,7 @@ vi.mock('../src/services/categories.service.js', () => ({
 vi.mock('../src/services/social.service.js', async (original) => ({
   ...(await original()),
   getArticleComments: mocks.getArticleComments,
+  getFavorites: mocks.getFavorites,
   getArticleLikes: mocks.getArticleLikes,
   getArticleLikeState: mocks.getArticleLikeState,
   getFavoriteState: mocks.getFavoriteState,
@@ -117,6 +121,8 @@ function Controls() {
         Test other article
       </button>
       <button onClick={() => navigate('/?search=next')}>Test search</button>
+      <button onClick={() => navigate(-1)}>Test back</button>
+      <button onClick={() => navigate(1)}>Test forward</button>
     </>
   )
 }
@@ -165,6 +171,16 @@ beforeEach(async () => {
   })
   mocks.getPublicArticles.mockResolvedValue({
     articles: [article],
+    pagination: { page: 1, limit: 10, total: 1, totalPages: 1 },
+  })
+  mocks.getMyArticles.mockResolvedValue({
+    articles: [{ ...article, status: 'published' }],
+    pagination: { page: 1, limit: 10, total: 1, totalPages: 1 },
+  })
+  mocks.getFavorites.mockResolvedValue({
+    favorites: [
+      { article_id: article.id, article: { ...article, status: 'published' } },
+    ],
     pagination: { page: 1, limit: 10, total: 1, totalPages: 1 },
   })
   mocks.getPublicAuthor.mockResolvedValue({ author })
@@ -740,6 +756,50 @@ describe('Author notification inbox', () => {
       inbox(['like', 'save', 'comment'].map(notificationFixture)),
     )
   })
+  it('keeps the dashboard tabs available across notifications, favorites and articles, including browser history', async () => {
+    const { container } = renderApp('/dashboard/notifications')
+    await screen.findByText('ha comentado tu artículo', { exact: false })
+
+    function sections() {
+      return screen.getByRole('navigation', { name: 'Secciones de Mi espacio' })
+    }
+    function section(label) {
+      return Array.from(sections().querySelectorAll('a')).find(
+        (link) => link.textContent === label,
+      )
+    }
+
+    expect(section('Notificaciones').getAttribute('aria-current')).toBe('page')
+    expect(container.querySelectorAll('main')).toHaveLength(1)
+    expect(screen.queryByRole('link', { name: /^Volver/ })).toBeNull()
+
+    fireEvent.click(section('Favoritos'))
+    await screen.findByRole('link', { name: 'Leer', exact: true })
+    expect(section('Favoritos').getAttribute('aria-current')).toBe('page')
+    expect(mocks.getFavorites).toHaveBeenCalledWith({ page: 1, limit: 10 })
+
+    fireEvent.click(section('Mis artículos'))
+    await screen.findByRole('link', { name: 'Editar', exact: true })
+    expect(section('Mis artículos').getAttribute('aria-current')).toBe('page')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Test back' }))
+    await screen.findByRole('link', { name: 'Leer', exact: true })
+    expect(section('Favoritos').getAttribute('aria-current')).toBe('page')
+    fireEvent.click(screen.getByRole('button', { name: 'Test back' }))
+    await screen.findByText('ha comentado tu artículo', { exact: false })
+    expect(section('Notificaciones').getAttribute('aria-current')).toBe('page')
+    fireEvent.click(screen.getByRole('button', { name: 'Test forward' }))
+    await screen.findByRole('link', { name: 'Leer', exact: true })
+    expect(section('Favoritos').getAttribute('aria-current')).toBe('page')
+  })
+  it('opens favorites directly without loading the article management list', async () => {
+    renderApp('/dashboard/favorites')
+    await screen.findByRole('link', { name: 'Leer', exact: true })
+    expect(mocks.getMyArticles).not.toHaveBeenCalled()
+    expect(
+      screen.getByRole('button', { name: 'Quitar', exact: true }),
+    ).toBeTruthy()
+  })
   it('shows the three kinds of incoming activity and the unread navbar badge', async () => {
     const { container } = renderApp('/dashboard/notifications')
     await screen.findByText('ha comentado tu artículo', { exact: false })
@@ -867,14 +927,18 @@ describe('Author notification inbox', () => {
     await screen.findByText('Todo en calma por aquí.')
     expect(screen.queryByRole('alert')).toBeNull()
   })
-  it('redirects anonymous visitors and hides the private navbar entry', async () => {
-    auth.isAuthenticated = false
-    const { container } = renderApp('/dashboard/notifications')
-    await screen.findByRole('heading', { name: 'Iniciar sesión' })
-    expect(container.querySelector('.notification-link')).toBeNull()
-    expect(mocks.getNotifications).not.toHaveBeenCalled()
-    expect(mocks.getUnreadCount).not.toHaveBeenCalled()
-  })
+  it.each(['/dashboard/notifications', '/dashboard/favorites'])(
+    'protects %s from anonymous visitors and hides the private navbar entry',
+    async (path) => {
+      auth.isAuthenticated = false
+      const { container } = renderApp(path)
+      await screen.findByRole('heading', { name: 'Iniciar sesión' })
+      expect(container.querySelector('.notification-link')).toBeNull()
+      expect(mocks.getNotifications).not.toHaveBeenCalled()
+      expect(mocks.getUnreadCount).not.toHaveBeenCalled()
+      expect(mocks.getFavorites).not.toHaveBeenCalled()
+    },
+  )
 })
 
 describe('Explicit account closure', () => {

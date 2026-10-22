@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next'
 
 import ArticleStatus from '../components/ArticleStatus.jsx'
 import ConfirmDialog from '../components/ConfirmDialog.jsx'
-import { useAuth } from '../hooks/useAuth.js'
 import { deleteArticle, getMyArticles } from '../services/articles.service.js'
 import { getFavorites, removeFavorite } from '../services/social.service.js'
 
@@ -20,11 +19,9 @@ function isPubliclyAvailable(article) {
   return new Date(article.published_at).getTime() <= Date.now()
 }
 
-function MyArticlesPage() {
+function MyArticlesPage({ section = 'articles' }) {
   const { i18n, t } = useTranslation()
-  const { profile } = useAuth()
-
-  const [activeSection, setActiveSection] = useState('articles')
+  const activeSection = section
 
   const [articles, setArticles] = useState([])
 
@@ -53,7 +50,7 @@ function MyArticlesPage() {
   const [favoritesPage, setFavoritesPage] = useState(1)
   const [favoritesRetryKey, setFavoritesRetryKey] = useState(0)
 
-  const [isFavoritesLoading, setIsFavoritesLoading] = useState(false)
+  const [isFavoritesLoading, setIsFavoritesLoading] = useState(true)
   const [favoritesError, setFavoritesError] = useState(null)
   const [favoriteActionError, setFavoriteActionError] = useState(null)
   const [removingFavoriteId, setRemovingFavoriteId] = useState(null)
@@ -173,22 +170,6 @@ function MyArticlesPage() {
       month: 'short',
       year: 'numeric',
     }).format(new Date(date))
-  }
-
-  function handleSectionChange(section) {
-    if (section === activeSection) {
-      return
-    }
-
-    if (section === 'articles') {
-      setIsArticlesLoading(true)
-      setArticlesError(null)
-    } else {
-      setIsFavoritesLoading(true)
-      setFavoritesError(null)
-    }
-
-    setActiveSection(section)
   }
 
   function handleArticlesPreviousPage() {
@@ -363,7 +344,7 @@ function MyArticlesPage() {
 
                 return (
                   <article
-                    className="article-row article-row--owned"
+                    className="article-row article-row--managed"
                     key={article.id}
                   >
                     {article.cover_image_url && (
@@ -507,7 +488,10 @@ function MyArticlesPage() {
 
                 if (!article) {
                   return (
-                    <article className="article-row" key={favorite.article_id}>
+                    <article
+                      className="article-row article-row--managed"
+                      key={favorite.article_id}
+                    >
                       <div className="article-row__main">
                         <p className="page-eyebrow">
                           {t('favorites.unavailable')}
@@ -519,16 +503,20 @@ function MyArticlesPage() {
                       </div>
 
                       <div className="article-row__meta">
-                        <button
-                          className="article-row__delete"
-                          type="button"
-                          disabled={removingFavoriteId === favorite.article_id}
-                          onClick={() =>
-                            void handleRemoveFavorite(favorite.article_id)
-                          }
-                        >
-                          {t('favorites.remove')}
-                        </button>
+                        <div className="article-row__actions">
+                          <button
+                            className="article-row__delete"
+                            type="button"
+                            disabled={
+                              removingFavoriteId === favorite.article_id
+                            }
+                            onClick={() =>
+                              void handleRemoveFavorite(favorite.article_id)
+                            }
+                          >
+                            {t('favorites.remove')}
+                          </button>
+                        </div>
                       </div>
                     </article>
                   )
@@ -557,7 +545,10 @@ function MyArticlesPage() {
                   favorite.created_at
 
                 return (
-                  <article className="article-row" key={favorite.article_id}>
+                  <article
+                    className="article-row article-row--managed"
+                    key={favorite.article_id}
+                  >
                     {article.cover_image_url && (
                       <Link
                         className="article-row__cover"
@@ -673,65 +664,7 @@ function MyArticlesPage() {
 
   return (
     <>
-      <main className="page dashboard-page articles-page">
-        <section className="dashboard-overview">
-          <p className="page-eyebrow">{t('dashboard.title')}</p>
-
-          <h1>
-            {t('dashboard.welcome', {
-              name: profile.name,
-            })}
-          </h1>
-
-          <p className="dashboard-username">
-            {t('dashboard.username', {
-              username: profile.username,
-            })}
-          </p>
-        </section>
-
-        <div className="dashboard-toolbar">
-          <nav
-            className="dashboard-sections"
-            aria-label={t('dashboard.sections')}
-          >
-            <button
-              type="button"
-              className="dashboard-section-button"
-              aria-pressed={activeSection === 'articles'}
-              onClick={() => handleSectionChange('articles')}
-            >
-              {t('articles.my.title')}
-            </button>
-
-            <button
-              type="button"
-              className="dashboard-section-button"
-              aria-pressed={activeSection === 'favorites'}
-              onClick={() => handleSectionChange('favorites')}
-            >
-              {t('favorites.title')}
-            </button>
-            <Link
-              className="dashboard-section-button"
-              to="/dashboard/notifications"
-            >
-              {t('notifications.title')}
-            </Link>
-          </nav>
-          <div className="dashboard-toolbar__actions">
-            <Link to="/dashboard/profile">{t('profile.editLink')}</Link>
-            <Link
-              className="dashboard-toolbar__create"
-              to="/dashboard/articles/new"
-            >
-              {t('articles.my.create')}
-            </Link>
-          </div>
-        </div>
-
-        {activeSection === 'articles' ? renderArticles() : renderFavorites()}
-      </main>
+      {activeSection === 'articles' ? renderArticles() : renderFavorites()}
 
       <ConfirmDialog
         open={Boolean(articleToDelete)}

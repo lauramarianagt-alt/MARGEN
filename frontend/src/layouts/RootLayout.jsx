@@ -160,9 +160,7 @@ function RootLayout() {
 
           {!isLoading && isAuthenticated && (
             <>
-              <NavLink to="/dashboard" end>
-                {t('navigation.dashboard')}
-              </NavLink>
+              <NavLink to="/dashboard">{t('navigation.dashboard')}</NavLink>
             </>
           )}
         </nav>

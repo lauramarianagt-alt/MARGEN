@@ -41,34 +41,6 @@
   letter-spacing: 0;
   font-variant-numeric: tabular-nums;
 }
-.dashboard-sections > a {
-  text-decoration: none;
-}
-.notifications-page {
-  max-width: 76rem;
-  margin-inline: auto;
-  padding-block: 4rem 5rem;
-}
-.notifications-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: end;
-  justify-content: space-between;
-  gap: 1.5rem;
-  margin-bottom: 2.5rem;
-}
-.notifications-header h1 {
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  line-height: 1.05;
-}
-.notifications-back {
-  color: var(--date-ink);
-  font-size: 0.75rem;
-  text-decoration: none;
-}
-.notifications-back:hover {
-  text-decoration: underline;
-}
 .notifications-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -232,12 +204,6 @@
   }
   .site-header .language-switcher button {
     width: 28px;
-  }
-  .notifications-page {
-    padding-block: 2.5rem 3rem;
-  }
-  .notifications-header {
-    margin-bottom: 2rem;
   }
   .notification-row {
     grid-template-columns: 20px minmax(0, 1fr) 14px;
