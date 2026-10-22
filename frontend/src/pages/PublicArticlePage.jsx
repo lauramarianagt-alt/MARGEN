@@ -1,7 +1,7 @@
 import ArticleActions from '../components/articles/ArticleActions.jsx'
 import ArticleContent from '../components/articles/ArticleContent.jsx'
 import PublicGallery from '../components/gallery/PublicGallery.jsx'
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { usePageMetadata } from '../hooks/usePageMetadata.js'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -69,6 +69,11 @@ function PublicArticlePage() {
   const [deletingCommentId, setDeletingCommentId] = useState(null)
 
   usePageMetadata(article?.title, article?.excerpt)
+
+  useLayoutEffect(() => {
+    // Reading links open at the beginning; explicit comment links keep their anchor.
+    if (!hash) window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [username, slug, hash])
 
   useEffect(() => {
     let cancelled = false

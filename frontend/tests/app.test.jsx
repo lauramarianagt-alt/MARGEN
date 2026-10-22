@@ -141,6 +141,7 @@ function renderApp(path) {
 
 beforeEach(async () => {
   vi.clearAllMocks()
+  vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
   window.history.replaceState({}, '', '/')
   await i18n.changeLanguage('es')
   auth.user = { id: 'member' }
@@ -230,6 +231,45 @@ afterEach(() => {
 })
 
 describe('Reader and member flows', () => {
+  it('opens reading links at the top and keeps comment pagination in place', async () => {
+    renderApp('/')
+    const read = await screen.findByRole('link', { name: 'Leer artículo' })
+    expect(window.scrollTo).not.toHaveBeenCalled()
+    fireEvent.click(read)
+    await screen.findByText('Article body.')
+    await screen.findByText('Comentario de prueba 1')
+    expect(window.scrollTo).toHaveBeenCalledWith({
+      top: 0,
+      left: 0,
+      behavior: 'instant',
+    })
+    vi.mocked(window.scrollTo).mockClear()
+    fireEvent.click(screen.getByRole('button', { name: 'Siguiente' }))
+    await screen.findByText('Comentario de prueba 12')
+    expect(window.scrollTo).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('button', { name: 'Test other article' }))
+    await screen.findByRole('heading', { name: 'Another story' })
+    expect(window.scrollTo).toHaveBeenCalledWith({
+      top: 0,
+      left: 0,
+      behavior: 'instant',
+    })
+  })
+  it('preserves explicit links to an article comment section', async () => {
+    const original = Element.prototype.scrollIntoView
+    const scrollIntoView = vi.fn()
+    Element.prototype.scrollIntoView = scrollIntoView
+    try {
+      renderApp('/Lau/story-one#comments')
+      await waitFor(() =>
+        expect(scrollIntoView).toHaveBeenCalledWith({ block: 'start' }),
+      )
+      expect(window.scrollTo).not.toHaveBeenCalled()
+    } finally {
+      if (original) Element.prototype.scrollIntoView = original
+      else delete Element.prototype.scrollIntoView
+    }
+  })
   it('opens an article with its gallery between the introduction and body, without a duplicate cover', async () => {
     mocks.getPublicArticle.mockResolvedValueOnce({
       article: { ...article, cover_image_url: '/cover.webp' },
