@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
+  act,
   cleanup,
   fireEvent,
   render,
@@ -11,8 +12,10 @@ import { MemoryRouter } from 'react-router-dom'
 import i18n from '../src/i18n/index.js'
 import GalleryCarousel from '../src/components/gallery/GalleryCarousel.jsx'
 import GalleryManager from '../src/components/gallery/GalleryManager.jsx'
+import PublicGallery from '../src/components/gallery/PublicGallery.jsx'
 import ProfilePage from '../src/pages/ProfilePage.jsx'
 const mocks = vi.hoisted(() => ({
+  getPublicGallery: vi.fn(),
   getOwnGallery: vi.fn(),
   uploadGalleryImage: vi.fn(),
   updateGalleryImage: vi.fn(),
@@ -45,12 +48,17 @@ beforeEach(async () => {
   vi.resetAllMocks()
   await i18n.changeLanguage('es')
   mocks.getOwnGallery.mockResolvedValue({ images: [] })
+  mocks.getPublicGallery.mockResolvedValue({ images: [] })
   mocks.uploadGalleryImage.mockResolvedValue({ image: images[0] })
   mocks.updateGalleryImage.mockResolvedValue({ image: images[0] })
   mocks.deleteGalleryImage.mockResolvedValue(undefined)
   mocks.updateProfile.mockResolvedValue({})
 })
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  vi.useRealTimers()
+  vi.unstubAllGlobals()
+})
 describe('Accessible editorial galleries', () => {
   it('navigates with buttons and keeps image description and caption together', () => {
     render(<GalleryCarousel images={images} />)
@@ -91,6 +99,127 @@ describe('Accessible editorial galleries', () => {
     const { rerender } = render(<GalleryCarousel images={[images[0]]} />)
     expect(screen.queryByRole('button')).toBeNull()
     rerender(<GalleryCarousel images={[]} />)
+    expect(screen.queryByRole('region')).toBeNull()
+  })
+  it('advances the opening banner every six seconds, wraps, and keeps the current caption', () => {
+    vi.useFakeTimers()
+    const { container } = render(
+      <GalleryCarousel images={images} banner autoPlay />,
+    )
+    expect(screen.getByText('1 / 3')).toBeTruthy()
+    act(() => vi.advanceTimersByTime(6000))
+    expect(screen.getByText('2 / 3')).toBeTruthy()
+    expect(screen.getByText('Créditos 2')).toBeTruthy()
+    expect(
+      container.querySelector(
+        '.gallery-carousel__slide[aria-hidden="false"] img',
+      ).alt,
+    ).toBe('Detalle de tejido 2')
+    act(() => vi.advanceTimersByTime(6000))
+    expect(screen.getByText('3 / 3')).toBeTruthy()
+    act(() => vi.advanceTimersByTime(6000))
+    expect(screen.getByText('1 / 3')).toBeTruthy()
+  })
+  it('pauses automatic rotation while allowing manual navigation and resumes on request', () => {
+    vi.useFakeTimers()
+    render(<GalleryCarousel images={images} banner autoPlay />)
+    fireEvent.click(screen.getByRole('button', { name: 'Pausar galería' }))
+    act(() => vi.advanceTimersByTime(12000))
+    expect(screen.getByText('1 / 3')).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'Imagen anterior' }))
+    expect(screen.getByText('3 / 3')).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'Imagen siguiente' }))
+    expect(screen.getByText('1 / 3')).toBeTruthy()
+    fireEvent.focus(screen.getByRole('button', { name: 'Reproducir galería' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Reproducir galería' }))
+    act(() => vi.advanceTimersByTime(6000))
+    expect(screen.getByText('2 / 3')).toBeTruthy()
+  })
+  it('holds rotation during hover and keyboard focus and does not capture button arrow keys', () => {
+    vi.useFakeTimers()
+    render(<GalleryCarousel images={images} banner autoPlay />)
+    const gallery = screen.getByRole('region')
+    fireEvent.mouseEnter(gallery)
+    act(() => vi.advanceTimersByTime(6000))
+    expect(screen.getByText('1 / 3')).toBeTruthy()
+    fireEvent.mouseLeave(gallery)
+    fireEvent.focus(screen.getByRole('button', { name: 'Imagen siguiente' }))
+    act(() => vi.advanceTimersByTime(6000))
+    expect(screen.getByText('1 / 3')).toBeTruthy()
+    fireEvent.keyDown(
+      screen.getByRole('button', { name: 'Imagen siguiente' }),
+      { key: 'ArrowRight' },
+    )
+    expect(screen.getByText('1 / 3')).toBeTruthy()
+    fireEvent.blur(screen.getByRole('button', { name: 'Imagen siguiente' }), {
+      relatedTarget: document.body,
+    })
+    act(() => vi.advanceTimersByTime(6000))
+    expect(screen.getByText('2 / 3')).toBeTruthy()
+  })
+  it('starts paused for reduced motion and ignores vertical scrolling or cancelled swipes', () => {
+    vi.useFakeTimers()
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn(() => ({
+        matches: true,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      })),
+    )
+    render(<GalleryCarousel images={images} banner autoPlay />)
+    expect(
+      screen.getByRole('button', { name: 'Reproducir galería' }),
+    ).toBeTruthy()
+    act(() => vi.advanceTimersByTime(12000))
+    const gallery = screen.getByRole('region')
+    fireEvent.touchStart(gallery, { touches: [{ clientX: 200, clientY: 10 }] })
+    fireEvent.touchEnd(gallery, {
+      changedTouches: [{ clientX: 130, clientY: 200 }],
+    })
+    expect(screen.getByText('1 / 3')).toBeTruthy()
+    fireEvent.touchStart(gallery, { touches: [{ clientX: 200, clientY: 10 }] })
+    fireEvent.touchCancel(gallery)
+    fireEvent.touchEnd(gallery, {
+      changedTouches: [{ clientX: 50, clientY: 10 }],
+    })
+    expect(screen.getByText('1 / 3')).toBeTruthy()
+    fireEvent.touchStart(gallery, { touches: [{ clientX: 200, clientY: 10 }] })
+    fireEvent.touchEnd(gallery, {
+      changedTouches: [{ clientX: 50, clientY: 10 }],
+    })
+    expect(screen.getByText('2 / 3')).toBeTruthy()
+  })
+  it('retains the cover when the gallery fails and replaces it after a successful retry', async () => {
+    const coverArticle = {
+      id: 'story',
+      title: 'Una historia',
+      cover_image_url: '/cover.webp',
+    }
+    mocks.getPublicGallery.mockRejectedValueOnce(new Error('Offline'))
+    const { container } = render(<PublicGallery article={coverArticle} />)
+    expect(screen.getByAltText('Una historia')).toBeTruthy()
+    await screen.findByText('No hemos podido cargar la galería.')
+    mocks.getPublicGallery.mockResolvedValueOnce({ images })
+    fireEvent.click(screen.getByRole('button', { name: 'Intentar de nuevo' }))
+    await screen.findByRole('region', { name: 'La historia en imágenes' })
+    expect(container.querySelector('.public-article__cover')).toBeNull()
+    expect(screen.queryByAltText('Una historia')).toBeNull()
+  })
+  it('retains the original cover when an article has no gallery', async () => {
+    render(
+      <PublicGallery
+        article={{
+          id: 'story',
+          title: 'Sin galería',
+          cover_image_url: '/cover.webp',
+        }}
+      />,
+    )
+    await waitFor(() =>
+      expect(mocks.getPublicGallery).toHaveBeenCalledWith('story'),
+    )
+    expect(screen.getByAltText('Sin galería')).toBeTruthy()
     expect(screen.queryByRole('region')).toBeNull()
   })
   it('uploads the description, credits and selected image to the correct article', async () => {

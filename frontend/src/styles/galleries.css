@@ -229,6 +229,89 @@
   }
 }
 
+/* The article gallery is its opening image, with quiet controls below it. */
+.gallery-carousel--banner {
+  margin: 2.5rem 0 0;
+  padding: 0;
+  border: 0;
+  outline-offset: 6px;
+}
+.gallery-carousel--banner figure,
+.gallery-carousel--banner figure:has(figcaption) {
+  display: block;
+}
+.gallery-carousel--banner .gallery-carousel__frame {
+  display: block;
+  position: relative;
+  aspect-ratio: 16 / 9;
+}
+.gallery-carousel__track {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  height: 100%;
+  transition: transform 600ms ease;
+}
+.gallery-carousel__slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  height: 100%;
+}
+.gallery-carousel--banner .gallery-carousel__frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  object-fit: cover;
+}
+.gallery-carousel--banner figcaption,
+.gallery-carousel--banner figure:has(figcaption) figcaption {
+  min-height: 3em;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  border: 0;
+}
+.gallery-carousel--banner .gallery-carousel__controls {
+  gap: 1rem;
+  margin-top: 0.25rem;
+}
+.gallery-carousel__counter {
+  color: var(--date-ink);
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+.gallery-carousel__navigation {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+.gallery-carousel--banner .gallery-arrow {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  color: var(--date-ink);
+}
+.gallery-carousel--banner .gallery-arrow:hover {
+  color: var(--ink);
+}
+.gallery-carousel--banner .gallery-arrow:focus-visible {
+  outline: 1px solid var(--ink);
+  outline-offset: -4px;
+}
+@media (max-width: 700px) {
+  .gallery-carousel--banner {
+    margin-top: 2rem;
+  }
+  .gallery-carousel--banner .gallery-carousel__frame {
+    aspect-ratio: 4 / 3;
+  }
+}
+
 .profile-editor-intro p {
   max-width: 65ch;
   margin: 0 0 1rem;

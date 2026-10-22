@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getPublicGallery } from '../../services/galleries.service.js'
 import GalleryCarousel from './GalleryCarousel.jsx'
-export default function PublicGallery({ id }) {
+import ResponsiveImage from '../ResponsiveImage.jsx'
+export default function PublicGallery({ article }) {
+  const id = article.id
   const { t } = useTranslation()
   const [images, setImages] = useState([])
   const [status, setStatus] = useState('loading')
@@ -23,27 +25,47 @@ export default function PublicGallery({ id }) {
       active = false
     }
   }, [id, retry])
+  const cover = article.cover_image_url ? (
+    <div className="public-article__cover">
+      <ResponsiveImage article={article} alt={article.title} />
+    </div>
+  ) : null
   if (status === 'loading')
     return (
-      <p className="gallery-state" role="status">
-        {t('gallery.loading')}
-      </p>
+      cover || (
+        <p className="gallery-state" role="status">
+          {t('gallery.loading')}
+        </p>
+      )
     )
   if (status === 'error')
     return (
-      <div className="gallery-state">
-        <p>{t('gallery.loadError')}</p>
-        <button
-          type="button"
-          className="navigation-button"
-          onClick={() => {
-            setStatus('loading')
-            setRetry((n) => n + 1)
-          }}
-        >
-          {t('common.retry')}
-        </button>
-      </div>
+      <>
+        {cover}
+        <div className="gallery-state">
+          <p>{t('gallery.loadError')}</p>
+          <button
+            type="button"
+            className="navigation-button"
+            onClick={() => {
+              setStatus('loading')
+              setRetry((n) => n + 1)
+            }}
+          >
+            {t('common.retry')}
+          </button>
+        </div>
+      </>
     )
-  return <GalleryCarousel key={id} images={images} title={t('gallery.title')} />
+  return images.length ? (
+    <GalleryCarousel
+      key={id}
+      images={images}
+      title={t('gallery.title')}
+      banner
+      autoPlay
+    />
+  ) : (
+    cover
+  )
 }

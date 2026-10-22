@@ -21,6 +21,7 @@ const mocks = vi.hoisted(() => ({
   getPublicArticle: vi.fn(),
   getMyArticles: vi.fn(),
   getFavorites: vi.fn(),
+  getPublicGallery: vi.fn(),
   getPublicArticles: vi.fn(),
   getPublicAuthor: vi.fn(),
   getCategories: vi.fn(),
@@ -58,7 +59,7 @@ vi.mock('../src/services/following.service.js', () => ({
   setFollowing: vi.fn(),
 }))
 vi.mock('../src/services/galleries.service.js', () => ({
-  getPublicGallery: vi.fn().mockResolvedValue({ images: [] }),
+  getPublicGallery: mocks.getPublicGallery,
 }))
 vi.mock('../src/hooks/useAuth.js', () => ({ useAuth: () => auth }))
 vi.mock('../src/services/articles.service.js', async (original) => ({
@@ -185,6 +186,7 @@ beforeEach(async () => {
   })
   mocks.getPublicAuthor.mockResolvedValue({ author })
   mocks.getCategories.mockResolvedValue([category])
+  mocks.getPublicGallery.mockResolvedValue({ images: [] })
   mocks.getPublicCategory.mockResolvedValue(category)
   mocks.getNotifications.mockResolvedValue({
     notifications: [],
@@ -228,6 +230,39 @@ afterEach(() => {
 })
 
 describe('Reader and member flows', () => {
+  it('opens an article with its gallery between the introduction and body, without a duplicate cover', async () => {
+    mocks.getPublicArticle.mockResolvedValueOnce({
+      article: { ...article, cover_image_url: '/cover.webp' },
+    })
+    mocks.getPublicGallery.mockResolvedValueOnce({
+      images: [
+        {
+          id: 'opening',
+          image_url: '/gallery.webp',
+          width: 1600,
+          height: 900,
+          alt_text: 'Imagen de apertura',
+          caption: 'Crédito de la imagen',
+        },
+      ],
+    })
+    const { container } = renderApp()
+    const gallery = await screen.findByRole('region', {
+      name: 'La historia en imágenes',
+    })
+    const heading = screen.getByRole('heading', { name: article.title })
+    const body = container.querySelector('.public-article__content')
+    expect(
+      heading.compareDocumentPosition(gallery) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
+    expect(
+      gallery.compareDocumentPosition(body) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
+    expect(container.querySelectorAll('.gallery-carousel')).toHaveLength(1)
+    expect(container.querySelector('.public-article__cover')).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Pausar galería' })).toBeNull()
+  })
   it('navigates beyond the first ten comments and back', async () => {
     const { container } = renderApp()
     await screen.findByText('Comentario de prueba 1')
