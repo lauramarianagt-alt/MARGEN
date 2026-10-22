@@ -48,42 +48,34 @@ export default function FeaturedArticlesCarousel() {
     else move(event.key === 'ArrowRight' ? 1 : -1)
   }
 
-  if (!article)
+  if (result === null && !failed)
     return (
-      <div className="public-home__opening">
-        <div>
-          <p className="page-eyebrow">{t('articles.public.eyebrow')}</p>
-          <h1
-            className="public-home__headline"
-            aria-label={t('articles.public.heroTitle')}
-          >
-            {t('articles.public.heroTitle')
-              .split(' ')
-              .map((word) => (
-                <span key={word}>{word}</span>
-              ))}
-          </h1>
-          <p className="public-home__intro">{t('articles.public.heroIntro')}</p>
-          {failed && (
-            <button
-              className="featured-retry"
-              onClick={() => setRetry((value) => value + 1)}
-            >
-              {t('featured.retry')}
-            </button>
-          )}
-        </div>
-        <figure className="public-home__opening-image">
-          <img
-            src="/images/margen-editorial.webp"
-            alt={t('magazine.heroAlt')}
-            width="1536"
-            height="1024"
-            fetchPriority="high"
-          />
-        </figure>
-      </div>
+      <section
+        className="featured-carousel"
+        aria-label={t('featured.label')}
+        aria-busy="true"
+      >
+        <p className="featured-carousel__loading" role="status">
+          {t('common.loading')}
+        </p>
+      </section>
     )
+
+  if (!article)
+    return failed ? (
+      <section aria-label={t('featured.label')}>
+        <p role="alert">{t('articles.public.loadError')}</p>
+        <button
+          className="featured-retry"
+          onClick={() => {
+            setFailed(false)
+            setRetry((value) => value + 1)
+          }}
+        >
+          {t('featured.retry')}
+        </button>
+      </section>
+    ) : null
 
   const href = `/${encodeURIComponent(article.author.username)}/${encodeURIComponent(article.slug)}`
   const daily = result.mode === 'daily-likes'

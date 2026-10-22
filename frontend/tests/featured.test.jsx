@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import i18n from '../src/i18n/index.js'
 import FeaturedArticlesCarousel from '../src/components/FeaturedArticlesCarousel.jsx'
@@ -30,6 +30,22 @@ beforeEach(async () => {
 })
 afterEach(cleanup)
 describe('Homepage featured carousel', () => {
+  it('shows only a loading message until the featured stories arrive', async () => {
+    let resolveStories
+    mocks.getFeaturedArticles.mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolveStories = resolve
+      }),
+    )
+    const { container } = show()
+    expect(screen.getByRole('status').textContent).toBe('Cargando...')
+    expect(container.querySelector('img')).toBeNull()
+    expect(screen.queryByRole('heading')).toBeNull()
+    expect(screen.getByRole('region').getAttribute('aria-busy')).toBe('true')
+    await act(async () => resolveStories({ articles, mode: 'daily-likes' }))
+    expect(screen.getByRole('heading', { name: 'Historia 1' })).toBeTruthy()
+    expect(screen.queryByRole('status')).toBeNull()
+  })
   it('shows real daily likes and links to the selected article', async () => {
     show()
     await screen.findByRole('heading', { name: 'Historia 1' })
@@ -91,16 +107,37 @@ describe('Homepage featured carousel', () => {
       screen.queryByRole('button', { name: 'Historia siguiente' }),
     ).toBeNull()
   })
-  it('retains the editorial opening with no stories and retries a failed request', async () => {
-    mocks.getFeaturedArticles.mockRejectedValueOnce(new Error('offline'))
-    show()
+  it('shows an error and retries without introducing an alternate cover', async () => {
+    let resolveRetry
+    mocks.getFeaturedArticles
+      .mockRejectedValueOnce(new Error('offline'))
+      .mockReturnValueOnce(
+        new Promise((resolve) => {
+          resolveRetry = resolve
+        }),
+      )
+    const { container } = show()
     fireEvent.click(
       await screen.findByRole('button', {
         name: 'Volver a cargar las historias destacadas',
       }),
     )
+    expect(screen.getByRole('status').textContent).toBe('Cargando...')
+    expect(container.querySelector('img')).toBeNull()
+    await act(async () => resolveRetry({ articles, mode: 'daily-likes' }))
     await screen.findByRole('heading', { name: 'Historia 1' })
     expect(mocks.getFeaturedArticles).toHaveBeenCalledTimes(2)
+  })
+  it('does not introduce an alternate cover when there are no featured stories', async () => {
+    mocks.getFeaturedArticles.mockResolvedValueOnce({
+      articles: [],
+      mode: 'latest',
+    })
+    const { container } = show()
+    await act(async () => {})
+    expect(screen.queryByRole('status')).toBeNull()
+    expect(container.querySelector('img')).toBeNull()
+    expect(container.textContent).toBe('')
   })
   it('exposes only the current story while retaining inactive panels for stable layout', async () => {
     show()
