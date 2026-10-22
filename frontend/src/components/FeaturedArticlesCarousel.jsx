@@ -113,9 +113,6 @@ export default function FeaturedArticlesCarousel() {
     >
       <div className="featured-carousel__spread">
         <div className="featured-carousel__copy">
-          <p className="page-eyebrow">
-            {t(daily ? 'featured.daily' : 'featured.latest')}
-          </p>
           <div className="featured-carousel__stories">
             {articles.map((story, index) => {
               const active = index === selected
@@ -133,36 +130,38 @@ export default function FeaturedArticlesCarousel() {
                     total: articles.length,
                   })}
                 >
-                  <p className="featured-carousel__category">
-                    {story.article_categories
-                      ?.map(({ category }) =>
-                        t(`categories.names.${category.slug}`, {
-                          defaultValue: category.name,
-                        }),
-                      )
-                      .join(' · ')}
-                  </p>
-                  <h1>
-                    <Link to={storyHref}>{story.title}</Link>
-                  </h1>
-                  {getArticlePreview(story) && (
-                    <p className="featured-carousel__excerpt">
-                      {getArticlePreview(story)}
+                  <div className="featured-carousel__text">
+                    <p className="featured-carousel__category">
+                      {story.article_categories
+                        ?.map(({ category }) =>
+                          t(`categories.names.${category.slug}`, {
+                            defaultValue: category.name,
+                          }),
+                        )
+                        .join(' · ')}
                     </p>
-                  )}
-                  <p className="featured-carousel__byline">
-                    {[story.author.name, story.author.surname]
-                      .filter(Boolean)
-                      .join(' ')}
-                  </p>
-                  {daily && story.likes_today > 0 && (
-                    <p className="featured-carousel__likes">
-                      {t('featured.likes', { count: story.likes_today })}
+                    <h1
+                      className="featured-carousel__title"
+                      data-long={story.title.length > 42}
+                    >
+                      <Link to={storyHref}>{story.title}</Link>
+                    </h1>
+                    {getArticlePreview(story) && (
+                      <p className="featured-carousel__excerpt">
+                        {getArticlePreview(story)}
+                      </p>
+                    )}
+                  </div>
+                  <div className="featured-carousel__story-footer">
+                    <p className="featured-carousel__byline">
+                      {[story.author.name, story.author.surname]
+                        .filter(Boolean)
+                        .join(' ')}
                     </p>
-                  )}
-                  <Link className="featured-carousel__read" to={storyHref}>
-                    {t('featured.read')} <span aria-hidden="true">→</span>
-                  </Link>
+                    <Link className="featured-carousel__read" to={storyHref}>
+                      {t('featured.read')} <span aria-hidden="true">→</span>
+                    </Link>
+                  </div>
                 </div>
               )
             })}
@@ -196,6 +195,16 @@ export default function FeaturedArticlesCarousel() {
                 <span />
               </button>
             ))}
+        </div>
+        <div className="featured-carousel__summary">
+          <p className="featured-carousel__label">
+            {t(daily ? 'featured.daily' : 'featured.latest')}
+          </p>
+          {daily && article.likes_today > 0 && (
+            <p className="featured-carousel__likes">
+              {t('featured.likes', { count: article.likes_today })}
+            </p>
+          )}
         </div>
         <p
           className="featured-carousel__counter"

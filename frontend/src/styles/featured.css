@@ -1,4 +1,5 @@
 .featured-carousel {
+  container-type: inline-size;
   outline-offset: 8px;
   touch-action: pan-y;
 }
@@ -11,24 +12,27 @@
 .featured-carousel__copy {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: 1.25rem 0;
+  padding: 0;
   min-width: 0;
 }
-.featured-carousel__copy .page-eyebrow {
-  font-size: 0.65rem;
-  margin: 0 0 2rem;
-}
-/* Overlapping text panels reserve the tallest story at every viewport width.
-   Inactive panels stay in layout, but are hidden and inert for navigation. */
+/* Desktop panels share the tallest story so copy and image never jump.
+   Inactive stories remain hidden and inert; compact layouts use natural flow. */
 .featured-carousel__stories {
   display: grid;
+  flex: 1;
   min-width: 0;
+  min-height: 32.5rem;
 }
 .featured-carousel__story {
   grid-area: 1 / 1;
-  align-self: center;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
   min-width: 0;
+}
+.featured-carousel__story-footer {
+  margin-top: auto;
 }
 .featured-carousel__story--inactive {
   visibility: hidden;
@@ -41,11 +45,15 @@
   color: var(--muted);
   margin: 0 0 1rem;
 }
-.featured-carousel h1 {
-  font-size: clamp(2.25rem, 4.2vw, 4.25rem);
+.featured-carousel .featured-carousel__title {
+  font-size: clamp(2.5rem, 5.9cqw, 3.75rem);
+  margin: 0;
   line-height: 1.02;
   letter-spacing: -0.05em;
   text-wrap: balance;
+}
+.featured-carousel .featured-carousel__title[data-long='true'] {
+  font-size: clamp(2.25rem, 4.5cqw, 3rem);
 }
 .featured-carousel h1 a {
   text-decoration: none;
@@ -54,7 +62,7 @@
   font-family: var(--font-reading);
   font-size: clamp(1.125rem, 1.6vw, 1.4rem);
   line-height: 1.45;
-  margin: 1.5rem 0 1rem;
+  margin: 1.5rem 0 0;
   max-width: 36ch;
 }
 .featured-carousel__byline {
@@ -63,16 +71,27 @@
   margin: 0;
   color: var(--muted);
 }
-.featured-carousel__likes {
-  font-size: 0.7rem;
+.featured-carousel__summary {
+  text-align: right;
   color: var(--muted);
-  margin: 1rem 0 0;
+}
+.featured-carousel__label {
+  margin: 0;
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+.featured-carousel__likes {
+  font-size: 0.625rem;
+  line-height: 1.5;
+  margin: 0.25rem 0 0;
 }
 .featured-carousel__read {
   display: inline-flex;
   gap: 1rem;
   align-items: center;
-  margin-top: 2rem;
+  margin-top: 0.75rem;
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -85,9 +104,9 @@
   position: relative;
   width: 100%;
   min-width: 0;
-  aspect-ratio: 1.4;
+  aspect-ratio: auto;
   background: var(--rule);
-  min-height: 28rem;
+  min-height: 32.5rem;
 }
 .featured-carousel__image img {
   position: absolute;
@@ -101,7 +120,9 @@
   display: flex;
   align-items: center;
   gap: 2rem;
+  margin-top: 1rem;
   padding-top: 0.75rem;
+  border-top: 1px solid var(--rule);
 }
 .featured-carousel__indicators {
   display: flex;
@@ -157,9 +178,6 @@
   .featured-carousel__spread {
     gap: 2rem;
   }
-  .featured-carousel__image {
-    min-height: 25rem;
-  }
 }
 @media (max-width: 700px) {
   .featured-carousel__spread {
@@ -169,15 +187,19 @@
   .featured-carousel__copy {
     padding: 0;
   }
-  .featured-carousel__copy .page-eyebrow {
-    margin-bottom: 1.25rem;
+  .featured-carousel__stories {
+    min-height: 0;
   }
-  .featured-carousel h1 {
-    font-size: clamp(2.25rem, 8.5vw, 3.5rem);
+  .featured-carousel__story--inactive {
+    display: none;
+  }
+  .featured-carousel .featured-carousel__title,
+  .featured-carousel .featured-carousel__title[data-long='true'] {
+    font-size: clamp(2.25rem, 8.5vw, 3rem);
   }
   .featured-carousel__excerpt {
     font-size: 1.2rem;
-    margin: 1rem 0;
+    margin: 1rem 0 0;
   }
   .featured-carousel__read {
     margin-top: 0.75rem;
@@ -187,7 +209,14 @@
     aspect-ratio: 4 / 3;
   }
   .featured-carousel__controls {
-    gap: 0.5rem;
+    flex-wrap: wrap;
+    gap: 0 0.5rem;
+  }
+  .featured-carousel__summary {
+    order: 1;
+    flex-basis: 100%;
+    text-align: left;
+    margin-top: 0.5rem;
   }
   .featured-carousel__arrows {
     gap: 0;
